@@ -17,7 +17,7 @@ Colosseum Copilot is a read-only research API for startup opportunity discovery 
 
 ## Version Check
 
-This skill is version **1.0.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.0.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/copilot-skill`"
+This skill is version **1.0.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.0.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
 
 - **Builder Projects**: 5,000+ Solana project submissions with tech stack, problem tags, and competitive context
 - **Crypto Archives**: Curated corpus across cypherpunk literature, protocol docs, investor research, and founder essays
@@ -56,7 +56,7 @@ Use this skill when:
 
 **Mode 1 — Conversational (default):** Answer questions with targeted API calls and evidence coverage matched to query type. Cite sources inline, keep responses concise, and offer to do a full deep-dive when the topic warrants it — never auto-trigger it.
 
-**Mode 2 — Deep Dive (explicit opt-in):** Full 8-step workflow from `rules/workflow-deep.md`. Only activates when user explicitly says "vet this idea", "deep dive", "full analysis", "validate this", "is X worth building?", "should I build X?", or accepts your offer to go deeper.
+**Mode 2 — Deep Dive (explicit opt-in):** Full 8-step workflow from `references/workflow-deep.md`. Only activates when user explicitly says "vet this idea", "deep dive", "full analysis", "validate this", "is X worth building?", "should I build X?", or accepts your offer to go deeper.
 
 ### Conversational Guidelines
 
@@ -88,7 +88,7 @@ Use this skill when:
 - **Entity coverage check:** If the user names specific companies, protocols, papers, or products, run direct searches for each named entity and explicitly address each one in the answer (found, not found, or tangential).
 - **Landscape check:** Never claim "nobody has done this" or "no existing players" unless an accelerator portfolio check (`acceleratorOnly`) was executed and reported. If accelerator overlap exists, surface those builders as useful reference points and potential sources of inspiration.
 
-> For the full 8-step deep research workflow, see `rules/workflow-deep.md`
+> For the full 8-step deep research workflow, see `references/workflow-deep.md`
 
 ## Data Sources
 
@@ -120,8 +120,8 @@ All endpoints require `Authorization: Bearer <COPILOT_PAT>`. Treat the PAT like 
 | `/colosseum_copilot/clusters/:key` | GET | Cluster details |
 | `/colosseum_copilot/filters` | GET | Available filters |
 
-> For full endpoint docs, curl examples, and query tips: `rules/api-reference.md`
-> For Grid GraphQL recipes and product type slugs: `rules/grid-recipes.md`
+> For full endpoint docs, curl examples, and query tips: `references/api-reference.md`
+> For Grid GraphQL recipes and product type slugs: `references/grid-recipes.md`
 
 ## Output Contract
 

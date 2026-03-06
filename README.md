@@ -1,11 +1,11 @@
-# Colosseum Copilot Skill
+# Colosseum Copilot
 
 AI agent skill for Solana/crypto startup research. Gives coding assistants access to 5,400+ hackathon project submissions, 188,000+ archive chunks, cohort analytics, and ecosystem data from The Grid.
 
 ## Install
 
 ```bash
-npx skills add ColosseumOrg/copilot-skill
+npx skills add ColosseumOrg/colosseum-copilot
 ```
 
 ## What it does
