@@ -22,7 +22,7 @@ jobs:
         run: |
           VERSION=$(sed -n 's/^version: *//p' skills/colosseum-copilot/SKILL.md | head -1 | tr -d '[:space:]')
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          TAG="copilot-skill-v$VERSION"
+          TAG="colosseum-copilot-v$VERSION"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Check if tag already exists
