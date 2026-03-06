@@ -1,0 +1,48 @@
+name: Copilot Skill Auto-Tag
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - skills/colosseum-copilot/SKILL.md
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from skill frontmatter
+        id: version
+        run: |
+          VERSION=$(sed -n 's/^version: *//p' skills/colosseum-copilot/SKILL.md | head -1 | tr -d '[:space:]')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          TAG="colosseum-copilot-v$VERSION"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: check
+        env:
+          TAG_NAME: ${{ steps.version.outputs.tag }}
+        run: |
+          if git tag -l "$TAG_NAME" | grep -q .; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create and push tag
+        if: steps.check.outputs.exists == 'false'
+        env:
+          TAG_NAME: ${{ steps.version.outputs.tag }}
+          SKILL_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG_NAME" -m "Copilot skill $SKILL_VERSION"
+          git push origin "$TAG_NAME"
