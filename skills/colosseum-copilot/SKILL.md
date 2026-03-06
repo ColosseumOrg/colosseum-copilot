@@ -1,5 +1,5 @@
 ---
-name: colosseum-copilot-research
+name: colosseum-copilot
 version: 1.0.0
 description: |
   Research Solana/crypto startup opportunities using builder project history, crypto archives,
