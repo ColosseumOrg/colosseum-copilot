@@ -23,7 +23,7 @@ npx skills add ColosseumOrg/colosseum-copilot
 
 ## Auth
 
-Requires a Personal Access Token (PAT) from [Colosseum Arena](https://arena.colosseum.org/copilot/auth).
+Requires a Personal Access Token (PAT) from [Colosseum Arena](https://arena.colosseum.org/copilot).
 
 ```bash
 export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v1"

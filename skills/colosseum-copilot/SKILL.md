@@ -31,7 +31,7 @@ This skill is version **1.0.0**. After your first API call, check the `X-Copilot
    export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v1"
    export COLOSSEUM_COPILOT_PAT="YOUR_PAT"
    ```
-   Get a PAT: Go to https://arena.colosseum.org/copilot/auth and generate a token
+   Get a PAT: Go to https://arena.colosseum.org/copilot and generate a token
 
 2. **Run your first search:**
    ```bash
@@ -147,7 +147,7 @@ Key rules: bullet points not tables, include project slugs, evidence-based not s
 - **Empty archive results**: Search auto-cascades (vector → chunk text → doc text) before returning empty. If still empty, try conceptual synonyms, keep queries to 3-6 keywords
 - **429 Too Many Requests**: Back off, max 2 concurrent requests
 - **API unavailable**: Note in report and proceed with available data
-- **Auth error**: Check PAT at https://arena.colosseum.org/copilot/auth
+- **Auth error**: Check PAT at https://arena.colosseum.org/copilot
 
 ## References
 
