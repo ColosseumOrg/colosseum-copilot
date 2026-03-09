@@ -194,6 +194,8 @@ curl -s "$COLOSSEUM_COPILOT_API_BASE/projects/by-slug/<slug>" \
 #### 2d. Hackathon Analysis (Topic-Aware Routing)
 Route the research topic to the most relevant hackathon(s) before calling `/analyze`:
 
+If you make any "recent", "before/after", or "trend across hackathons" claim, verify chronology first via `GET /filters` `hackathons[].startDate` or a result's `hackathon.startDate`. Never infer order from names alone.
+
 | Topic | Hackathon(s) |
 |-------|-------------|
 | Gaming/entertainment | `radar` |
@@ -347,7 +349,7 @@ Before synthesis, **internally verify** ALL of these are complete. This is a sel
 **Coverage depth checks (REQUIRED):**
 - [ ] **2+ distinct project queries executed** — confirm you ran at least two `search/projects` calls with meaningfully different formulations (semantic rewrite + problem-space rewrite). Two queries with minor word swaps do not count.
 - [ ] **One tag/filter follow-up query executed** — confirm you used facet data from an initial search to run a filtered follow-up query (see Step 2a tag-filtered follow-up).
-- [ ] **Cross-hackathon coverage confirmed** — results should span multiple hackathons. If a single hackathon dominates (> 70%), either reformulate and search again, or explicitly document why single-hackathon coverage is intentional (e.g., the topic only appeared in one hackathon edition).
+- [ ] **Cross-hackathon coverage confirmed** — results should span multiple hackathons. If you describe evolution across hackathons, verify chronology with `startDate`; if a single hackathon dominates (> 70%), either reformulate and search again, or explicitly document why single-hackathon coverage is intentional (e.g., the topic only appeared in one hackathon edition).
 - [ ] **Accelerator portfolio checked** — Query 3 (acceleratorOnly) executed and outcome documented
 
 **If any are missing, execute the missing calls NOW before proceeding.**

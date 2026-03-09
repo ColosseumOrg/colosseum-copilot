@@ -27,7 +27,7 @@ Unless noted, all requests include:
 
 #### GET /filters
 
-Fetch available filters (hackathons, tracks, tags, clusters). Use to translate hackathon or track names into valid slugs/keys.
+Fetch available filters (hackathons, tracks, tags, clusters). Use to translate hackathon or track names into valid slugs/keys and to get canonical hackathon `startDate` values for chronology-sensitive answers.
 
 ```bash
 curl "$COLOSSEUM_COPILOT_API_BASE/filters" \
@@ -36,7 +36,7 @@ curl "$COLOSSEUM_COPILOT_API_BASE/filters" \
 
 Response includes:
 - `tracks[]`: `{ key, name, hackathonSlug, projectCount }`
-- `hackathons[]`: `{ slug, name, projectCount, winnerCount }`
+- `hackathons[]`: `{ slug, name, startDate, projectCount, winnerCount }` — ordered chronologically (oldest first)
 - `acceleratorBatches[]`: `{ key, name, companyCount }`
 - `prizeTypes[]`: string array of prize category names
 - `prizePlacements[]`: integer array of placement ranks
@@ -119,6 +119,7 @@ Response includes `diagnostics`:
 Notes:
 - `query` is optional; omit it for filter-only browsing (prefer omission over an empty string).
 - `limit <= 25`. `offset` applies after ranking/diversity.
+- `results[]`: each result includes `hackathon: { name, slug, startDate }` alongside project metadata, tracks, links, evidence, prize, and accelerator fields
 
 **Score interpretation (projects):** Scores reflect hybrid RRF fusion across vector, text, and semantic tag channels — not raw embedding distance. Use relative ranking within a result set (higher = better match) rather than absolute thresholds. When `diagnostics.modeUsed` is `text`, scores represent text relevance (static 0.8). When `hybrid`, scores combine similarity and text rank. Enable `includeDiagnostics: true` to see which mode produced results.
 
@@ -192,6 +193,8 @@ Fetch full details for a project by slug. Use for 1-2 top results when evidence 
 curl "$COLOSSEUM_COPILOT_API_BASE/projects/by-slug/your-project-slug" \
   -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT"
 ```
+
+Response includes `hackathon`: `{ name, slug, startDate }` alongside project description, tracks, links, team, prize, repo/media, and semantic tags.
 
 #### POST /analyze
 
@@ -270,7 +273,7 @@ Response includes:
 
 **Hackathon analysis:**
 - `clusters`, `problemTags`, `techStack`: these dimensions exist in the schema but may not be populated for all hackathon sets. If a dimension returns empty, try `tracks` or `problemTags` instead.
-- Cross-hackathon compare: track keys are per-hackathon, so comparisons work best within the same hackathon (e.g., winners vs. all).
+- Cross-hackathon compare: use `GET /filters` `hackathons[].startDate` for chronology; track keys are per-hackathon, so track-level comparisons work best within the same hackathon (e.g., winners vs. all).
 
 
 ## Web Search

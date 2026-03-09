@@ -21,7 +21,7 @@ This skill is version **1.0.0**. After your first API call, check the `X-Copilot
 
 - **Builder Projects**: 5,400+ Solana project submissions with tech stack, problem tags, and competitive context
 - **Crypto Archives**: Curated corpus across cypherpunk literature, protocol docs, investor research, and founder essays
-- **Hackathon Analytics + Clusters**: Distribution and trend analysis across hackathons and topic groupings
+- **Hackathon Analytics + Clusters**: Distribution, comparison, and chronology-aware trend analysis across hackathons and topic groupings
 - **The Grid + Web Search**: Ecosystem product metadata plus real-time competitive landscape checks
 
 ## Quickstart (90 seconds to first result)
@@ -84,7 +84,7 @@ Use this skill when:
 
 - **Archive integration rule:** For any non-trivial question (anything beyond a simple one-list retrieval), run at least one `search/archives` query and cite at least one archive source in the answer.
 - **Accelerator/winner portfolio checks:** For "what has been tried", "who is building this", "is this crowded/saturated", or similar prompts, run targeted project searches with `filters: { "acceleratorOnly": true }` and `filters: { "winnersOnly": true }`, then reflect both outcomes in the answer.
-- **Freshness and temporal anchoring:** When citing hackathons, include timing context inline (hackathon edition/year and/or accelerator cohort like C1/C2). For evaluative judgments, label the claim with `As of YYYY-MM-DD`.
+- **Freshness and temporal anchoring:** Use `hackathon.startDate` from `/filters`, `/search/projects`, and `/projects/by-slug/:slug` to order hackathons chronologically; never infer chronology from names or memory. When citing hackathons, include month/year inline (and accelerator cohort like C1/C2/C4 when relevant). For evaluative judgments, label the claim with `As of YYYY-MM-DD`.
 - **Entity coverage check:** If the user names specific companies, protocols, papers, or products, run direct searches for each named entity and explicitly address each one in the answer (found, not found, or tangential).
 - **Landscape check:** Never claim "nobody has done this" or "no existing players" unless an accelerator portfolio check (`acceleratorOnly`) was executed and reported. If accelerator overlap exists, surface those builders as useful reference points and potential sources of inspiration.
 
@@ -94,10 +94,22 @@ Use this skill when:
 
 - **Builder Projects** (5,400+): Solana project submissions with tech stack, problem/solution tags, verticals, and competitive context
 - **Crypto Archives**: Curated corpus spanning cypherpunk literature, protocol docs, investor research (Paradigm, a16z, Multicoin), founder essays (Paul Graham), Solana protocol docs (Jupiter, Orca, Drift), Nakamoto Institute heritage collection, and foundational crypto texts
-- **Hackathon Analytics**: Analyze and compare hackathon projects across dimensions
+- **Hackathon Analytics + Chronology**: Analyze and compare hackathon projects across dimensions; canonical hackathon dates are available via `hackathon.startDate`
 - **Clusters**: Topic groupings across the project corpus
 - **The Grid**: Ecosystem metadata (products/entities/assets) via direct GraphQL (~6,300 products, ~3,000 roots)
 - **Web Search**: Real-time competitive landscape via your runtime's search tools
+
+### Hackathon Chronology
+
+| Edition | Period | Slug |
+|---|---|---|
+| Hyperdrive | Sep 2023 | `hyperdrive` |
+| Renaissance | Mar-Apr 2024 | `renaissance` |
+| Radar | Sep-Oct 2024 | `radar` |
+| Breakout | Apr-May 2025 | `breakout` |
+| Cypherpunk | Sep-Oct 2025 | `cypherpunk` |
+
+`GET /filters` returns `hackathons[].startDate` and orders `hackathons[]` chronologically (oldest first).
 
 ## Auth
 
@@ -118,7 +130,7 @@ All endpoints require `Authorization: Bearer <COPILOT_PAT>`. Treat the PAT like 
 | `/analyze` | POST | Hackathon analysis |
 | `/compare` | POST | Compare two hackathons |
 | `/clusters/:key` | GET | Cluster details |
-| `/filters` | GET | Available filters |
+| `/filters` | GET | Available filters + canonical hackathon chronology |
 
 > For full endpoint docs, curl examples, and query tips: `references/api-reference.md`
 > For Grid GraphQL recipes and product type slugs: `references/grid-recipes.md`
