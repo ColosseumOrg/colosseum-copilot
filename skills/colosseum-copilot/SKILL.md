@@ -8,7 +8,7 @@ description: |
 homepage: https://colosseum.com
 license: Proprietary
 compatibility: Claude Code, Codex, OpenClaw
-metadata: {"category":"copilot","api_base":"https://copilot.colosseum.com/api","auth":"pat","author":"colosseum","tags":"solana,research,founder,market-intel,startup,idea-generation"}
+metadata: {"category":"copilot","api_base":"https://copilot.colosseum.com/api/v1","auth":"pat","author":"colosseum","tags":"solana,research,founder,market-intel,startup,idea-generation"}
 ---
 
 # Colosseum Copilot
@@ -18,6 +18,25 @@ Colosseum Copilot is a read-only research API for startup opportunity discovery 
 ## Version Check
 
 This skill is version **1.0.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.0.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
+
+## Pre-Flight Auth Check (REQUIRED)
+
+**You MUST complete this check before making any other API call.** Do not skip this step.
+
+1. Verify `COLOSSEUM_COPILOT_PAT` is set in the environment. If missing, STOP and tell the user:
+
+   > You need a Personal Access Token before using Copilot.
+   > Go to **https://arena.colosseum.org/copilot** to generate one, then set it:
+   >
+   > `export COLOSSEUM_COPILOT_PAT="your-token-here"`
+
+2. Verify `COLOSSEUM_COPILOT_API_BASE` is set. If missing, set the default:
+
+   > `export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v1"`
+
+3. Call `GET /status` to verify the connection. Expected response: `{ "authenticated": true, "expiresAt": "...", "scope": "..." }`
+
+4. If `"authenticated": true`, proceed. If 401 or env vars missing, do NOT attempt other API calls — guide the user through steps 1-2.
 
 - **Builder Projects**: 5,400+ Solana project submissions with tech stack, problem tags, and competitive context
 - **Crypto Archives**: Curated corpus across cypherpunk literature, protocol docs, investor research, and founder essays
@@ -117,12 +136,13 @@ All endpoints require `Authorization: Bearer <COPILOT_PAT>`. Treat the PAT like 
 
 - Do not commit PATs or paste them into public logs
 - PATs are long-lived (expected ~90 days); rotate by issuing a new one
-- Default API base is `https://copilot.colosseum.com/api`; override `COLOSSEUM_COPILOT_API_BASE` to target a different environment
+- Default API base is `https://copilot.colosseum.com/api/v1`; override `COLOSSEUM_COPILOT_API_BASE` to target a different environment
 
 ## Key Endpoints (Quick Reference)
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
+| `/status` | GET | Auth pre-flight check — call first |
 | `/search/projects` | POST | Search builder projects |
 | `/search/archives` | POST | Search crypto archives |
 | `/projects/by-slug/:slug` | GET | Full project details |

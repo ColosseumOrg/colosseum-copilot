@@ -8,6 +8,8 @@ AI agent skill for Solana/crypto startup research. Gives coding assistants acces
 npx skills add ColosseumOrg/colosseum-copilot
 ```
 
+> **Prerequisites:** You need a Personal Access Token (PAT) from [arena.colosseum.org/copilot](https://arena.colosseum.org/copilot) before first use.
+
 ## What it does
 
 - **Search builder projects** — find hackathon submissions by concept, tech stack, or problem domain
