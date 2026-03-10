@@ -418,7 +418,7 @@ Classify the opportunity landscape into one of three categories.
 
 Use the saturation count from Step 2e Phase 3 to ground your classification. A category with 3 products and 3 distinct roots has a different competitive dynamic than one with 200 products across 150 roots.
 
-1. **Open space** — No existing player has meaningfully addressed this problem. Proceed to Step 7.
+1. **Open space** — Based on the available data, no existing player appears to have meaningfully addressed this problem. Proceed to Step 7.
 2. **Differentiation opportunity** — Existing players have solutions, but there are specific angles a new entrant could pursue:
    - **Segment opportunity**: They don't serve a specific user segment well (e.g., "Jupiter doesn't serve institutional traders who need compliance features")
    - **UX opportunity**: The feature exists but is buried, confusing, or requires technical knowledge (e.g., "Solana staking exists but requires CLI knowledge")
@@ -571,7 +571,7 @@ Select the **single highest-potential opportunity** from the gaps identified abo
 - **Who are the key players?** Name existing players and their approaches
 - **What do they currently offer?** Specific features that address this problem space
 - **Landscape classification:** One of:
-  - **Open space:** No existing player has meaningfully addressed this. [Evidence]
+  - **Open space:** Based on the available data, no existing player appears to have meaningfully addressed this. [Evidence]
   - **Differentiation opportunity — Segment:** They don't serve [specific user segment] well because [reason]
   - **Differentiation opportunity — UX:** Feature exists but [specific UX problem]
   - **Differentiation opportunity — Geographic:** Not available/adapted for [specific market]

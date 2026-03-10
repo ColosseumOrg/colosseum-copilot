@@ -34,7 +34,7 @@ export COLOSSEUM_COPILOT_PAT="your-token-here"
 
 ## Docs
 
-Full documentation at [docs.colosseum.com](https://docs.colosseum.com).
+Full documentation at [docs.colosseum.com/copilot](https://docs.colosseum.com/copilot).
 
 ## License
 
