@@ -115,7 +115,7 @@ Use this skill when:
 - **Crypto Archives**: Curated corpus spanning cypherpunk literature, protocol docs, investor research (Paradigm, a16z, Multicoin), founder essays (Paul Graham), Solana protocol docs (Jupiter, Orca, Drift), Nakamoto Institute heritage collection, and foundational crypto texts
 - **Hackathon Analytics + Chronology**: Analyze and compare hackathon projects across dimensions; canonical hackathon dates are available via `hackathon.startDate`
 - **Clusters**: Topic groupings across the project corpus
-- **The Grid**: Ecosystem metadata (products/entities/assets) via direct GraphQL (~6,300 products, ~3,000 roots)
+- **The Grid**: Ecosystem metadata (products/entities/assets) via direct GraphQL (6,300+ products across all ecosystems, ~3,000 roots)
 - **Web Search**: Real-time competitive landscape via your runtime's search tools
 
 ### Hackathon Chronology

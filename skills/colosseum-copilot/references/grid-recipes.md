@@ -8,7 +8,7 @@
 - **GraphiQL**: `https://cloud.hasura.io/public/graphiql?endpoint=https%3A%2F%2Fbeta.node.thegrid.id%2Fgraphql`
 - **Auth**: No API key required for public queries. If you have an enterprise key, add `-H "x-api-key: <key>"`.
 - **Schema hierarchy**: `roots` → `products`/`entities`/`assets`/`profileInfos` → `deployments`/`contracts`
-- **Data volume**: ~6,300 products, ~3,000 roots, ~2,500 entities
+- **Data volume**: ~6,300 products (all ecosystems), ~3,000 roots, ~2,500 entities
 - **Operators**: `_eq`, `_in`, `_contains`, `_like`, `_gt`/`_gte`/`_lt`/`_lte`, `_and`/`_or`/`_not`, `_is_null`
 - No full-text search — `_contains` and `_like` are case-insensitive substring matches
 - Always check the `errors` field in JSON responses (GraphQL errors return HTTP 200)
@@ -77,8 +77,8 @@ QUERY
 
 Three approaches with different coverage/precision trade-offs:
 
-- **Tag-based** (broadest, ~3,400 products): `root: { profileTags: { tag: { slug: { _eq: "solana" } } } }`
-- **Deployment-based** (highest precision, ~510 products): `productDeployments: { smartContractDeployment: { deployedOnProduct: { name: { _eq: "Solana Mainnet" } } } }`
+- **Tag-based** (broadest): `root: { profileTags: { tag: { slug: { _eq: "solana" } } } }`
+- **Deployment-based** (highest precision, narrower coverage): `productDeployments: { smartContractDeployment: { deployedOnProduct: { name: { _eq: "Solana Mainnet" } } } }`
 - **CAIP-2 attribute** (narrow, limited coverage): `attributes: { attributeType: { slug: { _eq: "chain_id_caip2" } }, value: { _contains: "solana" } }`
 
 The Vertical Search recipe above uses triple-OR across all three for maximum recall.

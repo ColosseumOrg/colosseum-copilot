@@ -4,7 +4,7 @@
 
 The Grid provides ecosystem metadata you can query via GraphQL: roots (projects/organizations), products, assets/tokens, entities, tags, smart-contract deployments, and relationship graphs (product supports-product edges, root relationship edges).
 
-**Data volume**: ~6,300 products, ~3,000 roots, ~2,500 entities, ~1,700 assets, ~7,300 profile tags, ~3,900 smart contract deployments.
+**Data volume**: ~6,300 products (all ecosystems), ~3,000 roots, ~2,500 entities, ~1,700 assets, ~7,300 profile tags, ~3,900 smart contract deployments.
 
 ## Endpoints
 
@@ -182,7 +182,7 @@ The strongest precision lever for incumbent discovery is filtering by `productTy
 
 Three approaches with different coverage/precision trade-offs. **For maximum recall, combine all three with `_or`** (see Vertical Search recipe below).
 
-**Option A: Profile tags** (broadest, ~3,400 products — recommended default)
+**Option A: Profile tags** (broadest — recommended default)
 
 ```graphql
 where: {
@@ -194,7 +194,7 @@ where: {
 }
 ```
 
-**Option B: Smart contract deployments** (highest precision, ~510 products)
+**Option B: Smart contract deployments** (highest precision, narrower coverage)
 
 ```graphql
 where: {
@@ -550,7 +550,7 @@ JSON
 
 ### Solana-Focused Discovery (Approach 3): Profile Tags (Broadest)
 
-When to use: broadest Solana ecosystem discovery (~3,400 products vs ~510 for deployment-based). This is the **recommended default** for Solana scoping.
+When to use: broadest Solana ecosystem discovery; deployment-based is narrower but more precise. This is the **recommended default** for Solana scoping.
 
 ```graphql
 query SolanaByTag($tag: String!, $limit: Int!) {
