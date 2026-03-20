@@ -11,6 +11,7 @@ All limits are per-user (keyed by PAT identity). Exceeding a limit returns `429`
 | Search | 30 req/min | `/search/projects`, `/search/archives` |
 | Analysis | 10 req/min | `/analyze`, `/compare` |
 | Concurrency | 2 in-flight | All data endpoints (`429` with `Retry-After: 1`) |
+| Source suggestions | 5 req/hr | `/source-suggestions` |
 | PAT issuance | 10 req/min | `POST /api/copilot/auth/token` (per IP) |
 
 **Tip:** The 2-concurrent limit is enforced server-side. Most agent runtimes serialize overflow automatically — submit all your calls and they'll execute in order. If you get repeated `429`s, reduce to sequential calls.
@@ -254,6 +255,37 @@ Response includes:
 - `topTags.problemTags[]`: `{ tag, count }` — top problem tags
 - `topTags.primitives[]`: `{ tag, count }`
 - `topTags.techStack[]`: `{ tag, count }`
+
+#### POST /source-suggestions
+
+Suggest a new source for the archive corpus. Requires auth. Rate limited to 5 requests per hour per user.
+
+```bash
+curl -X POST "$COLOSSEUM_COPILOT_API_BASE/source-suggestions" \
+  -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/solana-mev-research",
+    "name": "MEV Research Blog",
+    "reason": "Great technical analysis of Solana MEV strategies"
+  }'
+```
+
+**Request parameters:**
+
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `url` | string | Yes | URL of the source (must be public http/https, no private IPs or embedded credentials) |
+| `name` | string | No | Name or title of the source (max 200 chars) |
+| `reason` | string | No | Why this source would be valuable (max 500 chars) |
+
+**Response:** `201 Created`
+
+```json
+{ "message": "Thanks! We'll review your suggestion." }
+```
+
+Every submission is reviewed by the team. Approved sources are added to the archive pipeline.
 
 ### Query Tips
 

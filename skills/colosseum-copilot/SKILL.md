@@ -1,6 +1,6 @@
 ---
 name: colosseum-copilot
-version: 1.0.0
+version: 1.1.0
 description: |
   Research Solana/crypto startup opportunities using builder project history, crypto archives,
   investor theses, and market signals. Answers questions conversationally by default; runs the
@@ -13,11 +13,11 @@ metadata: {"category":"copilot","api_base":"https://copilot.colosseum.com/api/v1
 
 # Colosseum Copilot
 
-Colosseum Copilot is a read-only research API for startup opportunity discovery in crypto and Solana.
+Colosseum Copilot is a research API for startup opportunity discovery in crypto and Solana, with support for suggesting new archive sources.
 
 ## Version Check
 
-This skill is version **1.0.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.0.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
+This skill is version **1.1.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.1.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
 
 ## Pre-Flight Auth Check (REQUIRED)
 
@@ -117,6 +117,7 @@ Use this skill when:
 - **Clusters**: Topic groupings across the project corpus
 - **The Grid**: Ecosystem metadata (products/entities/assets) via direct GraphQL (6,300+ products across all ecosystems, ~3,000 roots)
 - **Web Search**: Real-time competitive landscape via your runtime's search tools
+- **Source Suggestions**: Users can suggest new sources for the archive via `POST /source-suggestions` (5 req/hr). See `references/api-reference.md` for details
 
 ### Hackathon Chronology
 
@@ -151,6 +152,7 @@ All endpoints require `Authorization: Bearer <COPILOT_PAT>`. Treat the PAT like 
 | `/compare` | POST | Compare two hackathons |
 | `/clusters/:key` | GET | Cluster details |
 | `/filters` | GET | Available filters + canonical hackathon chronology |
+| `/source-suggestions` | POST | Suggest a new archive source |
 
 > For full endpoint docs, curl examples, and query tips: `references/api-reference.md`
 > For Grid GraphQL recipes and product type slugs: `references/grid-recipes.md`
