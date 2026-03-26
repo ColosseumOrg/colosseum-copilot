@@ -320,7 +320,6 @@ curl -X POST "$COLOSSEUM_COPILOT_API_BASE/feedback" \
 ```
 
 High and critical severity feedback is escalated to the team immediately.
-
 ### Query Tips
 
 **Archive search:**
