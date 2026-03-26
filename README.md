@@ -1,6 +1,6 @@
 # Colosseum Copilot
 
-AI agent skill for Solana/crypto startup research. Gives coding assistants access to 5,400+ hackathon project submissions, 188,000+ archive chunks, hackathon analytics, and ecosystem data from The Grid.
+AI agent skill for Solana/crypto startup research. Gives coding assistants access to 5,400+ hackathon project submissions, 84,000+ archive documents from 65+ curated sources, hackathon analytics, and ecosystem data from The Grid.
 
 ## Install
 
