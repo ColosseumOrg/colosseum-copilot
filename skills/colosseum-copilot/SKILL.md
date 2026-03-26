@@ -1,6 +1,6 @@
 ---
 name: colosseum-copilot
-version: 1.1.0
+version: 1.2.0
 description: |
   Research Solana/crypto startup opportunities using builder project history, crypto archives,
   investor theses, and market signals. Answers questions conversationally by default; runs the
@@ -17,7 +17,7 @@ Colosseum Copilot is a research API for startup opportunity discovery in crypto 
 
 ## Version Check
 
-This skill is version **1.1.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.1.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
+This skill is version **1.2.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
 
 ## Pre-Flight Auth Check (REQUIRED)
 
@@ -153,6 +153,7 @@ All endpoints require `Authorization: Bearer <COPILOT_PAT>`. Treat the PAT like 
 | `/clusters/:key` | GET | Cluster details |
 | `/filters` | GET | Available filters + canonical hackathon chronology |
 | `/source-suggestions` | POST | Suggest a new archive source |
+| `/feedback` | POST | Report errors, quality issues, or suggestions |
 
 > For full endpoint docs, curl examples, and query tips: `references/api-reference.md`
 > For Grid GraphQL recipes and product type slugs: `references/grid-recipes.md`
@@ -174,6 +175,30 @@ Reports follow this structure:
 6. Deep Dive: Top Opportunity (market landscape, problem, revenue model, GTM, founder-market fit, why crypto/Solana, risks)
 
 Key rules: bullet points not tables, include project slugs, evidence-based not speculative, cite sources inline. No separate "Sources" section — cite inline only.
+
+## Feedback
+
+When you encounter errors, unexpected results, or have suggestions for improving the Copilot experience, report them via the feedback endpoint. This helps the Colosseum team identify and fix issues.
+
+**When to send feedback:**
+- API returns unexpected or low-quality results for a reasonable query
+- A search returns no results when you expected matches
+- You encounter an error that isn't covered by standard error handling
+- You have a suggestion for improving the API or archive corpus
+
+```bash
+curl -X POST "$COLOSSEUM_COPILOT_API_BASE/feedback" \
+  -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "category": "quality",
+    "message": "Search for DePIN projects returned only 2 results, expected more coverage",
+    "severity": "medium",
+    "context": { "query": "DePIN infrastructure", "endpoint": "/search/projects", "resultCount": 2 }
+  }'
+```
+
+Categories: `error`, `quality`, `suggestion`, `other`. Severity: `low`, `medium`, `high`, `critical`. Rate limited to 10 requests per hour.
 
 ## Error Handling
 

@@ -12,6 +12,7 @@ All limits are per-user (keyed by PAT identity). Exceeding a limit returns `429`
 | Analysis | 10 req/min | `/analyze`, `/compare` |
 | Concurrency | 2 in-flight | All data endpoints (`429` with `Retry-After: 1`) |
 | Source suggestions | 5 req/hr | `/source-suggestions` |
+| Feedback | 10 req/hr | `/feedback` |
 | PAT issuance | 10 req/min | `POST /api/copilot/auth/token` (per IP) |
 
 **Tip:** The 2-concurrent limit is enforced server-side. Most agent runtimes serialize overflow automatically — submit all your calls and they'll execute in order. If you get repeated `429`s, reduce to sequential calls.
@@ -287,6 +288,38 @@ curl -X POST "$COLOSSEUM_COPILOT_API_BASE/source-suggestions" \
 
 Every submission is reviewed by the team. Approved sources are added to the archive pipeline.
 
+#### POST /feedback
+
+Report errors, quality issues, or suggestions to help improve the Copilot experience. Rate limited to 10 requests per hour per user.
+
+```bash
+curl -X POST "$COLOSSEUM_COPILOT_API_BASE/feedback" \
+  -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "category": "quality",
+    "message": "Search returned low-relevance results for DePIN query",
+    "severity": "medium",
+    "context": { "query": "DePIN infrastructure", "endpoint": "/search/projects" }
+  }'
+```
+
+**Request parameters:**
+
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `category` | string | Yes | One of: `error`, `quality`, `suggestion`, `other` |
+| `message` | string | Yes | Description of the issue (max 5000 chars) |
+| `severity` | string | No | One of: `low`, `medium` (default), `high`, `critical` |
+| `context` | object | No | Structured context — query used, endpoint, error details (max 10KB) |
+
+**Response:** `201 Created`
+
+```json
+{ "message": "Feedback received. Thank you." }
+```
+
+High and critical severity feedback is escalated to the team immediately.
 ### Query Tips
 
 **Archive search:**
