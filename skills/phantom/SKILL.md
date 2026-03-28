@@ -65,7 +65,7 @@ Required for phantom-mcp; optional for phantom-connect-sdk.
 On first run, `phantom-mcp` opens a browser for OAuth (Google or Apple sign-in). Sessions persist across
 restarts. If an auth error occurs mid-session, re-run the login flow and retry.
 
-> ⚠️ `phantom-mcp` connects to **mainnet**. Use a dedicated test wallet with minimal funds.
+> **Note:** `phantom-mcp` connects to **mainnet**. Use a dedicated test wallet with minimal funds.
 
 ### 4. Preflight check
 
@@ -156,12 +156,12 @@ supported for message signing and transaction broadcasting.
 
 ## Key Rules (Don't Skip)
 
-- ✅ Always use `signAndSendTransaction` — `signTransaction` alone is **not supported** for embedded wallets
-- ✅ Always use `LAMPORTS_PER_SOL` — never hardcode `1000000000`
-- ✅ React Native: `import 'react-native-get-random-values'` must be the **very first** import
-- ✅ Browser SDK: call `createPhantom()` once as a singleton — never create multiple instances
-- ✅ SDK targets mainnet: `https://api.mainnet-beta.solana.com`
-- ✅ Call `get_wallet_addresses` or `get_connection_status` before any wallet operation to confirm auth
+- Always use `signAndSendTransaction` — `signTransaction` alone is **not supported** for embedded wallets
+- Always use `LAMPORTS_PER_SOL` — never hardcode `1000000000`
+- React Native: `import 'react-native-get-random-values'` must be the **very first** import
+- Browser SDK: call `createPhantom()` once as a singleton — never create multiple instances
+- SDK targets mainnet: `https://api.mainnet-beta.solana.com`
+- Call `get_wallet_addresses` or `get_connection_status` before any wallet operation to confirm auth
 
 ---
 
