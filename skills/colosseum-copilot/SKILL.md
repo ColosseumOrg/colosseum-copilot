@@ -1,6 +1,6 @@
 ---
 name: colosseum-copilot
-version: 1.2.0
+version: 1.2.1
 description: |
   Research Solana/crypto startup opportunities using builder project history, crypto archives,
   investor theses, and market signals. Answers questions conversationally by default; runs the
@@ -17,7 +17,7 @@ Colosseum Copilot is a research API for startup opportunity discovery in crypto 
 
 ## Version Check
 
-This skill is version **1.2.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
+This skill is version **1.2.1**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.1, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
 
 ## Pre-Flight Auth Check (REQUIRED)
 
