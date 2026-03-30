@@ -17,7 +17,7 @@ All limits are per-user (keyed by PAT identity). Exceeding a limit returns `429`
 
 **Tip:** The 2-concurrent limit is enforced server-side. Most agent runtimes serialize overflow automatically — submit all your calls and they'll execute in order. If you get repeated `429`s, reduce to sequential calls.
 
-**Fail-closed:** If the concurrency limiter is temporarily unavailable, it returns `503 SERVICE_UNAVAILABLE` rather than allowing unlimited concurrency. This is transient — retry after a brief delay.
+**Fail-closed:** If the concurrency limiter is temporarily unavailable, the API fails closed with a retryable 5xx rather than allowing unlimited concurrency. This is transient — retry after a brief delay.
 
 ### Endpoints
 
@@ -378,5 +378,7 @@ Server errors (5xx) also include a `requestId` field for log correlation when re
 | `429` | `RATE_LIMITED` | true | Rate limit or concurrency limit exceeded. Check `Retry-After` header. |
 | `500` | `INTERNAL_ERROR` | true | Unexpected server error. Retry after brief delay. |
 | `503` | `SERVICE_UNAVAILABLE` | true | Service temporarily unavailable (infrastructure transient error). Retry after brief delay. |
+
+Some 5xx responses may use a more specific `code` derived from the server-side error class instead of `INTERNAL_ERROR`. Treat any 5xx with `retryable: true` as transient and include the `requestId` when reporting issues.
 
 For `429`: the `Retry-After` header indicates seconds to wait. Most agent runtimes serialize overflow automatically.
