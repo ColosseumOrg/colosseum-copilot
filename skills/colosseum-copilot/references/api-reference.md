@@ -17,7 +17,7 @@ All limits are per-user (keyed by PAT identity). Exceeding a limit returns `429`
 
 **Tip:** The 2-concurrent limit is enforced server-side. Most agent runtimes serialize overflow automatically — submit all your calls and they'll execute in order. If you get repeated `429`s, reduce to sequential calls.
 
-**Fail-closed:** If the concurrency limiter is temporarily unavailable, it returns `503 SERVICE_UNAVAILABLE` rather than allowing unlimited concurrency. This is transient — retry after a brief delay.
+**Fail-closed:** If the concurrency limiter is temporarily unavailable, the API fails closed with a retryable 5xx rather than allowing unlimited concurrency. This is transient — retry after a brief delay.
 
 ### Endpoints
 
@@ -363,14 +363,22 @@ All errors return a JSON body with this shape:
 { "error": "<message>", "code": "<ERROR_CODE>", "retryable": <boolean> }
 ```
 
+Server errors (5xx) also include a `requestId` field for log correlation when reporting issues.
+
 | Status | Code | Retryable | Meaning |
 |--------|------|-----------|---------|
+| `400` | `INVALID_JSON` | false | Request body contains invalid JSON |
 | `400` | `INVALID_QUERY` | false | Request validation failed (bad params, unknown fields) |
+| `400` | `BAD_REQUEST` | false | Malformed request body (not JSON-specific) |
 | `401` | `UNAUTHORIZED` | false | Missing or invalid PAT |
 | `403` | `FORBIDDEN` | false | PAT lacks required scope |
 | `404` | `NOT_FOUND` | false | Resource not found (project slug, document ID) |
+| `413` | `PAYLOAD_TOO_LARGE` | false | Request body exceeds the 1 MB size limit |
+| `415` | `UNSUPPORTED_MEDIA_TYPE` | false | Unsupported content encoding or charset. Use `Content-Type: application/json` |
 | `429` | `RATE_LIMITED` | true | Rate limit or concurrency limit exceeded. Check `Retry-After` header. |
-| `500` | `SERVICE_UNAVAILABLE` | true | Internal server error. Retry after brief delay. |
-| `503` | `SERVICE_UNAVAILABLE` | true | Service temporarily unavailable (all search tiers failed, infrastructure transient error). Retry after brief delay. |
+| `500` | `INTERNAL_ERROR` | true | Unexpected server error. Retry after brief delay. |
+| `503` | `SERVICE_UNAVAILABLE` | true | Service temporarily unavailable (infrastructure transient error). Retry after brief delay. |
+
+Some 5xx responses may use a more specific `code` derived from the server-side error class instead of `INTERNAL_ERROR`. Treat any 5xx with `retryable: true` as transient and include the `requestId` when reporting issues.
 
 For `429`: the `Retry-After` header indicates seconds to wait. Most agent runtimes serialize overflow automatically.

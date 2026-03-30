@@ -69,7 +69,7 @@ If the topic is broad, identify the most relevant angles to explore.
 
 ### Step 2: Parallel Search [execute in parallel when possible]
 
-> **Concurrency note:** The API allows 2 in-flight requests, enforced server-side. Submit all Step 2 calls in a single response — your runtime serializes overflow automatically. If you get `429`, the server is at capacity; wait for in-flight requests to complete before retrying.
+> **Concurrency note:** The API allows 2 in-flight requests, enforced server-side. Submit all Step 2 calls in a single response — your runtime serializes overflow automatically. If you get `429 RATE_LIMITED`, honor the `Retry-After` header before retrying; for concurrency hits specifically, wait for in-flight requests to complete.
 
 > **Context budget:** After each sub-step, extract only the data you need going forward (top 3-5 results with names, slugs, scores; relevant tags; saturation counts). Do not carry raw API JSON into later steps — summarize inline and discard full payloads. If you need dropped details later, re-fetch rather than persisting large payloads.
 
