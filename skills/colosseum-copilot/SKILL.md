@@ -202,11 +202,16 @@ Categories: `error`, `quality`, `suggestion`, `other`. Severity: `low`, `medium`
 
 ## Error Handling
 
+All errors return `{ "error": "<message>", "code": "<ERROR_CODE>", "retryable": <boolean> }`. See **api-reference.md** for the full error code table.
+
+- **400 `INVALID_JSON`**: Fix the request body JSON syntax and retry
+- **400 `INVALID_QUERY`**: Fix query params (check field names, value ranges, unknown fields)
+- **413 `PAYLOAD_TOO_LARGE`**: Reduce request body size (1 MB limit)
+- **429 `RATE_LIMITED`**: Back off per the `Retry-After` header, max 2 concurrent requests
+- **401 `UNAUTHORIZED`**: Check PAT at https://arena.colosseum.org/copilot
+- **5xx errors**: Note in report and proceed with available data. Include `requestId` from the response when reporting issues.
 - **Empty project results**: Broaden query, remove filters
 - **Empty archive results**: Search auto-cascades (vector → chunk text → doc text) before returning empty. If still empty, try conceptual synonyms, keep queries to 3-6 keywords
-- **429 Too Many Requests**: Back off, max 2 concurrent requests
-- **API unavailable**: Note in report and proceed with available data
-- **Auth error**: Check PAT at https://arena.colosseum.org/copilot
 
 ## References
 
