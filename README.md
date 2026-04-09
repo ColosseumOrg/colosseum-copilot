@@ -36,6 +36,21 @@ export COLOSSEUM_COPILOT_PAT="your-token-here"
 
 Full documentation at [docs.colosseum.com/copilot](https://docs.colosseum.com/copilot).
 
+---
+
+## Sponsor Skills
+
+This repo also includes skills from hackathon sponsors.
+
+| Skill | What it does |
+|-------|-------------|
+| **phantom** | Router — directs builders to the right Phantom product based on agent-track vs app-track |
+| **phantom-mcp-server** | Give your agent a wallet with zero-fee swaps, transfers, perps, and cross-chain support via Phantom |
+| **phantom-connect** | Build user-facing dApps with embedded wallets, social login, and transaction flows |
+| **phantom-cash** | Add stablecoin payments, payouts, and paid actions with CASH |
+
+Phantom MCP Server requires an App ID from [Phantom Portal](https://phantom.com/portal) and authenticates via browser OAuth on first run. See each skill's `SKILL.md` for full setup and usage.
+
 ## License
 
 Proprietary. Copyright Colosseum.

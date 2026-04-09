@@ -1,11 +1,11 @@
-name: Copilot Skill Auto-Tag
+name: Skill Auto-Tag
 
 on:
   push:
     branches:
       - main
     paths:
-      - skills/colosseum-copilot/SKILL.md
+      - skills/*/SKILL.md
 
 jobs:
   tag:
@@ -17,32 +17,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract version from skill frontmatter
-        id: version
+      - name: Detect changed skills and create tags
         run: |
-          VERSION=$(sed -n 's/^version: *//p' skills/colosseum-copilot/SKILL.md | head -1 | tr -d '[:space:]')
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          TAG="colosseum-copilot-v$VERSION"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          for skill_file in skills/*/SKILL.md; do
+            SKILL_DIR=$(dirname "$skill_file")
+            SKILL_NAME=$(basename "$SKILL_DIR")
+            VERSION=$(sed -n 's/^version: *//p' "$skill_file" | head -1 | tr -d '[:space:]')
 
-      - name: Check if tag already exists
-        id: check
-        env:
-          TAG_NAME: ${{ steps.version.outputs.tag }}
-        run: |
-          if git tag -l "$TAG_NAME" | grep -q .; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
+            if [ -z "$VERSION" ]; then
+              echo "⚠ No version found in $skill_file, skipping"
+              continue
+            fi
 
-      - name: Create and push tag
-        if: steps.check.outputs.exists == 'false'
-        env:
-          TAG_NAME: ${{ steps.version.outputs.tag }}
-          SKILL_VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG_NAME" -m "Copilot skill $SKILL_VERSION"
-          git push origin "$TAG_NAME"
+            TAG="${SKILL_NAME}-v${VERSION}"
+
+            if git tag -l "$TAG" | grep -q .; then
+              echo "✓ Tag $TAG already exists, skipping"
+            else
+              echo "→ Creating tag $TAG"
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git tag -a "$TAG" -m "$SKILL_NAME skill $VERSION"
+              git push origin "$TAG"
+            fi
+          done
