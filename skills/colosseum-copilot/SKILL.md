@@ -1,6 +1,6 @@
 ---
 name: colosseum-copilot
-version: 1.2.1
+version: 2.0.0
 description: |
   Research Solana/crypto startup opportunities using builder project history, crypto archives,
   investor theses, and market signals. Answers questions conversationally by default; runs the
@@ -17,7 +17,7 @@ Colosseum Copilot is a research API for startup opportunity discovery in crypto 
 
 ## Version Check
 
-This skill is version **1.2.1**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.1, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
+This skill is version **2.0.0**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 2.0.0, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
 
 ## Pre-Flight Auth Check (REQUIRED)
 
@@ -38,7 +38,7 @@ This skill is version **1.2.1**. After your first API call, check the `X-Copilot
 
 4. If `"authenticated": true`, proceed. If 401 or env vars missing, do NOT attempt other API calls — guide the user through steps 1-2.
 
-- **Builder Projects**: 5,400+ Solana project submissions with tech stack, problem tags, and competitive context
+- **Builder Projects**: 8,200+ Solana project submissions with tech stack, problem tags, thesis and category facets, pitch/demo-informed search, and competitive context
 - **Crypto Archives**: Curated corpus across cypherpunk literature, protocol docs, investor research, and founder essays
 - **Hackathon Analytics + Clusters**: Distribution, comparison, and chronology-aware trend analysis across hackathons and topic groupings
 - **The Grid + Web Search**: Ecosystem product metadata plus real-time competitive landscape checks
@@ -111,7 +111,7 @@ Use this skill when:
 
 ## Data Sources
 
-- **Builder Projects** (5,400+): Solana project submissions with tech stack, problem/solution tags, verticals, and competitive context
+- **Builder Projects** (8,200+): Solana project submissions with tech stack, problem/solution tags, verticals, and competitive context
 - **Crypto Archives**: Curated corpus spanning cypherpunk literature, protocol docs, investor research (Paradigm, a16z, Multicoin), founder essays (Paul Graham), Solana protocol docs (Jupiter, Orca, Drift), Nakamoto Institute heritage collection, and foundational crypto texts
 - **Hackathon Analytics + Chronology**: Analyze and compare hackathon projects across dimensions; canonical hackathon dates are available via `hackathon.startDate`
 - **Clusters**: Topic groupings across the project corpus

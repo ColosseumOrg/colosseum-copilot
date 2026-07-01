@@ -29,7 +29,7 @@ Unless noted, all requests include:
 
 #### GET /filters
 
-Fetch available filters (hackathons, tracks, tags, clusters). Use to translate hackathon or track names into valid slugs/keys and to get canonical hackathon `startDate` values for chronology-sensitive answers.
+Fetch available filters (hackathons, tracks, categories, tags, clusters). Use to translate hackathon, track, category, or thesis names into valid slugs/keys and to get canonical hackathon `startDate` values for chronology-sensitive answers.
 
 ```bash
 curl "$COLOSSEUM_COPILOT_API_BASE/filters" \
@@ -39,6 +39,7 @@ curl "$COLOSSEUM_COPILOT_API_BASE/filters" \
 Response includes:
 - `tracks[]`: `{ key, name, hackathonSlug, projectCount }`
 - `hackathons[]`: `{ slug, name, startDate, projectCount, winnerCount }` — ordered chronologically (oldest first)
+- `categories[]`: `{ key, name, projectCount }`
 - `acceleratorBatches[]`: `{ key, name, companyCount }`
 - `prizeTypes[]`: string array of prize category names
 - `prizePlacements[]`: integer array of placement ranks
@@ -90,14 +91,15 @@ curl -X POST "$COLOSSEUM_COPILOT_API_BASE/search/projects" \
 | `problemTags` | string[] | Filter by problem domain tags |
 | `solutionTags` | string[] | Filter by solution approach tags |
 | `targetUsers` | string[] | Filter by target user segments |
-| `clusterKeys` | string[] | Filter by cluster (format `v<N>-c<N>`) |
+| `categoryKeys` | string[] | Filter by project category keys |
+| `clusterKeys` | string[] | Filter by cluster key (`v<N>-c<N>` or `thesis-<slug>`) |
 
 Discover valid values for tag/cluster/source filters via `GET /filters`.
 
 **Facets** — aggregate tag distributions across the matched set:
 
 - `includeFacets` (boolean, default `false`): enable facet computation. Adds overhead — only use when you need aggregate distributions.
-- `facets` (string[], optional): which dimensions to compute. Options: `hackathons`, `tracks`, `prizes`, `problemTags`, `solutionTags`, `primitives`, `techStack`, `clusters`. Omit to compute all 8.
+- `facets` (string[], optional): which dimensions to compute. Options: `hackathons`, `tracks`, `prizes`, `categories`, `problemTags`, `solutionTags`, `primitives`, `techStack`, `clusters`, `lenses`. Omit to compute all dimensions.
 - `facetTopK` (int, 1-20, default `8`): max buckets per dimension.
 
 Response includes `facets.{dimension}[]`: `{ key, label, count, sampleProjectSlugs[] }`.
@@ -196,7 +198,7 @@ curl "$COLOSSEUM_COPILOT_API_BASE/projects/by-slug/your-project-slug" \
   -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT"
 ```
 
-Response includes `hackathon`: `{ name, slug, startDate }` alongside project description, tracks, links, team, prize, repo/media, and semantic tags.
+Response includes `hackathon`: `{ name, slug, startDate }` alongside project description, category, tracks, links, team, prize, repo/media links, and semantic tags.
 
 #### POST /analyze
 
