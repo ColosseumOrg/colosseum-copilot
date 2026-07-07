@@ -1,10 +1,15 @@
 # Research Workflow — Deep Reference
 
+This file is the legacy deep-research reference used as raw material for
+`colosseum-copilot-vet`. The eight sub-skills are now the primary workflow surface. For
+all requests shown here, apply `request-conventions.md` and add the required skill version
+header plus `workflow/vet` User-Agent suffix.
+
 This is the detailed reference for the 8-step research workflow. For a quick overview, see the main skill file.
 
 ## Research Workflow
 
-Use this workflow when conducting deep research on crypto/blockchain topics. It ensures comprehensive coverage across all data sources and produces actionable opportunity analyses.
+Use this workflow when conducting deep research on crypto/blockchain topics. It works through every data source in turn and ends in a concrete opportunity analysis.
 
 ## When This Workflow Activates
 

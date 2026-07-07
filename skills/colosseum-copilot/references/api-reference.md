@@ -1,5 +1,12 @@
 # API Reference
 
+## Required Request Conventions
+
+All Copilot API calls made by these skills must follow `request-conventions.md`: include
+`Authorization`, `X-Copilot-Skill-Version`, and a `User-Agent` ending in
+`workflow/<short-name>`. The curl examples below may focus on endpoint shape; add the
+required headers from `request-conventions.md` to every request.
+
 ## API Reference
 
 ### Rate Limits
