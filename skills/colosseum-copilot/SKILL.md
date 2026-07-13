@@ -26,7 +26,7 @@ This skill is version **1.2.1**. After your first API call, check the `X-Copilot
 1. Verify `COLOSSEUM_COPILOT_PAT` is set in the environment. If missing, STOP and tell the user:
 
    > You need a Personal Access Token before using Copilot.
-   > Go to **https://arena.colosseum.org/copilot** to generate one, then set it:
+   > Go to **https://colosseum.com/arena/copilot** to generate one, then set it:
    >
    > `export COLOSSEUM_COPILOT_PAT="your-token-here"`
 
@@ -50,7 +50,7 @@ This skill is version **1.2.1**. After your first API call, check the `X-Copilot
    export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v1"
    export COLOSSEUM_COPILOT_PAT="YOUR_PAT"
    ```
-   Get a PAT: Go to https://arena.colosseum.org/copilot and generate a token
+   Get a PAT: Go to https://colosseum.com/arena/copilot and generate a token
 
 2. **Run your first search:**
    ```bash
@@ -208,7 +208,7 @@ All errors return `{ "error": "<message>", "code": "<ERROR_CODE>", "retryable": 
 - **400 `INVALID_QUERY`**: Fix query params (check field names, value ranges, unknown fields)
 - **413 `PAYLOAD_TOO_LARGE`**: Reduce request body size (1 MB limit)
 - **429 `RATE_LIMITED`**: Back off per the `Retry-After` header, max 2 concurrent requests
-- **401 `UNAUTHORIZED`**: Check PAT at https://arena.colosseum.org/copilot
+- **401 `UNAUTHORIZED`**: Check PAT at https://colosseum.com/arena/copilot
 - **5xx errors**: Note in report and proceed with available data. Include `requestId` from the response when reporting issues.
 - **Empty project results**: Broaden query, remove filters
 - **Empty archive results**: Search auto-cascades (vector → chunk text → doc text) before returning empty. If still empty, try conceptual synonyms, keep queries to 3-6 keywords
