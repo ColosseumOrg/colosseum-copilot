@@ -8,7 +8,7 @@ AI agent skill for Solana/crypto startup research. Gives coding assistants acces
 npx skills add ColosseumOrg/colosseum-copilot
 ```
 
-> **Prerequisites:** You need a Personal Access Token (PAT) from [arena.colosseum.org/copilot](https://arena.colosseum.org/copilot) before first use.
+> **Prerequisites:** You need a Personal Access Token (PAT) from [colosseum.com/arena/copilot](https://colosseum.com/arena/copilot) before first use.
 
 ## What it does
 
@@ -25,7 +25,7 @@ npx skills add ColosseumOrg/colosseum-copilot
 
 ## Auth
 
-Requires a Personal Access Token (PAT) from [Colosseum Arena](https://arena.colosseum.org/copilot).
+Requires a Personal Access Token (PAT) from [Colosseum Arena](https://colosseum.com/arena/copilot).
 
 ```bash
 export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v1"
