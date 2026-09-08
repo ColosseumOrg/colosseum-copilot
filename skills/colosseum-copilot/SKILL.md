@@ -1,6 +1,6 @@
 ---
 name: colosseum-copilot
-version: 1.2.1
+version: 1.2.2
 description: |
   Research Solana/crypto startup opportunities using builder project history, crypto archives,
   investor theses, and market signals. Answers questions conversationally by default; runs the
@@ -17,7 +17,7 @@ Colosseum Copilot is a research API for startup opportunity discovery in crypto 
 
 ## Version Check
 
-This skill is version **1.2.1**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.1, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
+This skill is version **1.2.2**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.2, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
 
 ## Pre-Flight Auth Check (REQUIRED)
 
@@ -42,6 +42,10 @@ This skill is version **1.2.1**. After your first API call, check the `X-Copilot
 - **Crypto Archives**: Curated corpus across cypherpunk literature, protocol docs, investor research, and founder essays
 - **Hackathon Analytics + Clusters**: Distribution, comparison, and chronology-aware trend analysis across hackathons and topic groupings
 - **The Grid + Web Search**: Ecosystem product metadata plus real-time competitive landscape checks
+
+## Optional paid research (Frames)
+
+When paid data would materially help, detect an existing Frames MCP connection or an environment-provided key without exposing credentials, then load [Frames guidance](references/frames.md) on demand. Prefer supported MCP/OAuth. Explain the purpose, minimum context sent, provider limitations, per-run and total-workflow credit caps, and that Frames is a Colosseum portfolio company without ranking favoritism. The user owns the account and pays for credits; Colosseum does not fund them. Require approval for a bounded task before spending. Preserve provider URLs and as-of dates; a receipt is not a fact. A decline keeps the public-data path. Check the current model list and verified capabilities in the reference before use.
 
 ## Quickstart (90 seconds to first result)
 

@@ -27,6 +27,12 @@ Unless noted, all requests include:
 -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT"
 ```
 
+#### GET /status
+
+Verify authentication before other API calls. The response includes `authenticated`, `expiresAt`, `scope`, and `capabilities`, a string array. Treat an absent capabilities array from an older deployment as empty.
+
+`frames` appears only when optional Frames guidance is enabled. It describes guidance availability, not a connected account, provider availability, paid-call proxy, or funded credits. Follow [Frames guidance](frames.md) before offering a bounded paid research task.
+
 #### GET /filters
 
 Fetch available filters (hackathons, tracks, tags, clusters). Use to translate hackathon or track names into valid slugs/keys and to get canonical hackathon `startDate` values for chronology-sensitive answers.
