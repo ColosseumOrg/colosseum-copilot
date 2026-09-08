@@ -1,33 +1,34 @@
-# The Grid — GraphQL Recipes
+# The Grid query recipes
 
 ## The Grid (Direct GraphQL)
 
-### Schema Overview
+These inherited query examples were not re-executed for the v2 documentation rewrite. Validate the live schema and source dates before relying on their results. Queries go directly to The Grid; send only public task context authorized by the user.
+
+### Schema overview
 
 - **Endpoint**: `https://beta.node.thegrid.id/graphql`
 - **GraphiQL**: `https://cloud.hasura.io/public/graphiql?endpoint=https%3A%2F%2Fbeta.node.thegrid.id%2Fgraphql`
 - **Auth**: No API key required for public queries. If you have an enterprise key, add `-H "x-api-key: <key>"`.
 - **Schema hierarchy**: `roots` → `products`/`entities`/`assets`/`profileInfos` → `deployments`/`contracts`
-- **Data volume**: ~6,300 products (all ecosystems), ~3,000 roots, ~2,500 entities
 - **Operators**: `_eq`, `_in`, `_contains`, `_like`, `_gt`/`_gte`/`_lt`/`_lte`, `_and`/`_or`/`_not`, `_is_null`
 - No full-text search — `_contains` and `_like` are case-insensitive substring matches
 - Always check the `errors` field in JSON responses (GraphQL errors return HTTP 200)
 
 ### Product Type Slug Cheat Sheet
 
-See the topic → slug mapping table and full slug list in **Step 2e in workflow-deep.md**. Key verticals for quick reference:
+These example type slugs may change. Check the current schema before use; the list is not a market taxonomy.
 
-- **DeFi**: `decentralised_exchange` (207), `decentralised_borrowing_and_lending` (114), `yield_aggregator` (113), `dex_aggregator` (81), `liquid_staking` (82), `derivatives` (46)
-- **Payments**: `merchant_payment_gateway` (159), `on_off_ramp` (145), `payments_infrastructure_and_orchestration` (136)
-- **Infrastructure**: `developer_tooling` (599), `block_explorer` (113), `onchain_data_api` (100), `rpc_provider` (44), `oracle` (46)
-- **AI**: `ai_agent` (104), `ai_agent_platform` (77), `ai_agent_framework` (27)
-- **Other**: `wallet` (331), `game` (131), `bridge` (101), `depin` (80), `stablecoin_issuance` (71), `nft_marketplace` (68)
+- **DeFi**: `decentralised_exchange`, `decentralised_borrowing_and_lending`, `yield_aggregator`, `dex_aggregator`, `liquid_staking`, `derivatives`
+- **Payments**: `merchant_payment_gateway`, `on_off_ramp`, `payments_infrastructure_and_orchestration`
+- **Infrastructure**: `developer_tooling`, `block_explorer`, `onchain_data_api`, `rpc_provider`, `oracle`
+- **AI**: `ai_agent`, `ai_agent_platform`, `ai_agent_framework`
+- **Other**: `wallet`, `game`, `bridge`, `depin`, `stablecoin_issuance`, `nft_marketplace`
 
 ### Query Recipes
 
-#### 1. Vertical Search (category + Solana scoping) — default starting point
+#### 1. Category search with optional Solana scoping
 
-Filter by `productType` slugs with triple-OR Solana scoping (deployment, supports-product, profile tag) and dead-product exclusion:
+This example filters by type and Solana relations and excludes discontinued records. Keep discontinued/unknown cases when researching histories; remove or change chain restrictions for other ecosystems. A status label is metadata, not independently verified outcome evidence.
 
 ```bash
 curl -s -X POST "https://beta.node.thegrid.id/graphql" \
@@ -37,7 +38,7 @@ curl -s -X POST "https://beta.node.thegrid.id/graphql" \
 QUERY
 ```
 
-#### 2. Broad Keyword Search (name/description/slug/entity recall) — fallback
+#### 2. Broad keyword search
 
 Searches across product name, description, root slug, and entity names. Use when the topic doesn't map cleanly to product type slugs:
 
@@ -49,7 +50,7 @@ curl -s -X POST "https://beta.node.thegrid.id/graphql" \
 QUERY
 ```
 
-#### 3. Root Profile Expansion (deep enrichment) — for Step 6 incumbent analysis
+#### 3. Root profile expansion
 
 Once you have a root slug, pull descriptions, tags, socials, URLs, and products:
 
@@ -61,9 +62,9 @@ curl -s -X POST "https://beta.node.thegrid.id/graphql" \
 QUERY
 ```
 
-#### 4. Saturation Aggregate (product count + distinct root count) — for gap validation
+#### 4. Corpus aggregate
 
-Count total products and distinct roots matching a category filter. Use to ground "how crowded is this space?" claims:
+Count products and distinct roots matching a category filter. These are corpus counts, not market size or adoption.
 
 ```bash
 curl -s -X POST "https://beta.node.thegrid.id/graphql" \
@@ -81,7 +82,6 @@ Three approaches with different coverage/precision trade-offs:
 - **Deployment-based** (highest precision, narrower coverage): `productDeployments: { smartContractDeployment: { deployedOnProduct: { name: { _eq: "Solana Mainnet" } } } }`
 - **CAIP-2 attribute** (narrow, limited coverage): `attributes: { attributeType: { slug: { _eq: "chain_id_caip2" } }, value: { _contains: "solana" } }`
 
-The Vertical Search recipe above uses triple-OR across all three for maximum recall.
+The category recipe combines deployment, supports-product, and profile-tag relations. Those relations have different coverage; none proves current product activity.
 
-For additional Grid query recipes (asset mapping, token relationships, deployment graphs, corporate structure), see `the-grid-skill.md`.
-
+See [Grid context](the-grid-skill.md) and the [current upstream documentation](https://docs.thegrid.id) for schema changes and additional queries.
