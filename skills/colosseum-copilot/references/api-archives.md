@@ -26,6 +26,8 @@ author: string | null
 source: string
 url: string | null
 publishedAt: string | null
+ingestedAt: string [datetime] | null [optional]
+archiveRevision: string | null [optional]
 similarity: number
 snippet: string
 chunkIndex: number
@@ -64,6 +66,8 @@ author: string | null
 source: string
 url: string | null
 publishedAt: string | null
+ingestedAt: string [datetime] | null [optional]
+archiveRevision: string | null [optional]
 content: string
 restricted: boolean
 ```
@@ -77,6 +81,8 @@ author: string | null
 source: string
 url: string | null
 publishedAt: string | null
+ingestedAt: string [datetime] | null [optional]
+archiveRevision: string | null [optional]
 content: string
 restricted: boolean
 offset: number [int]

@@ -24,9 +24,9 @@ Follow the helper's verification URL and code in a trusted browser. Do not share
 
 ## Returning or connecting another agent
 
-Run `status` first. Valid stored access should continue without another login; ordinary expiry uses rotating refresh credentials. Keep the user's task intact while reconnecting if needed. A compatible agent using the same helper account/storage may reuse that connection. Another machine or isolated environment needs its own login; do not copy credentials through chat or project files.
+Run helper `status` first as a local diagnostic. It reads saved state without a server request, returns no capabilities, and can report `ready` after access expiry. Use `token` privately as shown below to obtain or refresh access, then make an authenticated `GET /api/v1/status` request. Confirm `authenticated: true` and `capabilities.evidence: true` before declaring protected evidence ready. Usable stored access should continue without another login; ordinary expiry uses rotating refresh credentials. Keep the user's task intact while reconnecting if needed. A compatible agent using the same helper account/storage may reuse that connection. Another machine or isolated environment needs its own login; do not copy credentials through chat or project files.
 
-Use the status response's scopes and enabled capabilities to decide what is available. A permission denial is not automatically an expired connection. Reserved project-update and submission scopes cannot be requested, and no project-writing capability ships here.
+Use the authenticated API status response's `scopes` array and boolean `capabilities` properties to decide what is available. A permission denial is not automatically an expired connection. Reserved project-update and submission scopes cannot be requested, and no project-writing capability ships here.
 
 ## Manual HTTPS requests
 
@@ -52,28 +52,36 @@ Read `X-Copilot-Skill-Version` from the first response and compare it to the ins
 
 ## Migrate from v1 PATs
 
-Existing `COLOSSEUM_COPILOT_PAT` integrations continue during the 90-day post-GA transition. Run the helper login and verify `status` before replacing a working integration. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment and revoke it through Arena when it is no longer needed. Do not print either credential during migration.
+Existing `COLOSSEUM_COPILOT_PAT` integrations continue during the 90-day post-GA transition. Run the helper login, then make an authenticated `GET /api/v1/status` request with the helper token before replacing a working integration. Confirm `authenticated: true` and `capabilities.evidence: true`; local helper `status` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment and revoke it through Arena when it is no longer needed. Do not print either credential during migration.
 
 ## End or revoke access
 
+To revoke the server-side grant and then clear local credentials, run:
+
 ```bash
-npx @colosseum/copilot-connect logout
 npx @colosseum/copilot-connect revoke
 ```
 
-Use `logout` to end the local helper session. Use `revoke` to invalidate the grant rather than relying on removal of a local credential alone. [Arena grant management](https://colosseum.com/arena/copilot), available with v2, lists grants and supports revoking one or all. Reconnect deliberately after revocation.
+To clear local credentials only, use this separate alternative:
+
+```bash
+npx @colosseum/copilot-connect logout
+```
+
+Do not run `logout` before `revoke`: revocation needs the saved refresh credential. A successful `revoke` also clears local credentials, so no subsequent logout is needed. If you already logged out, revoke through Arena grant management. [Arena grant management](https://colosseum.com/arena/copilot), available with v2, lists grants and supports revoking one or all. Reconnect deliberately after revocation.
 
 ## Troubleshooting
 
-| Problem                                                  | Next action                                                                                              |
-| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Browser cannot reach the callback                        | Use `login --device` in that environment.                                                                |
-| Browser approval completed but the agent is disconnected | Check credential-store access and run `status`; approval alone does not confirm storage.                 |
-| Temporary network or service failure                     | Preserve credentials and retry later; do not reset a valid connection.                                   |
-| Definitively revoked or expired grant                    | Offer one reconnect action and preserve the task.                                                        |
-| Permission denied                                        | Inspect scopes/capabilities; repeating login cannot enable an unshipped feature.                         |
-| Helper unavailable in your release                       | Keep an existing PAT integration during the migration window; consult the docs for release availability. |
-| Rate limited                                             | Honor `Retry-After` and the API's concurrency limit.                                                     |
-| Paid or mutating request timed out                       | Reconcile its known result before retrying; never blindly replay it.                                     |
+| Problem                                                  | Next action                                                                                                                                                                 |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Browser cannot reach the callback                        | Use `login --device` in that environment.                                                                                                                                   |
+| Browser approval completed but the agent is disconnected | Check credential-store access and local `status`, then verify authenticated API status; browser approval alone is insufficient.                                             |
+| Ordinary evidence request network or service failure     | Preserve usable credentials and retry later; do not reset a valid connection.                                                                                               |
+| Interrupted or uncertain refresh                         | If local status is `refresh-pending` or `token` exits with code 6, run `login` again. Do not retry the possibly consumed refresh credential or edit saved state to `ready`. |
+| Definitively revoked or expired grant                    | Offer one reconnect action and preserve the task.                                                                                                                           |
+| Permission denied                                        | Inspect scopes/capabilities; repeating login cannot enable an unshipped feature.                                                                                            |
+| Helper unavailable in your release                       | Keep an existing PAT integration during the migration window; consult the docs for release availability.                                                                    |
+| Rate limited                                             | Honor `Retry-After` and the API's concurrency limit.                                                                                                                        |
+| Paid or mutating request timed out                       | Reconcile its known result before retrying; never blindly replay it.                                                                                                        |
 
 For help, consult [Copilot documentation](https://docs.colosseum.com/copilot) or [open an issue](https://github.com/ColosseumOrg/colosseum-copilot/issues) with the command, redacted error, skill/helper versions, and request ID when available. Public issues must not include credentials, private source, or conversation history. API feedback is an explicit user-authorized submission, not automatic error telemetry.

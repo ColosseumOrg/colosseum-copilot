@@ -45,19 +45,24 @@ Source suggestions require a public HTTP or HTTPS URL without embedded credentia
 
 ## Status, scopes and capabilities
 
-`authenticated`, `expiresAt` and legacy `scope` describe authentication. An unknown expiry or scope can be `null`. The optional `scopes` and `capabilities` arrays are available with v2. Treat missing arrays as unknown or unavailable, and tolerate future string values without attempting unknown actions.
+`authenticated`, `expiresAt` and legacy `scope` describe authentication. An unknown expiry or scope can be `null`. The current contract requires `scopes`, an array of scope values, and `capabilities`, a strict object with all six boolean properties below. Read properties such as `capabilities.frames`; capabilities are not a string array.
 
-The current capability list is:
+| Property      | Meaning when true                                                                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deviceFlow`  | Device authorization is enabled.                                                                                                                                          |
+| `pkce`        | Authorization code with PKCE is enabled.                                                                                                                                  |
+| `evidence`    | Evidence retrieval is enabled.                                                                                                                                            |
+| `embeddingV2` | V2 embeddings are enabled.                                                                                                                                                |
+| `reranker`    | Search reranking is enabled.                                                                                                                                              |
+| `frames`      | Optional Frames guidance is enabled. This does not establish an account connection, provider availability, a paid-call proxy, or funded credits. See [Frames](frames.md). |
 
-| Value    | Meaning                                                                                                                                                                   |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `frames` | Optional Frames guidance is enabled. This does not establish an account connection, provider availability, a paid-call proxy, or funded credits. See [Frames](frames.md). |
+For compatibility with older deployments only, treat missing scopes or capability properties as unknown or unavailable. Do not infer support from an absent property.
 
-The enabled list may be empty. The v2 grant direction uses `evidence:read` and `profile:read`; request only what the connection flow offers. `projects:updates:write` and `submissions:write` are reserved, unavailable scopes. Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. There are no project-action endpoints to call.
+The helper defaults to `evidence:read self-data:read`; `profile:read` is requestable but is not a default. Request only what the connection flow offers. The scope enum also includes compatibility aliases `copilot:retrieval`, `copilot:telemetry`, and `copilot:self-data`, plus `telemetry:write`. `projects:updates:write` and `submissions:write` are reserved, unavailable scopes. Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. There are no project-action endpoints to call.
 
 ## Evidence and search interpretation
 
-Structured `evidence`, `corpusRevision` and `freshness` on project results and details are optional and **available with v2**. Search results also accept the legacy evidence array of up to two strings. Structured evidence has nullable `repoSummary`, `pitchSummary` and `demoSummary`. Each present summary carries text, source URL, source revision, capture time and extractor version. A missing channel is unknown, not negative evidence. Capture time is not event time or proof that a claim remains current.
+Structured `evidenceSummaries`, `corpusRevision` and `freshness` on project results and details are optional and **available with v2**. Search results require the separate legacy `evidence: string[]` field, capped at two match snippets. Project details have no `evidence` field. Structured evidence has nullable `repoSummary`, `pitchSummary` and `demoSummary`. Each present summary carries text, source URL, source revision, capture time and extractor version. A missing channel is unknown, not negative evidence. Capture time is not event time or proof that a claim remains current.
 
 `appliedFilters`, `coverage` and `facetScope` are optional and **available with v2**. Preserve legacy `filtersApplied` compatibility. Coverage records counts by hackathon and evidence channel plus exclusions with reasons; it does not certify completeness beyond the returned accounting. Freshness values may be null.
 

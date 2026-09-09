@@ -7,9 +7,9 @@ license: Proprietary
 compatibility: Any agent that can read skills and make authorized HTTPS requests; local changes also require coding tools.
 metadata:
   {
-    'category': 'copilot',
-    'api_base': 'https://copilot.colosseum.com/api/v1',
-    'author': 'colosseum',
+    "category": "copilot",
+    "api_base": "https://copilot.colosseum.com/api/v1",
+    "author": "colosseum",
   }
 ---
 
@@ -36,7 +36,7 @@ npx @colosseum/copilot-connect status
 npx @colosseum/copilot-connect login
 ```
 
-`login` uses browser authorization with PKCE and a local callback. Use `login --device` for remote agents or blocked callbacks. The helper stores credentials and rotates refresh credentials; do not ask the user to paste secrets into chat. Report readiness only after storage and a successful access check. See [connection.md](references/connection.md) for returning users, revocation, and recovery.
+`login` uses browser authorization with PKCE and a local callback. Use `login --device` for remote agents or blocked callbacks. The helper stores credentials and rotates refresh credentials; do not ask the user to paste secrets into chat. Helper `status` reads local storage only; it makes no server request and can report `ready` after access expiry. Report readiness only after storage and an authenticated `GET /api/v1/status` response confirms `authenticated: true` and `capabilities.evidence: true`. See [connection.md](references/connection.md) for returning users, revocation, and recovery.
 
 Manual HTTPS fallback, run privately with shell tracing disabled. Capture the header without displaying the bearer token:
 
@@ -48,7 +48,7 @@ export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot
 
 Keep bearer tokens out of model context, command output, logs, and committed files. Only use a trusted API base. v1 PATs remain supported for 90 days after GA; migration is in the connection reference. The API contract and error recovery are in [api-reference.md](references/api-reference.md).
 
-This skill is version **2.0.0**. After the first API response, compare `X-Copilot-Skill-Version` semantically against `2.0.0`. If newer, tell the user to update with `npx skills add ColosseumOrg/colosseum-copilot`. Read `/status` scopes and capabilities, available with v2, before relying on a feature. A capability flag does not grant permission to spend or publish; missing optional fields do not establish new capabilities.
+This skill is version **2.0.0**. After the first API response, compare `X-Copilot-Skill-Version` semantically against `2.0.0`. If newer, tell the user to update with `npx skills add ColosseumOrg/colosseum-copilot`. Read authenticated `/status` before relying on a feature. Its current contract requires a `scopes` array and a boolean `capabilities` object; check properties such as `capabilities.evidence` and `capabilities.frames`. A capability flag does not grant permission to spend or publish; when tolerating older deployments, missing fields do not establish new capabilities.
 
 ## Evidence that supports the answer
 

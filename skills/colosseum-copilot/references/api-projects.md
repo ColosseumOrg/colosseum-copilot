@@ -12,10 +12,10 @@ hackathons: Array<string [min 1]> [max 10] [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [max 10] [optional]
 limit: number [int, min 1, max 25] [default 10]
 offset: number [int, min 0] [default 0]
-filters: { winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
+filters: { category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
 diversify: boolean [optional] [default true]
 includeFacets: boolean [optional] [default false]
-facets: Array<"hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "clusters"> [optional]
+facets: Array<"category" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "clusters"> [optional]
 facetTopK: number [int, min 1, max 20] [optional] [default 8]
 includeDiagnostics: boolean [optional] [default false]
 ```
@@ -51,12 +51,16 @@ archiveIngestedAt: string [datetime] | null
 ```text
 slug: string
 name: string
+category: string | null [optional]
+country: string | null [optional]
+website: string | null [optional]
 oneLiner: string | null
 similarity: number
 hackathon: { name: string; slug: string; startDate: string }
 tracks: Array<{ name: string; key: string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/] }>
 links: { github: string | null; demo: string | null; presentation: string | null; technicalDemo: string | null; twitter: string | null; colosseum: string | null }
-evidence: Array<string> [max 2] | projectEvidence [optional]
+evidence: Array<string> [max 2]
+evidenceSummaries: projectEvidence [optional]
 corpusRevision: string [optional]
 freshness: projectFreshness [optional]
 prize: { type: string; name: string | null; placement: number [int] | null; amount: number | null; trackName: string | null } | null
@@ -88,7 +92,7 @@ effectiveFilters: Record<string, unknown>
 ```text
 hackathons: Array<string> [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]
-filters: { winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
+filters: { category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
 ```
 
 ## projectSearchCoverage
@@ -106,10 +110,10 @@ appliedFilters: appliedProjectFilters [optional]
 coverage: projectSearchCoverage [optional]
 facetScope: "filters" | "query" [optional]
 results: Array<projectSearchResult>
-filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional] }
+filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional] }
 totalFound: number [int]
 hasMore: boolean
-facets: { hackathons: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; tracks: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; prizes: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; problemTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; solutionTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; primitives: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; techStack: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; clusters: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional] } [optional]
+facets: { category: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; hackathons: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; tracks: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; prizes: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; problemTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; solutionTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; primitives: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; techStack: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; clusters: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional] } [optional]
 diagnostics: searchDiagnostics [optional]
 ```
 
@@ -122,11 +126,14 @@ slug: string
 ## projectDetails
 
 ```text
-evidence: projectEvidence [optional]
+evidenceSummaries: projectEvidence [optional]
 corpusRevision: string [optional]
 freshness: projectFreshness [optional]
 slug: string
 name: string
+category: string | null [optional]
+country: string | null [optional]
+website: string | null [optional]
 description: string | null
 oneLiner: string | null
 hackathon: { name: string; slug: string; startDate: string }
