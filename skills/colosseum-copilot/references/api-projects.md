@@ -1,6 +1,6 @@
 # Project API fields
 
-Field definitions generated from the shared v2 contract, reviewed 2026-09-08. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
+Field definitions generated from the shared v2 contract, reviewed 2026-09-09. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
 
 [Endpoint reference](api-reference.md).
 
@@ -23,12 +23,26 @@ includeDiagnostics: boolean [optional] [default false]
 ## projectEvidenceSummary
 
 ```text
-text: string
-sourceUrl: string [url]
+text: string [max 12000]
+truncated: boolean
+sourceUrl: string [url] | null
 sourceRevision: string
-capturedAt: string [datetime]
+sourceCapturedAt: string [datetime] | null
+generatedAt: string [datetime] | null
+indexedAt: string [datetime]
+capturedAt: string [datetime] | null
+sourceInferred: boolean
+evidenceId: string | null
 extractorVersion: string
 ```
+
+Project details return the complete permitted Gemini summary for each available kind, preserving Markdown up to 12,000 characters. `truncated` is true only when that limit cuts off text. These summaries describe the sources; raw source files and full derived materials are not distributed.
+
+`sourceUrl` points to the project's public GitHub repository, presentation, or technical demo for the corresponding summary, or is null when no valid link is known. The linked page may have changed since capture. `evidenceId` identifies the summary independently of that link; it is null for older evidence without a summary identifier. `sourceRevision` identifies the revision associated with the evidence.
+
+`sourceCapturedAt` dates source capture. For older sources without a capture date, it uses the stored source's last-modified date when known. `capturedAt` is a compatibility alias with the same nullable value. `generatedAt` dates summary creation and is null when unknown. `indexedAt` dates Copilot ingestion or its most recent provenance refresh. `sourceInferred` is true when the source association was inferred from the only matching source kind rather than explicitly declared.
+
+Search results omit `evidenceSummaries` to keep multi-project responses bounded. Use each result's slug with `GET /projects/by-slug/:slug` to read its summaries. Search still returns match snippets in `evidence` and optional freshness metadata.
 
 ## projectEvidence
 
