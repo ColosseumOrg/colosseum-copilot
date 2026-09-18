@@ -1,6 +1,6 @@
 # API reference
 
-Contract reviewed 2026-09-08 for skill 2.0.0. The API path remains `/api/v1`. All 12 public evidence-service endpoints below require a bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
+Contract reviewed 2026-09-18 for skill 2.0.0. The API path remains `/api/v1`. The public evidence-service endpoints below require a bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
 
 ## Connect and call
 
@@ -50,7 +50,7 @@ See [FAQ fields and freshness](api-faqs.md) for canonical program answers.
 
 ## Status, scopes and capabilities
 
-`authenticated`, `expiresAt` and legacy `scope` describe authentication. An unknown expiry or scope can be `null`. The current contract requires `scopes`, an array of scope values, and `capabilities`, a strict object with all six boolean properties below. Read properties such as `capabilities.frames`; capabilities are not a string array.
+`authenticated`, `expiresAt` and legacy `scope` describe authentication. An unknown expiry or scope can be `null`. The current contract requires `scopes`, an array of scope values, and `capabilities`, a strict object with the boolean properties below. Read properties such as `capabilities.frames`; capabilities are not a string array.
 
 | Property      | Meaning when true                                                                                                                                                         |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -60,10 +60,20 @@ See [FAQ fields and freshness](api-faqs.md) for canonical program answers.
 | `embeddingV2` | V2 embeddings are enabled.                                                                                                                                                |
 | `reranker`    | Search reranking is enabled.                                                                                                                                              |
 | `frames`      | Optional Frames guidance is enabled. This does not establish an account connection, provider availability, a paid-call proxy, or funded credits. See [Frames](frames.md). |
+| `faqs` | Canonical Colosseum FAQ list and detail reads are available. |
+| `resources` | The canonical hackathon resources catalog is available. |
 
 For compatibility with older deployments only, treat missing scopes or capability properties as unknown or unavailable. Do not infer support from an absent property.
 
 The helper defaults to `evidence:read self-data:read`; `profile:read` is requestable but is not a default. Request only what the connection flow offers. The scope enum also includes compatibility aliases `copilot:retrieval`, `copilot:telemetry`, and `copilot:self-data`, plus `telemetry:write`. `projects:updates:write` and `submissions:write` are reserved, unavailable scopes. Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. There are no project-action endpoints to call.
+
+## Optional usage feedback
+
+V2 operational telemetry requires separate, current user consent. A connection scope permits access; it does not establish consent or prove that collection is enabled. Read the current disclosure and settings before describing what this connection shares. When enabled and consented, bounded service observations can include tool family, result count, status and timing. HTTP success does not establish that the answer was helpful.
+
+Structured ratings use schema `2.1` with `name: "user.feedback"`, `observationOrigin: "user-feedback"`, `rating` (`helpful`, `partly`, or `not-helpful`), and an optional bounded reason. Ask for an actual user rating; never infer or submit it from your own assessment. Accepted batches return `accepted`, `rejected`, and optionally `deduplicated`; accepted includes already-stored retries. Exports can contain `2.0` client events and `2.1` server observations or ratings. Exported event/run identifiers are pseudonymous receipts.
+
+Query-content telemetry is currently unavailable. Do not send query text to an operational event endpoint. The [privacy guide](https://docs.colosseum.com/copilot/privacy) describes consent, export/deletion and retention limits. Continue the user's task if optional telemetry is unavailable.
 
 ## Evidence and search interpretation
 
