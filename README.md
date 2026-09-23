@@ -31,7 +31,7 @@ Optional [Frames research](skills/colosseum-copilot/references/frames.md) uses y
 
 ## Help and privacy
 
-Read the [documentation](https://docs.colosseum.com/copilot), [connection guide](skills/colosseum-copilot/references/connection.md), or [API reference](skills/colosseum-copilot/references/api-reference.md). Manage grants at [Colosseum Arena](https://colosseum.com/arena/copilot). For skill issues, [open an issue](https://github.com/ColosseumOrg/colosseum-copilot/issues) with redacted errors and versions; never include credentials or private repository content.
+Read the [documentation](https://docs.colosseum.com/copilot), [connection guide](skills/colosseum-copilot/references/connection.md), or [API reference](skills/colosseum-copilot/references/api-reference.md). Use the helper's `revoke` command to end the current connection before clearing its local credentials. For skill issues, [open an issue](https://github.com/ColosseumOrg/colosseum-copilot/issues) with redacted errors and versions; never include credentials or private repository content.
 
 The agent sends necessary API queries to Colosseum and any separately authorized services. Do not automatically upload repositories or conversations. Feedback and source suggestions require explicit authorization. Agent/provider handling is governed by their own terms; local coding does not mean all model processing is local.
 

@@ -56,7 +56,7 @@ Read `X-Copilot-Skill-Version` from the first response and compare it to the ins
 
 ## Migrate from v1 PATs
 
-Existing `COLOSSEUM_COPILOT_PAT` integrations continue during the 90-day post-GA transition. Run the helper login and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /api/v1/status` request and confirm the authoritative scopes and capabilities it needs. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment and revoke it through Arena when it is no longer needed. Do not print either credential during migration.
+Existing `COLOSSEUM_COPILOT_PAT` integrations continue during the 90-day post-GA transition. Run the helper login and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /api/v1/status` request and confirm the authoritative scopes and capabilities it needs. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment when it is no longer needed. Do not print either credential during migration.
 
 ## End or revoke access
 
@@ -72,7 +72,7 @@ To clear local credentials only, use this separate alternative:
 npx @colosseum-org/copilot-connect logout
 ```
 
-Do not run `logout` before `revoke`: revocation needs the saved refresh credential. A successful `revoke` also clears local credentials, so no subsequent logout is needed. If you already logged out, revoke through Arena grant management. [Arena grant management](https://colosseum.com/arena/copilot), available with v2, lists grants and supports revoking one or all. Reconnect deliberately after revocation.
+Do not run `logout` before `revoke`: revocation needs the saved refresh credential. A successful `revoke` also clears local credentials, so no subsequent logout is needed. If you already logged out, the helper no longer has the credential needed to revoke that connection. Reconnect deliberately after revocation.
 
 ## Troubleshooting
 
