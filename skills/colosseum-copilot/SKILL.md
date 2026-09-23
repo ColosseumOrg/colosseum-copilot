@@ -45,8 +45,8 @@ For founder decisions, preserve the substance behind a useful analysis: the cust
 Preserve the user's task through setup. Use an existing connection if it works; do not require login on every conversation.
 
 ```bash
-npx @colosseum/copilot-connect status
-npx @colosseum/copilot-connect login
+npx @colosseum-org/copilot-connect status
+npx @colosseum-org/copilot-connect login
 ```
 
 `login` uses browser authorization with PKCE and a local callback. Use `login --device` for remote agents or blocked callbacks. The helper uses the OS credential store or its supported protected file fallback. It confirms completion only after saving credentials and verifying authenticated evidence access. Do not ask the user to paste secrets into chat.
@@ -57,7 +57,7 @@ Manual HTTPS fallback, run privately with shell tracing disabled. Capture the he
 
 ```bash
 export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v1}"
-{ printf 'Authorization: Bearer '; npx @colosseum/copilot-connect token; } |
+{ printf 'Authorization: Bearer '; npx @colosseum-org/copilot-connect token; } |
   curl --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 

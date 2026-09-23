@@ -47,7 +47,7 @@ Use the trusted API base configured in the endpoint reference. Keep shell tracin
 
 ```bash
 set +x
-npx @colosseum/copilot-connect token | {
+npx @colosseum-org/copilot-connect token | {
   IFS= read -r copilot_token
   printf 'Authorization: Bearer %s\n' "$copilot_token" |
     curl --silent --show-error --fail-with-body \

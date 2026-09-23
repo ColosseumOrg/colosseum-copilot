@@ -7,11 +7,11 @@ Contract reviewed 2026-09-18 for skill 2.0.0. The API path remains `/api/v1`. Th
 The connection helper is **available with v2**. It uses browser authorization with PKCE by default, a device fallback, and rotating refresh tokens. See [connection instructions](connection.md) for setup and v1 migration. Do not print, commit, or send tokens to the model. This manual fallback feeds the token directly to curl through standard input; keep shell tracing off.
 
 ```bash
-npx @colosseum/copilot-connect login
-npx @colosseum/copilot-connect status
+npx @colosseum-org/copilot-connect login
+npx @colosseum-org/copilot-connect status
 export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v1"
 set +x
-npx @colosseum/copilot-connect token | {
+npx @colosseum-org/copilot-connect token | {
   IFS= read -r copilot_token
   printf 'Authorization: Bearer %s\n' "$copilot_token" |
     curl --silent --show-error --fail-with-body \

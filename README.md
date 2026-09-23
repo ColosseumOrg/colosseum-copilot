@@ -10,11 +10,11 @@ You need a compatible AI agent, a Colosseum account for protected evidence, and 
 
 ```bash
 npx skills add ColosseumOrg/colosseum-copilot
-npx @colosseum/copilot-connect login
-npx @colosseum/copilot-connect status
+npx @colosseum-org/copilot-connect login
+npx @colosseum-org/copilot-connect status
 ```
 
-The helper flow is available with v2. Default login opens the browser using PKCE; use `npx @colosseum/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. Existing v1 PATs remain supported for 90 days after GA.
+The helper flow is available with v2. Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. Existing v1 PATs remain supported for 90 days after GA.
 
 Then ask your agent for a task, for example:
 
