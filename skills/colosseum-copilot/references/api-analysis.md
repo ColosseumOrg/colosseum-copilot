@@ -161,6 +161,5 @@ severity: "low" | "medium" | "high" | "critical" [default "medium"]
 authenticated: boolean
 expiresAt: string | null
 scope: string | null
-scopes: Array<"copilot:retrieval" | "copilot:telemetry" | "copilot:self-data" | "evidence:read" | "profile:read" | "telemetry:write" | "self-data:read" | "projects:updates:write" | "submissions:write">
-capabilities: { deviceFlow: boolean; pkce: boolean; evidence: boolean; embeddingV2: boolean; reranker: boolean; frames: boolean; faqs: boolean; resources: boolean } [strict]
+capabilities: Record<string, boolean> [optional]
 ```

@@ -59,7 +59,7 @@ Use `"categories"` in the `dimensions` array for `POST /analyze` to compare cate
 
 ## Status, scopes and capabilities
 
-`authenticated`, `expiresAt` and legacy `scope` describe authentication. An unknown expiry or scope can be `null`. The current contract requires `scopes`, an array of scope values, and `capabilities`, a strict object with the boolean properties below. Read properties such as `capabilities.frames`; capabilities are not a string array.
+`authenticated`, `expiresAt`, and `scope` describe authentication. An unknown expiry or scope can be `null`. `scope` is a space-delimited string of granted values. Deployments can also return an optional `capabilities` object with the boolean properties below. Read a property such as `capabilities.frames` only when it is present; capabilities are not a string array.
 
 | Property      | Meaning when true                                                                                                                                                         |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -72,7 +72,7 @@ Use `"categories"` in the `dimensions` array for `POST /analyze` to compare cate
 | `faqs` | Canonical Colosseum FAQ list and detail reads are available. |
 | `resources` | The canonical hackathon resources catalog is available. |
 
-For compatibility with older deployments only, treat missing scopes or capability properties as unknown or unavailable. Do not infer support from an absent property.
+Treat an absent capability property as unknown or unavailable. Do not infer support from an absent property.
 
 The helper defaults to `evidence:read self-data:read`; `profile:read` is requestable but is not a default. Request only what the connection flow offers. The scope enum also includes compatibility aliases `copilot:retrieval`, `copilot:telemetry`, and `copilot:self-data`, plus `telemetry:write`. `projects:updates:write` and `submissions:write` are reserved, unavailable scopes. Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. There are no project-action endpoints to call.
 
