@@ -12,7 +12,7 @@ hackathons: Array<string [min 1]> [max 10] [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [max 10] [optional]
 limit: number [int, min 1, max 25] [default 10]
 offset: number [int, min 0] [default 0]
-filters: { builtWith: builtWithFilters [optional]; category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
+filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
 diversify: boolean [optional] [default true]
 includeFacets: boolean [optional] [default false]
 facets: Array<"category" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "clusters" | "builtWith.languages" | "builtWith.frameworks" | "builtWith.chains" | "builtWith.protocols" | "builtWith.services" | "builtWith.tooling" | "builtWith.standards"> [optional]
@@ -155,6 +155,7 @@ archiveIngestedAt: string [datetime] | null
 
 ```text
 builtWith: compactBuiltWith | null [optional]
+categories: { version: string; primaryKey: v2CategoryKey | null; secondaryKey: v2CategoryKey | null } | null [optional, V2 only]
 slug: string
 name: string
 category: string | null [optional]
@@ -198,7 +199,7 @@ effectiveFilters: Record<string, unknown>
 ```text
 hackathons: Array<string> [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]
-filters: { builtWith: builtWithFilters [optional]; category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
+filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
 ```
 
 ## projectSearchCoverage
@@ -233,6 +234,7 @@ slug: string
 
 ```text
 builtWith: repositoryTags | null [optional]
+categories: { version: string; primaryKey: v2CategoryKey | null; secondaryKey: v2CategoryKey | null } | null [optional, V2 only]
 evidenceSummaries: projectEvidence [optional]
 corpusRevision: string [optional]
 freshness: projectFreshness [optional]

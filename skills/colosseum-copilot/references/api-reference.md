@@ -38,6 +38,7 @@ Each schema name below resolves to the field definitions on its linked page. Tho
 | `GET /faqs` | Optional `program`, `q` | 200, FAQ list with canonical links and revisions |
 | `GET /faqs/:program/:id` | Program and stable FAQ ID | 200, one FAQ; 404 if unknown |
 | `GET /filters`                | No body or query                                                                                          | 200, [filtersResponse](api-projects.md#filtersresponse)                                               |
+| `GET /categories`             | No body or query                                                                                          | 200, the current V2 category map: its version, six areas, 34 group keys, labels, and definitions     |
 | `POST /analyze`               | JSON [analyzeRequest](api-analysis.md#analyzerequest)                                                     | 200, [analyzeResponse](api-analysis.md#analyzeresponse)                                               |
 | `POST /compare`               | JSON [compareRequest](api-analysis.md#comparerequest), with cohortDefinition for each side                | 200, [compareResponse](api-analysis.md#compareresponse)                                               |
 | `GET /clusters/:key`          | Path [getClusterDetailsParams](api-analysis.md#getclusterdetailsparams)                                   | 200, [clusterDetails](api-analysis.md#clusterdetails)                                                 |
@@ -47,6 +48,14 @@ Each schema name below resolves to the field definitions on its linked page. Tho
 Source suggestions require a public HTTP or HTTPS URL without embedded credentials. Feedback `context` must serialize to at most 10,000 characters; the validation message describes this as 10 KB. Preview these submissions and obtain the user's consent. Using research does not authorize sending feedback or suggestions.
 
 See [FAQ fields and freshness](api-faqs.md) for canonical program answers.
+
+## Curated V2 categories
+
+Categories are available only to a V2 signed-in client. They are not available to a legacy v1 token, and v1 clusters remain a separate, unchanged surface. Call `GET /categories` before using a category key: it returns the current map, including six broad areas, 34 stable group keys, each group's plain definition, and `other-emerging` for projects that do not fit the map. Do not invent, rename, or infer category keys.
+
+Use `filters.categoryKeys` with one to ten keys when searching projects. Request the `categories` facet only when it helps answer the question. Project-search and project-detail responses may include a project's main and secondary category with the map version. A category read returns `503 CATEGORIES_UNAVAILABLE` while the current map has not been published; retry later or continue the request without category filters or category facets. A regular project search remains available before publication.
+
+Use `"categories"` in the `dimensions` array for `POST /analyze` to compare category counts in a cohort. The same availability rule applies. Categories are descriptive groupings, not investment scores, market-size claims, chain or technology tags, or evidence that a project is active today.
 
 ## Status, scopes and capabilities
 

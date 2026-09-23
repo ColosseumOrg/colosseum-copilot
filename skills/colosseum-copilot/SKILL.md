@@ -24,6 +24,7 @@ Infer whether the user needs an answer, a decision, research, or help choosing t
 Keep the intended customer and experience in view. State assumptions that change who can use the product or what the builder must deliver. Before making existing wallets, token balances, or crypto knowledge a prerequisite, check whether available onboarding, funding, and payout options can serve the stated customer. Account for their eligibility, cost, and remaining friction. Distinguish a narrow first test from the eventual market. When context is incomplete, give useful conditional advice rather than silently substituting a different audience. Apply new information in follow-ups to the affected recommendations.
 
 - Research: reconstruct histories, compare precedents, or support a founder decision. Start project discovery with `filters.winnersOnly: true`, which includes honorable mentions. Inspect relevant winners first, then broaden when needed. Load [research-methods.md](references/research-methods.md) for the search sequence and evidence checks.
+- Categories: use the V2-only curated map to filter projects or compare cohorts. Read `GET /api/v1/categories` for the current areas, group definitions, and stable keys before sending `filters.categoryKeys` or `dimensions: ["categories"]`. Categories describe what a project is for; keep chains, technology, hackathons, and awards as separate filters. Load [api-reference.md](references/api-reference.md) for availability and request shapes.
 - Tools: connect builders with the right tools from Colosseum's canonical hackathon resources hub through `GET /api/v1/resources`. Cross-reference adoption with project `builtWith` evidence when available. Present canonical links and hand implementation to the builder's agent and each tool's docs or skill. Load [tools.md](references/tools.md) and [api-resources.md](references/api-resources.md).
 - Colosseum questions: use `GET /api/v1/faqs` for canonical program FAQs, cite the linked program page, and verify consequential current policy there. Load [api-faqs.md](references/api-faqs.md).
 - Platform actions, coming: posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. Do not attempt these actions or request reserved write scopes.
@@ -94,6 +95,7 @@ Save continuity only when useful, using existing private conventions or gitignor
 ## On-demand references
 
 - [api-reference.md](references/api-reference.md): endpoints, schemas, capabilities, errors, and limits.
+- [api-projects.md](references/api-projects.md): project search, including V2 category filters and facets.
 - [connection.md](references/connection.md): connect, return, migrate, revoke, and troubleshoot.
 - [research-methods.md](references/research-methods.md): dated histories and comparisons.
 - [tools.md](references/tools.md): choose hub entries, check adoption, and hand off implementation.
