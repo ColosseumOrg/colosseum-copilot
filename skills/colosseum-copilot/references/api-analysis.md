@@ -17,7 +17,7 @@ For technology counts, use [project search](api-projects.md#built-with-technolog
 
 Category buckets count main and secondary groups, so buckets overlap. Never add them or treat `share` as exclusive. `topK` returns at most 20 buckets. Use empty-query project search with `filters.categoryKeys` for exact counts, listing the group keys to cover an area.
 
-`totals.winners`, `totalsA.winners` and `totalsB.winners` include honorable mentions. Report them separately from prize winners using the `filters.prizeTypes` searches described in the project reference.
+`totals.winners`, `totalsA.winners` and `totalsB.winners` include honorable mentions. Report them separately from prize winners using the [`filters.prizeTypes` searches](api-projects.md#winners-and-honorable-mentions).
 
 ## analyzeResponse
 

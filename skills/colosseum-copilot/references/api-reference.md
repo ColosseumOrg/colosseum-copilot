@@ -41,7 +41,7 @@ Each schema name below resolves to the field definitions on its linked page. Tho
 | `GET /categories`             | No body or query                                                                                          | 200, the current V2 category map: its version, six areas, 34 group keys, labels, and definitions     |
 | `POST /analyze`               | JSON [analyzeRequest](api-analysis.md#analyzerequest)                                                     | 200, [analyzeResponse](api-analysis.md#analyzeresponse)                                               |
 | `POST /compare`               | JSON [compareRequest](api-analysis.md#comparerequest), with cohortDefinition for each side                | 200, [compareResponse](api-analysis.md#compareresponse)                                               |
-| `POST /session-shares` | JSON [session sharing request](#privacy-and-session-sharing) | 201, `{ saved: true, expiresAt: string }` |
+| `POST /session-shares` | JSON [session sharing request](#privacy-and-session-sharing), where conversation sharing is available | 201, `{ saved: true, expiresAt: string }` |
 | `POST /source-suggestions`    | JSON [sourceSuggestionRequest](api-analysis.md#sourcesuggestionrequest)                                   | 201, `{ "message": "Thanks! We'll review your suggestion." }`                                         |
 | `POST /feedback`              | JSON [feedbackRequest](api-analysis.md#feedbackrequest)                                                   | 201, `{ "message": "Feedback received. Thank you." }`                                                 |
 
@@ -53,27 +53,27 @@ See [FAQ fields and freshness](api-faqs.md) for canonical program answers.
 
 Categories are available only to a V2 signed-in client. `GET /categories` returns the current map: its version, six broad areas, 34 group keys, labels and definitions, plus `other-emerging`. Do not invent, rename or infer category keys. Categories describe project purpose, not investment quality, market size, technology or current activity.
 
-Call `GET /categories` for the current areas, group keys and definitions. `filters.categoryKeys` accepts one to ten group keys, including `other-emerging`. Listed keys are alternatives: a project matches if its main or secondary group matches any key. To cover a broad area, list its group keys, not the area key.
+`filters.categoryKeys` accepts one to ten group keys, including `other-emerging`. Listed keys are alternatives: a project matches if its main or secondary group matches any key. To cover a broad area, list its group keys, not the area key.
 
 Category facets and `/analyze` count a project under both its main and secondary groups. Buckets overlap: never add them to get a project total or treat `share` as exclusive. Each returns at most 20 buckets (`facetTopK` for search, `topK` for analysis), so a missing bucket does not establish zero projects.
 
 For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For trends, run one search per hackathon with the same group keys and other filters. `/compare` rejects `"categories"`; neither analysis nor comparison cohorts accept `categoryKeys`.
 
-In a returned `categories` object, `primaryKey: null` means Other / emerging. `categories: null` means no category record is available. Category filtering, category facets and category analysis require V2 sign-in and return `503 CATEGORIES_UNAVAILABLE` until categories are published.
+In a returned `categories` object, `primaryKey: null` means Other / emerging. `categories: null` means no category record is available. Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` always works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
 
 ## Status and scopes
 
-`authenticated`, `expiresAt`, and `scope` describe authentication. An unknown expiry or scope can be `null`. `scope` is a space-delimited string of granted values. Confirm `evidence:read` before reading protected evidence.
+`authenticated`, `expiresAt`, and `scope` describe authentication. An unknown expiry or scope can be `null`. `scope` is a space-delimited string of granted values. On a V2 connection, confirm `evidence:read` (or its alias `copilot:retrieval`) before reading protected evidence. A v1 token reports `colosseum_copilot:read`, which also grants evidence access.
 
-The helper defaults to `evidence:read self-data:read`; `profile:read` is requestable but is not a default. Request only what the connection flow offers. The scope enum also includes compatibility aliases `copilot:retrieval`, `copilot:telemetry`, and `copilot:self-data`, plus `telemetry:write`. `projects:updates:write` and `submissions:write` are reserved, unavailable scopes. Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. There are no project-action endpoints to call.
+The helper requests `evidence:read` and `self-data:read`, plus `telemetry:write` where conversation sharing is available. `telemetry:write` shares nothing unless the user also opts in when approving the connection. `profile:read` is requestable but is not a default. Request only what the connection flow offers. The scope enum also includes compatibility aliases `copilot:retrieval`, `copilot:telemetry`, and `copilot:self-data`, plus `telemetry:write`. `projects:updates:write` and `submissions:write` are reserved, unavailable scopes. Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. There are no project-action endpoints to call.
 
 ## Privacy and session sharing
 
 Copilot retains request records, including account association, request metadata and search inputs, for 12 months. Those service records are separate from optional conversation sharing. The Copilot notice supplements the existing [Terms of Service](https://colosseum.com/terms-of-service) and [Privacy Policy](https://colosseum.com/privacy-policy). Contact [hello@colosseum.com](mailto:hello@colosseum.com) for data-handling questions or requests.
 
-Conversation sharing requires a separate opt-in for the connection. `POST /session-shares`, relative to the API base, requires a V2 connection with session sharing enabled and `telemetry:write` (or its compatibility alias `copilot:telemetry`). A scope alone is not consent. Where session sharing is available, `GET /status` returns `sessionSharingEnabled` for V2 connections. Shared sessions are retained for 90 days.
+Conversation sharing requires a separate opt-in for the connection: an unchecked box on the approval page, shown only when the connection requests `telemetry:write`. `POST /session-shares`, relative to the API base, requires a V2 connection with session sharing enabled and `telemetry:write` (or its compatibility alias `copilot:telemetry`). A scope alone is not consent. Where session sharing is available, `GET /status` returns `sessionSharingEnabled` for V2 connections. Shared sessions are retained for 90 days.
 
-Preview the conversation content and send only what the user authorized. Never automatically upload repositories, unrelated conversation history or paid results. The request is a strict JSON object with `sessionId` (a UUID) and `messages` (2–100 strict objects with `role: "user" | "assistant"` and trimmed `content` of 1–20,000 characters). Include at least one message of each role. The serialized `messages` array must be at most 100,000 characters. Success is `201` with `{ saved: true, expiresAt: string }`, where `expiresAt` is an ISO datetime. Repeating the same `sessionId` for the same connection does not replace the saved session or extend its expiry. A connection without the required opt-in and scope receives `403 INSUFFICIENT_SCOPE`.
+Preview the conversation content and send only what the user authorized. Never automatically upload repositories, unrelated conversation history or paid results. The request is a strict JSON object with `sessionId` (a UUID) and `messages` (2–100 strict objects with `role: "user" | "assistant"` and trimmed `content` of 1–20,000 characters). Include at least one message of each role. The serialized `messages` array must be at most 100,000 characters. Success is `201` with `{ saved: true, expiresAt: string }`, where `expiresAt` is an ISO datetime. Credential-like text is removed from shared messages before they are saved. Repeating the same `sessionId` for the same connection does not replace the saved session or extend its expiry. A connection without the required opt-in and scope receives `403 INSUFFICIENT_SCOPE`.
 
 Revoking access does not delete historical records. The [privacy guide](https://docs.colosseum.com/copilot/privacy) explains these boundaries. Continue the user's task if optional sharing is unavailable.
 
@@ -81,7 +81,7 @@ Revoking access does not delete historical records. The [privacy guide](https://
 
 Project details can return `evidenceSummaries`, `corpusRevision` and `freshness`. Search results can return `corpusRevision` and `freshness` but omit `evidenceSummaries`; open details by slug for summaries. Search results require the separate legacy `evidence: string[]` field, capped at two match snippets. Project details have no `evidence` field. Structured evidence has nullable `repoSummary`, `pitchSummary` and `demoSummary`. Each present summary carries text, source URL, source revision, capture time and extractor version. A missing channel is unknown, not negative evidence. Capture time is not event time or proof that a claim remains current.
 
-Facets need `includeFacets: true`; list `"categories"` explicitly in `facets` when needed. They count everything matching the filters and ignore the query. With a query, `totalFound` is offset plus returned results, plus one if more exist; never report it as a count. With an empty query, it is the exact filtered project count. Check `filtersApplied` before reporting the population.
+Facets need `includeFacets: true`. Always list the facets you want in `facets`, including `"categories"`; the default set omits categories. They count everything matching the filters and ignore the query. With a query, `totalFound` is offset plus returned results, plus one if more exist; never report it as a count. With an empty query, it is the exact filtered project count. Check `filtersApplied` before reporting the population.
 
 Counts describe covered projects, not market size. Similarity, prizes and update counts do not establish commercial outcomes. Freshness values may be null.
 
@@ -120,9 +120,9 @@ Error bodies contain `error: string`, `code: string`, and `retryable: boolean`. 
 | 415  | `UNSUPPORTED_MEDIA_TYPE` | false     | Use supported encoding and charset.                     |
 | 429  | `RATE_LIMITED`           | true      | Honor `Retry-After` and reduce concurrency.             |
 | 500  | `INTERNAL_ERROR`         | true      | Retry with bounded backoff.                             |
-| 503  | `SERVICE_UNAVAILABLE`    | true      | Retry later.                                            |
+| 503  | `SERVICE_UNAVAILABLE`    | true      | Honor `Retry-After` when present, then retry.           |
 | 503  | `PROJECT_PERMISSIONS_UNAVAILABLE` | true | Project research is temporarily unavailable; retry later. |
-| 503  | `CATEGORIES_UNAVAILABLE` | true | Category counts are not yet available; retry later or omit categories. |
+| 503  | `CATEGORIES_UNAVAILABLE` | true | Categories aren't published yet; retry later or search without categories. |
 | 503  | `EVIDENCE_UNAVAILABLE`   | true      | Repository checks pending; retry later.                 |
 
 Other application error codes may occur. Honor the returned status and `retryable` flag. Empty search results are successful responses, not errors; broaden filters or terms and disclose coverage limits rather than inferring that no relevant project exists.

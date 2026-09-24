@@ -10,7 +10,7 @@ Fields checked against the release API on 2026-09-24. This is schema notation, n
 query: string [trim, max 500, min 1]
 sources: Array<string> [max 20] [optional]
 limit: number [int, min 1, max 10] [default 5]
-offset: number [int, min 0] [default 0]
+offset: number [int, min 0, max 50] [default 0]
 maxChunksPerDoc: number [int, min 1, max 4] [default 2]
 maxDocsPerSource: number [int, min 0, max 10] [optional] [default 3]
 intent: "ideation" | "docs" [optional] [default "docs"]

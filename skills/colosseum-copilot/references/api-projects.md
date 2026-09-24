@@ -34,9 +34,9 @@ Category facets and `/analyze` count a project under both its main and secondary
 
 For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For trends, run one search per hackathon with the same group keys and other filters. `/compare` rejects `"categories"`; neither analysis nor comparison cohorts accept `categoryKeys`.
 
-In a returned `categories` object, `primaryKey: null` means Other / emerging. `categories: null` means no category record is available. Category filtering, category facets and category analysis require V2 sign-in and return `503 CATEGORIES_UNAVAILABLE` until categories are published.
+In a returned `categories` object, `primaryKey: null` means Other / emerging. `categories: null` means no category record is available. Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` always works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
 
-Facets need `includeFacets: true`; list `"categories"` explicitly in `facets` when needed. They count everything matching the filters and ignore the query. With a query, `totalFound` is offset plus returned results, plus one if more exist; never report it as a count. With an empty query, it is the exact filtered project count. Check `filtersApplied` before reporting the population.
+Facets need `includeFacets: true`. Always list the facets you want in `facets`, including `"categories"`; the default set omits categories. They count everything matching the filters and ignore the query. With a query, `totalFound` is offset plus returned results, plus one if more exist; never report it as a count. With an empty query, it is the exact filtered project count. Check `filtersApplied` before reporting the population.
 
 ## Built with technology tags
 

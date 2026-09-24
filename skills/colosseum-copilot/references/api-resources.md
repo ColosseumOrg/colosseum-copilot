@@ -1,6 +1,6 @@
 # Resources API fields
 
-Contract reviewed 2026-09-18 for skill 2.0.0. `GET /resources` requires a bearer token and returns the canonical hackathon resources hub. `[optional]` permits omission; `[default x]` supplies x when omitted. This is schema notation, not a sample response.
+Contract reviewed 2026-09-24 for skill 2.0.0. `GET /resources` requires a bearer token and returns the canonical hackathon resources hub. `[optional]` permits omission; `[default x]` supplies x when omitted. This is schema notation, not a sample response.
 
 [Endpoint reference](api-reference.md).
 
@@ -37,7 +37,7 @@ resourceLink: { label: string; url: string; description: string [optional, topic
 
 `topics` contains the hub's resource sections, with link `hyperlink` values normalized to `label`. `topicGroups` contains only IDs of returned topics and omits empty groups. `query.matched` counts returned sponsors, topic links and RPC providers.
 
-`source.url` is a data feed, not a citation target. Open and cite the event's public resources page, including any sponsor cards borrowed from other tracks. The data feed is `https://ColosseumOrg.github.io/hackathon-resources/<hackathon-slug>.json`. `source.fetchedAt` records the last successful fetch. Cached data is fresh for 10 minutes; older data returns immediately with `stale: true` while refreshing. Copies older than 24 hours are not returned.
+`source.url` is a data feed, not a citation target. Open and cite the event's public resources page on colosseum.com, such as `https://colosseum.com/frontier/resources`. The page path can differ from `hackathon.slug` (for example, `crypto-worlds-fair` is at `/worldsfair/resources`), so confirm it resolves. Describe what that page shows, and say when an entry belongs to another track (its `trackId`). The data feed is `https://ColosseumOrg.github.io/hackathon-resources/<hackathon-slug>.json`. `source.fetchedAt` records the last successful fetch. Cached data is fresh for 10 minutes; older data returns immediately with `stale: true` while refreshing. Copies older than 24 hours are not returned.
 
 Unknown hackathons return 404 `NOT_FOUND` with `Hackathon resources not found`. If the hub is unavailable and no usable cached copy exists, the endpoint returns 503 `resources_unavailable`. Invalid query parameters return 400 `INVALID_QUERY`.
 
