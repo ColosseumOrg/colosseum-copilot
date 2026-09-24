@@ -7,7 +7,7 @@ Fields used by the v2 skill, checked against the release API on 2026-09-24. This
 ## analyzeRequest
 
 ```text
-cohort: { hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional] } [strict]
+cohort: { categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, default false, V2 only]; hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional] } [strict]
 dimensions: Array<"categories" | "tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
 topK: number [int, min 1, max 20] [default 10]
 samplePerBucket: number [int, min 0, max 5] [default 2]
@@ -15,13 +15,14 @@ samplePerBucket: number [int, min 0, max 5] [default 2]
 
 For technology counts, use [project search](api-projects.md#built-with-technology-tags) with an empty query, `filters.builtWith`, and the requested hackathon scope. Inspect `totalFound` and its diagnostics before reporting a count; inspect project details for tag evidence. Run separate searches for each hackathon when comparing recorded technology use over time.
 
-Category buckets count main and secondary groups, so buckets overlap. Never add them or treat `share` as exclusive. `topK` returns at most 20 buckets. Use empty-query project search with `filters.categoryKeys` for exact counts, listing the group keys to cover an area.
+Category buckets count main groups by default. `cohort.includeSecondaryCategories: true` includes runner-up guesses and returns `categoryCountsOverlap: true`; label these counts as overlapping and do not add them. `topK` returns at most 20 buckets. Use empty-query project search with `filters.categoryKeys` for exact counts, listing the group keys to cover an area.
 
 `totals.winners`, `totalsA.winners` and `totalsB.winners` include honorable mentions. Report them separately from prize winners using the [`filters.prizeTypes` searches](api-projects.md#winners-and-honorable-mentions).
 
 ## analyzeResponse
 
 ```text
+categoryCountsOverlap: boolean [optional, V2 only]
 totals: { projects: number [int]; winners: number [int] }
 buckets: Record<string, Array<{ key: string; label: string; count: number [int]; share: number; sampleProjectSlugs: Array<string> }>>
 ```
@@ -37,7 +38,7 @@ acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optio
 prizePlacements: Array<number [int]> [optional]
 ```
 
-`POST /compare` rejects `"categories"`. For category trends, use an empty-query project search per hackathon with the same `filters.categoryKeys`. Analysis and comparison cohorts do not accept `categoryKeys` or `prizeTypes`.
+`POST /compare` rejects `"categories"`. For category trends, use an empty-query project search per hackathon with the same `filters.categoryKeys`. Analysis cohorts accept `categoryKeys` and `includeSecondaryCategories`; comparison cohorts accept neither. Neither accepts `prizeTypes`.
 
 ## compareRequest
 

@@ -38,7 +38,7 @@ Each schema name below resolves to the field definitions on its linked page. Tho
 | `GET /faqs` | Optional `program`, `q` | 200, FAQ list with canonical links and revisions |
 | `GET /faqs/:program/:id` | Program and stable FAQ ID | 200, one FAQ; 404 if unknown |
 | `GET /filters`                | No body or query                                                                                          | 200, [filtersResponse](api-projects.md#filtersresponse)                                               |
-| `GET /categories`             | No body or query                                                                                          | 200, the current V2 category map: its version, six areas, 34 group keys, labels, and definitions     |
+| `GET /categories`             | No body or query                                                                                          | 200, the current V2 category map: its version, six areas, 41 group keys, labels, and definitions     |
 | `POST /analyze`               | JSON [analyzeRequest](api-analysis.md#analyzerequest)                                                     | 200, [analyzeResponse](api-analysis.md#analyzeresponse)                                               |
 | `POST /compare`               | JSON [compareRequest](api-analysis.md#comparerequest), with cohortDefinition for each side                | 200, [compareResponse](api-analysis.md#compareresponse)                                               |
 | `POST /session-shares` | JSON [session sharing request](#privacy-and-session-sharing), where conversation sharing is available | 201, `{ saved: true, expiresAt: string }` |
@@ -51,15 +51,15 @@ See [FAQ fields and freshness](api-faqs.md) for canonical program answers.
 
 ## Curated V2 categories
 
-Categories are available only to a V2 signed-in client. `GET /categories` returns the current map: its version, six broad areas, 34 group keys, labels and definitions, plus `other-emerging`. Do not invent, rename or infer category keys. Categories describe project purpose, not investment quality, market size, technology or current activity.
+Categories are available only to a V2 signed-in client. `GET /categories` returns the current map: its version, six broad areas, 41 group keys, labels and definitions, plus `other-emerging` and `insufficient-information`. Do not invent, rename or infer category keys. Categories describe project purpose, not investment quality, market size, technology or current activity.
 
-`filters.categoryKeys` accepts one to ten group keys, including `other-emerging`. Listed keys are alternatives: a project matches if its main or secondary group matches any key. To cover a broad area, list its group keys, not the area key.
+`filters.categoryKeys` accepts one to ten group keys, including `other-emerging` and `insufficient-information`. Listed keys are alternatives: a project matches if its main group matches any key. Use `filters.includeSecondaryCategories: true` to include runner-up guesses. To cover a broad area, list its group keys, not the area key.
 
-Category facets and `/analyze` count a project under both its main and secondary groups. Buckets overlap: never add them to get a project total or treat `share` as exclusive. Each returns at most 20 buckets (`facetTopK` for search, `topK` for analysis), so a missing bucket does not establish zero projects.
+Category facets and `/analyze` count main groups by default. Opt into second groups with `filters.includeSecondaryCategories` for search or `cohort.includeSecondaryCategories` for analysis. Then `categoryCountsOverlap: true` marks overlapping buckets; do not sum them. Label discovery lists “including runner-up guesses.” Each returns at most 20 buckets (`facetTopK` for search, `topK` for analysis), so a missing bucket does not establish zero projects.
 
-For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For trends, run one search per hackathon with the same group keys and other filters. `/compare` rejects `"categories"`; neither analysis nor comparison cohorts accept `categoryKeys`.
+For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For trends, run one search per hackathon with the same group keys and other filters. `/compare` rejects `"categories"`; analysis accepts `cohort.categoryKeys`; comparison does not.
 
-In a returned `categories` object, `primaryKey: null` means Other / emerging. `categories: null` means no category record is available. Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` always works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
+A returned `categories.primaryKey` is a group key, `other-emerging`, or `insufficient-information`. Confidence is `high`, `medium` or `low`; all levels are included. `categories: null` means “not yet categorized.” Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` always works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
 
 ## Status and scopes
 
