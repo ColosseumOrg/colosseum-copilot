@@ -27,6 +27,24 @@ Unless noted, all requests include:
 -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT"
 ```
 
+Connected agents that use Colosseum sign-in receive a separate, short-lived access token. Their `GET /status` response also includes `sessionSharingEnabled`, which reflects whether full-session sharing is currently on for that connection.
+
+#### POST /session-shares (connected agents only)
+
+An agent may upload a question and answer only when the user opted in during sign-in and full-session sharing is still on for that connection. The access token must include `telemetry:write` or `copilot:telemetry`; personal access tokens cannot use this route. No approval is required for each upload. Users can turn sharing off at any time on the connected-agents page, after which later uploads are rejected.
+
+Send a stable UUID as `sessionId` so retrying an upload does not save a duplicate. `messages` contains 2–100 `user` or `assistant` messages, including at least one of each; each message is at most 20,000 characters and the combined messages at most 100,000 characters. The response is `201` with `{ "saved": true, "expiresAt": "..." }`. Shared sessions expire after 90 days.
+
+```json
+{
+  "sessionId": "bb94832a-ef25-443d-a8a3-57b438a186f0",
+  "messages": [
+    { "role": "user", "content": "What should I build?" },
+    { "role": "assistant", "content": "Start with customer interviews." }
+  ]
+}
+```
+
 #### GET /filters
 
 Fetch available filters (hackathons, tracks, tags, clusters). Use to translate hackathon or track names into valid slugs/keys and to get canonical hackathon `startDate` values for chronology-sensitive answers.
