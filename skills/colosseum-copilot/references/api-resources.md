@@ -58,4 +58,4 @@ npx @colosseum-org/copilot-connect token | {
 }
 ```
 
-Copilot recommends tools only from this hub and uses `POST /analyze` `builtWith` facets for adoption evidence.
+Copilot recommends tools only from this hub and uses `POST /search/projects` with `filters.builtWith` for recorded technology use.

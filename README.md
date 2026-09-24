@@ -14,7 +14,7 @@ npx @colosseum-org/copilot-connect login
 npx @colosseum-org/copilot-connect status
 ```
 
-The helper flow is available with v2. Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. Existing v1 PATs remain supported for 90 days after GA.
+The helper flow is available with v2. Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. Existing v1 PATs keep working. Colosseum will announce any end date well in advance.
 
 Then ask your agent for a task, for example:
 

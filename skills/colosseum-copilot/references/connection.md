@@ -1,6 +1,6 @@
 # Connect and manage access
 
-The `@colosseum-org/copilot-connect` helper and browser/device authorization described here are available with v2. Use the helper only when available in your release. Existing v1 PATs remain supported for 90 days after GA; no calendar cutoff is implied before GA is announced.
+The `@colosseum-org/copilot-connect` helper and browser/device authorization described here are available with v2. Use the helper only when available in your release. Existing v1 PATs keep working. Colosseum will announce any end date well in advance.
 
 You need a Colosseum account, an agent that can run commands and make HTTPS requests, and Node.js/npm with `npx`. Browser authorization uses your Colosseum identity. Agent/model usage remains subject to your provider's terms and billing. Frames is optional and has separate account and credit requirements.
 
@@ -56,7 +56,7 @@ Read `X-Copilot-Skill-Version` from the first response and compare it to the ins
 
 ## Migrate from v1 PATs
 
-Existing `COLOSSEUM_COPILOT_PAT` integrations continue during the 90-day post-GA transition. Run the helper login and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /api/v1/status` request and confirm its `scope` contains each required grant. Inspect optional capability fields only when present. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment when it is no longer needed. Do not print either credential during migration.
+Existing `COLOSSEUM_COPILOT_PAT` integrations keep working. Run the helper login and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /api/v1/status` request and confirm its `scope` contains each required grant. Inspect optional capability fields only when present. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment when it is no longer needed. Do not print either credential during migration.
 
 ## End or revoke access
 
@@ -86,7 +86,7 @@ Do not run `logout` before `revoke`: revocation needs the saved refresh credenti
 | HTTP 401 after helper status                             | Authentication was rejected, but this does not prove the grant was revoked. Keep credentials, check the configured API origins, and reconnect if needed.                                   |
 | Permission denied                                        | Helper `status` exits 8 for HTTP 403. Inspect granted scopes and account permissions; repeating login cannot enable an unavailable feature.                                                |
 | Evidence capability disabled                             | Helper `status` exits 7 and keeps credentials. Check feature availability before reconnecting.                                                                                             |
-| Helper unavailable in your release                       | Keep an existing PAT integration during the migration window; consult the docs for release availability.                                                                                   |
+| Helper unavailable in your release                       | Keep an existing PAT integration; consult the docs for release availability.                                                                                                               |
 | Rate limited                                             | Honor `Retry-After` and the API's concurrency limit.                                                                                                                                       |
 | Paid or mutating request timed out                       | Reconcile its known result before retrying; never blindly replay it.                                                                                                                       |
 

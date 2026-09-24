@@ -19,7 +19,7 @@ npx @colosseum-org/copilot-connect token | {
 }
 ```
 
-Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. V1 PATs remain supported for 90 days after v2 GA. The legacy token response contract is `{ access_token: string, token_type: "Bearer", expires_in: number, scope: string }`; `expires_in` is seconds. Issuance and grant management belong to the Colosseum connection service, not an endpoint under this API base.
+Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. V1 PATs keep working; Colosseum will announce any end date well in advance. The legacy token response contract is `{ access_token: string, token_type: "Bearer", expires_in: number, scope: string }`; `expires_in` is seconds. Issuance and grant management belong to the Colosseum connection service, not an endpoint under this API base.
 
 Compare `X-Copilot-Skill-Version` semantically with local version `2.0.0`; when newer, recommend `npx skills add ColosseumOrg/colosseum-copilot`. A newer header does not prove a capability is enabled.
 
@@ -127,5 +127,6 @@ Error bodies contain `error: string`, `code: string`, and `retryable: boolean`. 
 | 429  | `RATE_LIMITED`           | true      | Honor `Retry-After` and reduce concurrency.             |
 | 500  | `INTERNAL_ERROR`         | true      | Retry with bounded backoff.                             |
 | 503  | `SERVICE_UNAVAILABLE`    | true      | Retry later.                                            |
+| 503  | `EVIDENCE_UNAVAILABLE`   | true      | Repository checks pending; retry later.                 |
 
 Other application error codes may occur. Honor the returned status and `retryable` flag. Empty search results are successful responses, not errors; broaden filters or terms and disclose coverage limits rather than inferring that no relevant project exists.

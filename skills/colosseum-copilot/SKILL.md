@@ -25,7 +25,7 @@ Keep the intended customer and experience in view. State assumptions that change
 
 - Research: reconstruct histories, compare precedents, or support a founder decision. Start project discovery with `filters.winnersOnly: true`, which includes honorable mentions. Inspect relevant winners first, then broaden when needed. Load [research-methods.md](references/research-methods.md) for the search sequence and evidence checks.
 - Categories: use the V2-only curated map to filter projects or compare cohorts. Read `GET /api/v1/categories` for the current areas, group definitions, and stable keys before sending `filters.categoryKeys` or `dimensions: ["categories"]`. Categories describe what a project is for; keep chains, technology, hackathons, and awards as separate filters. Load [api-reference.md](references/api-reference.md) for availability and request shapes.
-- Tools: connect builders with the right tools from Colosseum's canonical hackathon resources hub through `GET /api/v1/resources`. Cross-reference adoption with project `builtWith` evidence when available. Present canonical links and hand implementation to the builder's agent and each tool's docs or skill. Load [tools.md](references/tools.md) and [api-resources.md](references/api-resources.md).
+- Tools: connect builders with the right tools from Colosseum's canonical hackathon resources hub through `GET /api/v1/resources`. Cross-reference recorded technology use with project `builtWith` evidence when available. Present canonical links and hand implementation to the builder's agent and each tool's docs or skill. Load [tools.md](references/tools.md) and [api-resources.md](references/api-resources.md).
 - Colosseum questions: use `GET /api/v1/faqs` for canonical program FAQs, cite the linked program page, and verify consequential current policy there. Load [api-faqs.md](references/api-faqs.md).
 - Platform actions, coming: posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. Do not attempt these actions or request reserved write scopes.
 
@@ -62,7 +62,7 @@ export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot
   curl --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
-Keep bearer tokens out of model context, command output, logs, and committed files. Only use a trusted API base. v1 PATs remain supported for 90 days after GA; migration is in the connection reference. The API contract and error recovery are in [api-reference.md](references/api-reference.md).
+Keep bearer tokens out of model context, command output, logs, and committed files. Only use a trusted API base. v1 PATs keep working; Colosseum will announce any end date well in advance. The upgrade path is in the connection reference. The API contract and error recovery are in [api-reference.md](references/api-reference.md).
 
 This skill is version **2.0.0**. After the first API response, compare `X-Copilot-Skill-Version` semantically against `2.0.0`. If newer, tell the user to update with `npx skills add ColosseumOrg/colosseum-copilot`. Read authenticated `/status` before relying on a feature. Its current contract returns `authenticated`, `expiresAt`, and a space-delimited `scope` string. Confirm the scope needed for the request, such as `evidence:read`. An optional `capabilities` object may describe enabled features; a capability flag does not grant permission to spend or publish, and an absent field is unknown.
 

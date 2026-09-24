@@ -12,10 +12,10 @@ hackathons: Array<string [min 1]> [max 10] [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [max 10] [optional]
 limit: number [int, min 1, max 25] [default 10]
 offset: number [int, min 0] [default 0]
-filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
+filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
 diversify: boolean [optional] [default true]
 includeFacets: boolean [optional] [default false]
-facets: Array<"category" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "clusters" | "builtWith.languages" | "builtWith.frameworks" | "builtWith.chains" | "builtWith.protocols" | "builtWith.services" | "builtWith.tooling" | "builtWith.standards"> [optional]
+facets: Array<"categories" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "clusters"> [optional]
 facetTopK: number [int, min 1, max 20] [optional] [default 8]
 includeDiagnostics: boolean [optional] [default false]
 ```
@@ -86,9 +86,9 @@ tooling: Array<string [trim, min 1, max 100]> [max 20] [optional]
 standards: Array<string [trim, min 1, max 100]> [max 20] [optional]
 ```
 
-Use `filters.builtWith` for exact canonical-name matches. Matching trims whitespace and ignores case. It combines categories with AND and names within a category with OR. Discover canonical names through facets; matching does not resolve arbitrary aliases. These filters are separate from the existing `techStack` tags.
+Use `filters.builtWith` for exact canonical-name matches. Matching trims whitespace and ignores case. It combines categories with AND and names within a category with OR. Inspect project details for canonical names; matching does not resolve arbitrary aliases. These filters are separate from the existing `techStack` tags. Technology filtering requires a v2 sign-in.
 
-For example, `POST /projects/search` finds projects tagged with Solana and either Kamino Lend or Jupiter:
+For example, `POST /search/projects` finds projects tagged with Solana and either Kamino Lend or Jupiter:
 
 ```json
 {
@@ -100,16 +100,14 @@ For example, `POST /projects/search` finds projects tagged with Solana and eithe
       "protocols": ["Kamino Lend", "Jupiter"]
     }
   },
-  "includeFacets": true,
-  "facets": ["builtWith.protocols", "builtWith.frameworks"],
-  "facetTopK": 10,
+  "includeDiagnostics": true,
   "limit": 10
 }
 ```
 
-Facet names are `builtWith.languages`, `builtWith.frameworks`, `builtWith.chains`, `builtWith.protocols`, `builtWith.services`, `builtWith.tooling`, and `builtWith.standards`. The response uses those same flattened keys in `facets`. Each bucket contains `key`, `label`, `count`, and `sampleProjectSlugs`; `count` counts distinct projects. `facetTopK` defaults to 8 and permits at most 20 buckets per requested facet.
+Use `totalFound` for the filtered project count and check `diagnostics.totalFoundIsEstimate` when present. Fetch project details to inspect the complete technology record and its evidence. Missing tags do not establish that a project uses none.
 
-Read `facetScope` before interpreting counts. With `facetScope: "filters"`, facets describe the projects satisfying the request's filters, including its built-with filters, rather than just the returned page or text-query matches.
+A v2 technology filter returns `503 EVIDENCE_UNAVAILABLE` while repository evidence checks are not current; retry later. A v1 PAT sending `filters.builtWith` gets `400 INVALID_QUERY`; sign in with the new helper or search without the technology filter.
 
 ## projectEvidenceSummary
 
@@ -199,7 +197,7 @@ effectiveFilters: Record<string, unknown>
 ```text
 hackathons: Array<string> [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]
-filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
+filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
 ```
 
 ## projectSearchCoverage
@@ -217,10 +215,10 @@ appliedFilters: appliedProjectFilters [optional]
 coverage: projectSearchCoverage [optional]
 facetScope: "filters" | "query" [optional]
 results: Array<projectSearchResult>
-filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { builtWith: builtWithFilters [optional]; category: string [pattern /^[a-z0-9]+(?:-[a-z0-9]+)*$/] [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional] }
+filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional] }
 totalFound: number [int]
 hasMore: boolean
-facets: { category: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; hackathons: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; tracks: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; prizes: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; problemTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; solutionTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; primitives: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; techStack: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; clusters: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; "builtWith.languages": Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [max 20] [optional]; "builtWith.frameworks": Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [max 20] [optional]; "builtWith.chains": Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [max 20] [optional]; "builtWith.protocols": Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [max 20] [optional]; "builtWith.services": Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [max 20] [optional]; "builtWith.tooling": Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [max 20] [optional]; "builtWith.standards": Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [max 20] [optional] } [optional]
+facets: { categories: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; hackathons: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; tracks: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; prizes: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; problemTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; solutionTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; primitives: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; techStack: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; clusters: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional] } [optional]
 diagnostics: searchDiagnostics [optional]
 ```
 
