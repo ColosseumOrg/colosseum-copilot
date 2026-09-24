@@ -24,13 +24,13 @@ Follow the helper's verification URL and code in a trusted browser. Do not share
 
 ## Returning or connecting another agent
 
-Run helper `status` first. It silently refreshes expired or soon-expiring access, then verifies authenticated evidence access. It reports `state: "ready"` only when authenticated access includes `evidence:read` (or the response explicitly reports evidence capability). Valid renewable authorization needs no new browser approval.
+Run helper `status` first. It silently refreshes expired or soon-expiring access, then verifies authenticated evidence access. It reports `state: "ready"` only when authenticated access includes `evidence:read`. Valid renewable authorization needs no new browser approval.
 
 Use `status --local` for a storage-only diagnostic. It makes no API request, does not refresh or change credentials, and returns no capabilities. With saved credentials, its `state` is `stored credentials present (not verified)`; `credentialState` describes the saved authorization. Neither local value proves server access.
 
 Keep the user's task intact while reconnecting if needed. A compatible agent using the same helper account/storage may reuse that connection. Another machine or isolated environment needs its own login; do not copy credentials through chat or project files.
 
-Helper status confirms evidence readiness only and reports saved scopes. Use the authenticated `GET /api/v1/status` response's space-delimited `scope` string for the current grant. An optional boolean `capabilities` object can describe enabled features, but an absent property is unknown. A permission denial is not automatically an expired connection. Reserved project-update and submission scopes cannot be requested, and no project-writing capability ships here.
+Helper status confirms evidence readiness only and reports saved scopes. Use the authenticated `GET /status` response's space-delimited `scope` string for the current grant. A permission denial is not automatically an expired connection. Reserved project-update and submission scopes cannot be requested, and no project-writing capability ships here.
 
 ## Manual HTTPS requests
 
@@ -56,7 +56,7 @@ Read `X-Copilot-Skill-Version` from the first response and compare it to the ins
 
 ## Migrate from v1 PATs
 
-Existing `COLOSSEUM_COPILOT_PAT` integrations keep working. Run the helper login and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /api/v1/status` request and confirm its `scope` contains each required grant. Inspect optional capability fields only when present. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment when it is no longer needed. Do not print either credential during migration.
+Existing `COLOSSEUM_COPILOT_PAT` integrations keep working. Run the helper login and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment when it is no longer needed. Do not print either credential during migration.
 
 ## End or revoke access
 

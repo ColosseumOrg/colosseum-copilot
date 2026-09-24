@@ -1,6 +1,6 @@
 # Project API fields
 
-Field definitions generated from the shared v2 contract, reviewed 2026-09-09. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
+Fields used by the v2 skill, checked against the release API on 2026-09-24. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
 
 [Endpoint reference](api-reference.md).
 
@@ -12,17 +12,31 @@ hackathons: Array<string [min 1]> [max 10] [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [max 10] [optional]
 limit: number [int, min 1, max 25] [default 10]
 offset: number [int, min 0] [default 0]
-filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
+filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional] } [strict] [optional]
 diversify: boolean [optional] [default true]
 includeFacets: boolean [optional] [default false]
-facets: Array<"categories" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "clusters"> [optional]
+facets: Array<"categories" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack"> [optional]
 facetTopK: number [int, min 1, max 20] [optional] [default 8]
 includeDiagnostics: boolean [optional] [default false]
 ```
 
 ## Winners and honorable mentions
 
-`filters.winnersOnly: true` selects projects with an award, including honorable mentions. Use it for the first project-discovery pass described in [research-methods.md](research-methods.md), then remove it when broadening the search. `filters.prizeTypes` can select specific award types returned by `GET /filters`. Awards do not change the default relevance ranking.
+`filters.winnersOnly: true` includes prize winners and honorable mentions. Honorable mentions (`prize.type: "HONORABLE_MENTION"`) are not winners, even though `winnersOnly`, `isWinner`, `winnerCount` and `winners` include them. Call them honorable mentions.
+
+To count prize winners, use an empty query and `filters.prizeTypes` containing every type returned by `GET /filters` except `HONORABLE_MENTION`, then read `totalFound`. To count honorable mentions separately, use `filters.prizeTypes: ["HONORABLE_MENTION"]`. Keep the same hackathon and other filters for both counts. Prize types do not change the default relevance ranking.
+
+## Categories and counts
+
+Call `GET /categories` for the current areas, group keys and definitions. `filters.categoryKeys` accepts one to ten group keys, including `other-emerging`. Listed keys are alternatives: a project matches if its main or secondary group matches any key. To cover a broad area, list its group keys, not the area key.
+
+Category facets and `/analyze` count a project under both its main and secondary groups. Buckets overlap: never add them to get a project total or treat `share` as exclusive. Each returns at most 20 buckets (`facetTopK` for search, `topK` for analysis), so a missing bucket does not establish zero projects.
+
+For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For trends, run one search per hackathon with the same group keys and other filters. `/compare` rejects `"categories"`; neither analysis nor comparison cohorts accept `categoryKeys`.
+
+In a returned `categories` object, `primaryKey: null` means Other / emerging. `categories: null` means no category record is available. Category filtering, category facets and category analysis require V2 sign-in and return `503 CATEGORIES_UNAVAILABLE` until categories are published.
+
+Facets need `includeFacets: true`; list `"categories"` explicitly in `facets` when needed. They count everything matching the filters and ignore the query. With a query, `totalFound` is offset plus returned results, plus one if more exist; never report it as a count. With an empty query, it is the exact filtered project count. Check `filtersApplied` before reporting the population.
 
 ## Built with technology tags
 
@@ -125,7 +139,7 @@ evidenceId: string | null
 extractorVersion: string
 ```
 
-Project details return the complete permitted Gemini summary for each available kind, preserving Markdown up to 12,000 characters. `truncated` is true only when that limit cuts off text. These summaries describe the sources; raw source files and full derived materials are not distributed.
+Project details return the permitted summary for each available kind, preserving Markdown up to 12,000 characters. `truncated` is true only when that limit cuts off text. These summaries describe the sources; raw source files and full derived materials are not distributed.
 
 `sourceUrl` points to the project's public GitHub repository, presentation, or technical demo for the corresponding summary, or is null when no valid link is known. The linked page may have changed since capture. `evidenceId` identifies the summary independently of that link; it is null for older evidence without a summary identifier. `sourceRevision` identifies the revision associated with the evidence.
 
@@ -156,24 +170,18 @@ builtWith: compactBuiltWith | null [optional]
 categories: { version: string; primaryKey: v2CategoryKey | null; secondaryKey: v2CategoryKey | null } | null [optional, V2 only]
 slug: string
 name: string
-category: string | null [optional]
-country: string | null [optional]
-website: string | null [optional]
 oneLiner: string | null
 similarity: number
 hackathon: { name: string; slug: string; startDate: string }
 tracks: Array<{ name: string; key: string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/] }>
 links: { github: string | null; demo: string | null; presentation: string | null; technicalDemo: string | null; twitter: string | null; colosseum: string | null }
 evidence: Array<string> [max 2]
-evidenceSummaries: projectEvidence [optional]
 corpusRevision: string [optional]
 freshness: projectFreshness [optional]
 prize: { type: string; name: string | null; placement: number [int] | null; amount: number | null; trackName: string | null } | null
 metrics: { updatesCount: number [int] }
 team: { count: number [int] }
-crowdedness: number [int] | null
 tags: { problemTags: Array<string> [max 10]; solutionTags: Array<string> [max 10]; primitives: Array<string> [max 10]; techStack: Array<string> [max 10]; targetUsers: Array<string> [max 10] } | null
-cluster: { key: string [pattern /^v\d+-c\d+$/]; label: string } | null
 accelerator: { companySlug: string | null; companyName: string | null; batchKey: string [pattern /^accelerator\/[a-z0-9-]+$/]; batchName: string } | null
 ```
 
@@ -192,33 +200,14 @@ queryExpanded: string
 effectiveFilters: Record<string, unknown>
 ```
 
-## appliedProjectFilters
-
-```text
-hackathons: Array<string> [optional]
-trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]
-filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional]
-```
-
-## projectSearchCoverage
-
-```text
-hackathons: Array<{ hackathonSlug: string [min 1]; count: number [int, min 0] }>
-channels: Array<{ channel: "project" | "repository" | "pitch" | "demo"; count: number [int, min 0] }>
-exclusions: Array<{ reason: string [min 1]; count: number [int, min 0]; hackathonSlug: string [min 1] [optional]; channel: "project" | "repository" | "pitch" | "demo" [optional] }>
-```
-
 ## searchProjectsResponse
 
 ```text
-appliedFilters: appliedProjectFilters [optional]
-coverage: projectSearchCoverage [optional]
-facetScope: "filters" | "query" [optional]
 results: Array<projectSearchResult>
-filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [max 10] [optional] } [strict] [optional] }
+filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { categoryKeys: Array<v2CategoryKey | "other-emerging"> [min 1, max 10] [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional] } [strict] [optional] }
 totalFound: number [int]
 hasMore: boolean
-facets: { categories: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; hackathons: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; tracks: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; prizes: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; problemTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; solutionTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; primitives: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; techStack: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; clusters: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional] } [optional]
+facets: { categories: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; hackathons: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; tracks: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; prizes: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; problemTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; solutionTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; primitives: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; techStack: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional] } [optional]
 diagnostics: searchDiagnostics [optional]
 ```
 
@@ -238,9 +227,6 @@ corpusRevision: string [optional]
 freshness: projectFreshness [optional]
 slug: string
 name: string
-category: string | null [optional]
-country: string | null [optional]
-website: string | null [optional]
 description: string | null
 oneLiner: string | null
 hackathon: { name: string; slug: string; startDate: string }
@@ -251,7 +237,6 @@ isWinner: boolean
 accelerator: { companySlug: string | null; companyName: string | null; batchKey: string [pattern /^accelerator\/[a-z0-9-]+$/]; batchName: string } | null
 createdAt: string
 tags: { problemTags: Array<string> [max 10]; solutionTags: Array<string> [max 10]; primitives: Array<string> [max 10]; techStack: Array<string> [max 10]; targetUsers: Array<string> [max 10] } | null
-cluster: { key: string [pattern /^v\d+-c\d+$/]; label: string } | null
 metrics: { updatesCount: number [int] } | null
 prize: { type: string; name: string | null; placement: number [int] | null; amount: number | null; trackName: string | null } | null
 ```
@@ -269,6 +254,5 @@ solutionTags: Array<{ tag: string; count: number [int] }>
 primitives: Array<{ tag: string; count: number [int] }>
 techStack: Array<{ tag: string; count: number [int] }>
 targetUsers: Array<{ tag: string; count: number [int] }>
-clusters: Array<{ key: string [pattern /^v\d+-c\d+$/]; label: string; projectCount: number [int] }>
 archiveSources: Array<{ key: string; label: string; documentCount: number [int] [optional] }>
 ```

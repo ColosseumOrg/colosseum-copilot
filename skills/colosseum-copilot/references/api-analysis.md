@@ -1,19 +1,23 @@
 # Analysis, status and submission fields
 
-Field definitions generated from the shared v2 contract, reviewed 2026-09-09. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
+Fields used by the v2 skill, checked against the release API on 2026-09-24. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
 
 [Endpoint reference](api-reference.md).
 
 ## analyzeRequest
 
 ```text
-cohort: { hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [optional] } [strict]
-dimensions: Array<"categories" | "tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers" | "clusters">
+cohort: { hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional] } [strict]
+dimensions: Array<"categories" | "tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
 topK: number [int, min 1, max 20] [default 10]
 samplePerBucket: number [int, min 0, max 5] [default 2]
 ```
 
 For technology counts, use [project search](api-projects.md#built-with-technology-tags) with an empty query, `filters.builtWith`, and the requested hackathon scope. Inspect `totalFound` and its diagnostics before reporting a count; inspect project details for tag evidence. Run separate searches for each hackathon when comparing recorded technology use over time.
+
+Category buckets count main and secondary groups, so buckets overlap. Never add them or treat `share` as exclusive. `topK` returns at most 20 buckets. Use empty-query project search with `filters.categoryKeys` for exact counts, listing the group keys to cover an area.
+
+`totals.winners`, `totalsA.winners` and `totalsB.winners` include honorable mentions. Report them separately from prize winners using the `filters.prizeTypes` searches described in the project reference.
 
 ## analyzeResponse
 
@@ -31,15 +35,16 @@ winnersOnly: boolean [optional]
 acceleratorOnly: boolean [optional]
 acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]
 prizePlacements: Array<number [int]> [optional]
-clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [optional]
 ```
+
+`POST /compare` rejects `"categories"`. For category trends, use an empty-query project search per hackathon with the same `filters.categoryKeys`. Analysis and comparison cohorts do not accept `categoryKeys` or `prizeTypes`.
 
 ## compareRequest
 
 ```text
 cohortA: cohortDefinition
 cohortB: cohortDefinition
-dimensions: Array<"tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers" | "clusters">
+dimensions: Array<"tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
 topK: number [int, min 1, max 20] [default 10]
 ```
 
@@ -49,24 +54,6 @@ topK: number [int, min 1, max 20] [default 10]
 totalsA: { projects: number [int]; winners: number [int] }
 totalsB: { projects: number [int]; winners: number [int] }
 results: Record<string, Array<{ key: string; label: string; countA: number [int]; shareA: number; countB: number [int]; shareB: number; lift: number; delta: number; examplesA: Array<string>; examplesB: Array<string> }>>
-```
-
-## getClusterDetailsParams
-
-```text
-key: string [pattern /^v\d+-c\d+$/]
-```
-
-## clusterDetails
-
-```text
-key: string [pattern /^v\d+-c\d+$/]
-label: string
-summary: string
-projectCount: number [int]
-winnerCount: number [int]
-representativeProjects: Array<{ slug: string; name: string; oneLiner: string; isWinner: boolean }>
-topTags: { problemTags: Array<{ tag: string; count: number [int] }>; primitives: Array<{ tag: string; count: number [int] }>; techStack: Array<{ tag: string; count: number [int] }> }
 ```
 
 ## sourceSuggestionRequest
@@ -92,5 +79,5 @@ severity: "low" | "medium" | "high" | "critical" [default "medium"]
 authenticated: boolean
 expiresAt: string | null
 scope: string | null
-capabilities: Record<string, boolean> [optional]
+sessionSharingEnabled: boolean [optional, V2 session sharing]
 ```
