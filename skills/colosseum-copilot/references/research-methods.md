@@ -15,11 +15,11 @@ For each consequential claim, retain its source URL or locator, the claim, relev
 
 For an as-of question, exclude later events from the historical conclusion. Later retrospective sources may describe earlier events, but label them as retrospective and do not imply they were available then. If only a mutable current page exists, disclose the gap.
 
-Distinguish the team's claim, an observed outcome, and your explanation. A repository demonstrates available code, not customers. A prize or funding announcement establishes an award or financing, not product success. Lack of recent public evidence leaves the outcome unknown.
+Distinguish the team's claim, an observed outcome, and your explanation. A repository demonstrates available code, not customers. A prize or funding announcement establishes an award or financing, not product success. Check the live product or official site before calling a project failed or gone; a deleted repository alone does not establish that. Lack of recent public evidence leaves the outcome unknown.
 
 ## Check winning projects first
 
-For project discovery, recommendations, and finding comparison candidates, start with `POST /search/projects` using `filters.winnersOnly: true`. This includes winners and honorable mentions. Preserve the question's customer, mechanism, stage, period, and other relevant constraints.
+For project discovery, recommendations, and finding comparison candidates, start with `POST /search/projects` using `filters.winnersOnly: true`. This includes winners and honorable mentions; count an honorable mention as a prize winner only if Colosseum lists a prize amount. Preserve the question's customer, mechanism, stage, period, and other relevant constraints.
 
 Read project details and available repository or demo evidence for the strongest matches before searching other submissions. Assess relevance and implemented functionality. Colosseum is a startup competition, so awards are a meaningful signal of relative startup promise within that event's submission pool. Favor awarded projects among similarly relevant candidates and identify their awards. Verify demand, revenue, and current activity separately.
 
@@ -43,6 +43,7 @@ When retrieval fails, distinguish an evidence gap from a query/filter problem. T
 
 When evaluating an idea, connect the evidence to the user's customer, problem, and constraints. Address the factors that materially affect the decision without filling a fixed report:
 
+- Check potential blockers before recommending a plan or stack: platform and app-store rules, regulation, where users and liquidity already are, and who holds users' funds or assets. Do not set aside a factor that could decide the recommendation.
 - Explain how customers solve the problem today, including non-crypto alternatives. Compare direct competitors with adjacent products and historical prototypes; project similarity alone does not establish direct competition.
 - Before treating a hard part as custom development or a reason to narrow the market, investigate existing solutions. Study competitors and successful products for how they address the same user need. Explain what the builder can reuse, buy, integrate, or learn, and what remains their responsibility. Distinguish an observed product pattern from an implementation or service actually available to them. Use current primary evidence and choose references for the problem rather than relying on a fixed company list.
 - Treat competition as evidence to investigate, not a verdict against building. Identify what competitors serve well and where a specific customer, workflow, distribution channel, integration, or other advantage could give a new entrant a reason to exist. Label an unverified angle as a hypothesis. Do not invent an underserved niche to make the idea sound promising.
@@ -56,4 +57,4 @@ Do not force a binary verdict or redirect the user's idea just to create differe
 
 For project recommendations, explain what each selected project built, why it matters to this user, and the lesson or limitation that affects their next decision. Distinguish a business worth studying, an implementation to adapt, and a UX pattern to learn from. Rank or group examples by usefulness rather than presenting every search result. Keep evidence detail that changes the advice; more citations, counts, or sections do not make an answer more useful by themselves.
 
-Cite sources beside the claims they support. Give the requested answer, explain what remains unknown, and suggest a next check only when it would improve the decision. Save private notes only if they help continuity. Do not require a saved report or upload research without permission.
+Cite sources beside the claims they support. Link each cited project's public Colosseum page and each source's public page, checking that links resolve. Give the requested answer, explain what remains unknown, and suggest a next check only when it would improve the decision. Save private notes only if they help continuity. Do not require a saved report or upload research without permission.
