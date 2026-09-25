@@ -121,7 +121,7 @@ Response includes `diagnostics`:
 Notes:
 - `query` is optional; omit it for filter-only browsing (prefer omission over an empty string).
 - `limit <= 25`. `offset` applies after ranking/diversity.
-- With a new-login token, project search uses public project evidence for vector ranking and defaults `diversify` to `false`. Set it to `true` to diversify the vector results. Old tokens keep their hybrid ranking and `diversify: true` default.
+- With a new-login token, project search uses public project evidence for vector ranking and defaults `diversify` to `false`. Set it to `true` to diversify the vector results. If a missing vector triggers hybrid fallback, that request keeps the prior `diversify: true` default unless you explicitly set it. Old tokens keep their hybrid ranking and `diversify: true` default.
 - `results[]`: each result includes `hackathon: { name, slug, startDate }` alongside project metadata, tracks, links, evidence, prize, and accelerator fields
 
 **Score interpretation (projects):** With a new-login token, `diagnostics.modeUsed: "vector"` means `similarity` is cosine similarity (higher = closer). `"hybrid"` means the existing vector, text, and tag ranking was used, including when a project lacks a new vector. `"text"` uses a static score of 0.8 when vector search is unavailable. Old tokens keep hybrid ranking. Compare scores only within the same mode; use `includeDiagnostics: true` to identify it.
