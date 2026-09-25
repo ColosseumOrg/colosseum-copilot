@@ -108,7 +108,7 @@ Note: facets reflect corpus-wide counts scoped to active filters, not just the r
 
 Response includes `diagnostics`:
 - `modeUsed`: `"vector"`, `"text"`, `"hybrid"`, or `"filters"` — which search mode was used
-- `fallbackUsed`: whether text fallback was triggered
+- `fallbackUsed`: whether hybrid or text fallback was used
 - `fallbackReason`: why fallback occurred (if applicable)
 - `vectorCandidates`: number of vector search candidates
 - `textCandidates`: number of text search candidates
@@ -121,9 +121,10 @@ Response includes `diagnostics`:
 Notes:
 - `query` is optional; omit it for filter-only browsing (prefer omission over an empty string).
 - `limit <= 25`. `offset` applies after ranking/diversity.
+- With a new-login token, project search uses public project evidence for vector ranking and defaults `diversify` to `false`. Set it to `true` to diversify the vector results. Old tokens keep their hybrid ranking and `diversify: true` default.
 - `results[]`: each result includes `hackathon: { name, slug, startDate }` alongside project metadata, tracks, links, evidence, prize, and accelerator fields
 
-**Score interpretation (projects):** Scores reflect hybrid RRF fusion across vector, text, and semantic tag channels — not raw embedding distance. Use relative ranking within a result set (higher = better match) rather than absolute thresholds. When `diagnostics.modeUsed` is `text`, scores represent text relevance (static 0.8). When `hybrid`, scores combine similarity and text rank. Enable `includeDiagnostics: true` to see which mode produced results.
+**Score interpretation (projects):** With a new-login token, `diagnostics.modeUsed: "vector"` means `similarity` is cosine similarity (higher = closer). `"hybrid"` means the existing vector, text, and tag ranking was used, including when a project lacks a new vector. `"text"` uses a static score of 0.8 when vector search is unavailable. Old tokens keep hybrid ranking. Compare scores only within the same mode; use `includeDiagnostics: true` to identify it.
 
 #### POST /search/archives
 
@@ -334,7 +335,7 @@ High and critical severity feedback is escalated to the team immediately.
 - Natural language queries work well (`"privacy wallet for stablecoin users"`).
 - Use `filters` to narrow by hackathon, track, or tech stack rather than stuffing filter terms into the query.
 - `includeFacets: true` adds overhead — only enable when you need aggregate tag distributions.
-- `diversify: false` — use this when doing a focused investigation of a specific niche, incumbent, or competitor landscape (e.g., "show me all DEX aggregators"). This disables cross-hackathon diversity ranking and returns results purely by similarity score. Only use for narrow deep-dives, not for broad discovery where cross-hackathon coverage matters.
+- New-login project search defaults to raw similarity order. Set `diversify: true` when you want more variety across hackathons, tracks, and clusters. Old tokens still default to diversified hybrid ranking.
 
 **Hackathon analysis:**
 - `clusters`, `problemTags`, `techStack`: these dimensions exist in the schema but may not be populated for all hackathon sets. If a dimension returns empty, try `tracks` or `problemTags` instead.
