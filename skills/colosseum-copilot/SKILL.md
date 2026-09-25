@@ -65,15 +65,20 @@ Helper `status` silently refreshes expiring access and verifies evidence access.
 
 Manual HTTPS fallback, run privately with shell tracing disabled. Capture the header without displaying the bearer token:
 
+The old skill set `COLOSSEUM_COPILOT_API_BASE` to `/api/v1`. A sign-in token works there only for `/status`, so use a base that ends in `/api/v2`.
+
 ```bash
-export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v2}"
+case "${COLOSSEUM_COPILOT_API_BASE:-}" in
+  */api/v2) ;;
+  *) export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v2" ;;
+esac
 { printf 'Authorization: Bearer '; npx @colosseum-org/copilot-connect token; } |
   curl --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
 Keep bearer tokens out of model context, command output, logs, and committed files. Only use a trusted API base. The `/api/v2` path requires a new sign-in token. Existing v1 personal tokens use the legacy `/api/v1` path and stop working on October 28, 2026 at 00:00 UTC. Tell users to update this skill and sign in with `@colosseum-org/copilot-connect` before then. The upgrade path is in [connection.md](references/connection.md); the API contract and error recovery are in [api-reference.md](references/api-reference.md).
 
-This skill is version **2.0.0**. After the first API response, compare `X-Copilot-Skill-Version` semantically against `2.0.0`. If newer, tell the user to update with `npx skills add ColosseumOrg/colosseum-copilot`. Read authenticated `/status` before relying on a feature. Its current contract returns `authenticated`, `expiresAt`, a space-delimited `scope` string and, for V2 connections where conversation sharing is available, `sessionSharingEnabled`. On a V2 connection, confirm the scope needed for the request, such as `evidence:read`. A v1 token reports `colosseum_copilot:read`, which also grants evidence access.
+This skill is version **2.0.0**. After the first API response, compare `X-Copilot-Skill-Version` semantically against `2.0.0`. If newer, tell the user to update with `npx skills add ColosseumOrg/colosseum-copilot`. Read authenticated `/status` before relying on a feature. Its current contract returns `authenticated`, `expiresAt`, and a space-delimited `scope` string. On `/api/v2`, a sign-in token's status includes `sessionSharingEnabled`; it is true only if the user opted in for this connection. On a V2 connection, confirm the scope needed for the request, such as `evidence:read`. A v1 token reports `colosseum_copilot:read`, which also grants evidence access.
 
 ## Evidence that supports the answer
 

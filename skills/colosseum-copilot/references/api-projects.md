@@ -13,7 +13,7 @@ trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [max 10] [optional
 limit: number [int, min 1, max 25] [default 10]
 offset: number [int, min 0] [default 0]
 filters: { categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, V2 only, default false]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional] } [strict] [optional]
-diversify: boolean [optional] [default false for new sign-in vector search; true for hybrid fallback and old tokens]
+diversify: boolean [optional] [default false for new sign-in; true for old tokens]
 includeFacets: boolean [optional] [default false]
 facets: Array<"categories" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack"> [optional]
 facetTopK: number [int, min 1, max 20] [optional] [default 8]
@@ -121,7 +121,7 @@ For example, `POST /search/projects` finds projects tagged with Solana and eithe
 
 Use `totalFound` for the filtered project count and check `diagnostics.totalFoundIsEstimate` when present. Fetch project details to inspect the complete technology record and its evidence. Missing tags do not establish that a project uses none.
 
-A v2 technology filter returns `503 EVIDENCE_UNAVAILABLE` while repository evidence checks are not current; retry later. A v1 PAT sending `filters.builtWith` gets `400 INVALID_QUERY`; sign in with the new helper or search without the technology filter.
+A v2 technology filter returns `503 EVIDENCE_UNAVAILABLE` while repository evidence checks are not current; retry later. Technology filters work only on `/api/v2` with a sign-in token. On `/api/v1`, a request with `filters.builtWith` returns `404 NOT_FOUND`. An old personal token on `/api/v2` receives `401 V2_SIGN_IN_REQUIRED`.
 
 ## projectEvidenceSummary
 
@@ -195,6 +195,8 @@ vectorCandidates: number [int]
 textCandidates: number [int]
 tagCandidates: number [int]
 diversityDropped: number [int]
+missingVectorProjects: number [int] [optional]
+missingVectorMatches: number [int] [optional]
 totalFoundIsEstimate: boolean
 queryExpanded: string
 effectiveFilters: Record<string, unknown>

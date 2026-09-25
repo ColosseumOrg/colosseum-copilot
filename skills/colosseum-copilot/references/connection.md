@@ -1,8 +1,8 @@
 # Connect and manage access
 
-The `@colosseum-org/copilot-connect` helper and browser/device authorization described here are available with v2. Use the helper only when available in your release. Existing v1 personal tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and sign in with the helper before then.
+The `@colosseum-org/copilot-connect` helper (Node.js 20 or later) provides browser and device sign-in. Existing v1 personal tokens return v1 data only on `/api/v1`, do not work on `/api/v2`, and stop working on October 28, 2026 at 00:00 UTC. Update the skill and sign in with the helper before then.
 
-You need a Colosseum account, an agent that can run commands and make HTTPS requests, and Node.js/npm with `npx`. Browser authorization uses your Colosseum identity. Agent/model usage remains subject to your provider's terms and billing.
+You need a Colosseum account, an agent that can run commands and make HTTPS requests, and Node.js 20 or later with npm and `npx`. Browser authorization uses your Colosseum identity. Agent/model usage remains subject to your provider's terms and billing.
 
 ## First connection
 
@@ -37,7 +37,10 @@ Helper status confirms evidence readiness only and reports saved scopes. Use the
 Keep tokens out of model context and logs. The `token` command outputs a bearer token for private command-to-command use. Never run it naked in a captured terminal, use shell tracing, or place the value directly in a command argument.
 
 ```bash
-export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v2}"
+case "${COLOSSEUM_COPILOT_API_BASE:-}" in
+  */api/v2) ;;
+  *) export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v2" ;;
+esac
 { printf 'Authorization: Bearer '; npx @colosseum-org/copilot-connect token; } |
   curl --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
@@ -56,7 +59,7 @@ Read `X-Copilot-Skill-Version` from the first response and compare it to the ins
 
 ## Migrate from v1 PATs
 
-Existing v1 personal tokens work only for v1 data until October 28, 2026 at 00:00 UTC. Update the skill with `npx skills add ColosseumOrg/colosseum-copilot`, then run helper `login` and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old token from that integration's environment when it is no longer needed. Do not print either credential during migration.
+Existing v1 personal tokens work only for v1 data until October 28, 2026 at 00:00 UTC. Update the skill with `npx skills add ColosseumOrg/colosseum-copilot`, then run helper `login` and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`. Then remove `COLOSSEUM_COPILOT_PAT`, and any `COLOSSEUM_COPILOT_API_BASE` ending in `/api/v1`, from the shell profile or agent configuration. Do not print either credential during migration.
 
 ## End or revoke access
 
@@ -81,12 +84,11 @@ Do not run `logout` before `revoke`: revocation needs the saved refresh credenti
 | Browser cannot reach the callback                        | Use `login --device` in that environment.                                                                                                                                                  |
 | Browser approval completed but the agent is disconnected | Run helper `status` to verify saved access. Inspect `status --local` for storage problems; browser approval alone is insufficient.                                                         |
 | Ordinary evidence request network or service failure     | Preserve usable credentials and retry later; do not reset a valid connection.                                                                                                              |
-| Interrupted or uncertain refresh                         | If `status --local` shows `credentialState: "refresh-pending"`, run `login` again. Subsequent `status` and `token` calls exit 6 without retrying that credential. Do not edit saved state. |
+| Interrupted or uncertain refresh                         | `status --local` may show `credentialState: "refresh-pending"`. The next `status` or `token` resumes that renewal automatically; exit 4 means the service is still unreachable, so keep the credentials and retry later. Run `login` again only when the helper reports the authorization expired or revoked (exit 2 or 3). Do not edit saved state. |
 | Definitively revoked or expired grant                    | Offer one reconnect action and preserve the task.                                                                                                                                          |
 | HTTP 401 after helper status                             | Authentication was rejected, but this does not prove the grant was revoked. Keep credentials, check the configured API origins, and reconnect if needed.                                   |
 | Permission denied                                        | Helper `status` exits 8 for HTTP 403. Inspect granted scopes and account permissions; repeating login cannot enable an unavailable feature.                                                |
 | Evidence capability disabled                             | Helper `status` exits 7 and keeps credentials. Check feature availability before reconnecting.                                                                                             |
-| Helper unavailable in your release                       | Keep an existing PAT integration; consult the docs for release availability.                                                                                                               |
 | Rate limited                                             | Honor `Retry-After` and the API's concurrency limit.                                                                                                                                       |
 | Paid or mutating request timed out                       | Reconcile its known result before retrying; never blindly replay it.                                                                                                                       |
 

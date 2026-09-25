@@ -7,8 +7,8 @@ Fields used by the v2 skill, checked against the release API on 2026-09-25. This
 ## analyzeRequest
 
 ```text
-cohort: { hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional]; categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, V2 only, default false] } [strict]
-dimensions: Array<"categories" | "tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
+cohort: { hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional]; clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [optional]; categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, V2 only, default false] } [strict]
+dimensions: Array<"categories" | "clusters" | "tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
 topK: number [int, min 1, max 20] [default 10]
 samplePerBucket: number [int, min 0, max 5] [default 2]
 ```
@@ -36,6 +36,7 @@ winnersOnly: boolean [optional]
 acceleratorOnly: boolean [optional]
 acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]
 prizePlacements: Array<number [int]> [optional]
+clusterKeys: Array<string [pattern /^v\d+-c\d+$/]> [optional]
 ```
 
 `POST /analyze` accepts `cohort.categoryKeys`; `POST /compare` rejects `"categories"` and category keys. For category trends, use an empty-query project search per hackathon with the same `filters.categoryKeys`. Neither analysis nor comparison cohorts accept `prizeTypes`.
@@ -45,7 +46,7 @@ prizePlacements: Array<number [int]> [optional]
 ```text
 cohortA: cohortDefinition
 cohortB: cohortDefinition
-dimensions: Array<"tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
+dimensions: Array<"clusters" | "tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
 topK: number [int, min 1, max 20] [default 10]
 ```
 
@@ -80,5 +81,5 @@ severity: "low" | "medium" | "high" | "critical" [default "medium"]
 authenticated: boolean
 expiresAt: string | null
 scope: string | null
-sessionSharingEnabled: boolean [optional, V2 session sharing]
+sessionSharingEnabled: boolean [optional, V2 sign-in; true only if opted in]
 ```

@@ -6,7 +6,7 @@ Research and tool guidance work inside your agent. Solana is our deepest evidenc
 
 ## Start
 
-You need a compatible AI agent, a Colosseum account for protected evidence, and Node.js/npm with `npx` for installation and the connection helper. The agent must be able to read skills and make authorized HTTPS requests. Claude Code, Codex, and OpenClaw are examples, not an allowlist or a guarantee of identical capabilities. Your agent/model provider bills its own usage under its terms.
+You need a compatible AI agent, a Colosseum account for protected evidence, and Node.js 20 or later with npm and `npx` for installation and the connection helper. The agent must be able to read skills and make authorized HTTPS requests. Claude Code, Codex, and OpenClaw are examples, not an allowlist or a guarantee of identical capabilities. Your agent/model provider bills its own usage under its terms.
 
 ```bash
 npx skills add ColosseumOrg/colosseum-copilot

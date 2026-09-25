@@ -9,17 +9,20 @@ The connection helper is **available with v2**. It uses browser authorization wi
 ```bash
 npx @colosseum-org/copilot-connect login
 npx @colosseum-org/copilot-connect status
-export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v2}"
+case "${COLOSSEUM_COPILOT_API_BASE:-}" in
+  */api/v2) ;;
+  *) export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v2" ;;
+esac
 set +x
 npx @colosseum-org/copilot-connect token | {
   IFS= read -r copilot_token
   printf 'Authorization: Bearer %s\n' "$copilot_token" |
-    curl --silent --show-error --fail-with-body \
+    curl --silent --show-error --fail-with-body --include \
       --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 }
 ```
 
-Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. Existing v1 personal tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in before then. The legacy token response contract is `{ access_token: string, token_type: "Bearer", expires_in: number, scope: string }`; `expires_in` is seconds. Issuance and grant management belong to the Colosseum connection service, not an endpoint under this API base.
+Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. Existing v1 personal tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in before then. Issuance and grant management belong to the Colosseum connection service, not an endpoint under this API base.
 
 Compare `X-Copilot-Skill-Version` semantically with local version `2.0.0`; when newer, recommend `npx skills add ColosseumOrg/colosseum-copilot`. A newer header does not prove a capability is enabled.
 
@@ -67,7 +70,7 @@ In a returned `categories` object, `primaryKey` is a group key, `other-emerging`
 
 ## Status and scopes
 
-`authenticated`, `expiresAt`, and `scope` describe authentication. An unknown expiry or scope can be `null`. `scope` is a space-delimited string of granted values. On a V2 connection, confirm `evidence:read` (or its alias `copilot:retrieval`) before reading protected evidence. A v1 token reports `colosseum_copilot:read`, which also grants evidence access.
+`authenticated`, `expiresAt`, and `scope` describe authentication. An unknown expiry or scope can be `null`. `scope` is a space-delimited string of granted values. On `/api/v2`, a sign-in token's status includes `sessionSharingEnabled`; it is true only if the user opted in for this connection. On a V2 connection, confirm `evidence:read` (or its alias `copilot:retrieval`) before reading protected evidence. A v1 token reports `colosseum_copilot:read`, which also grants evidence access.
 
 The helper requests `evidence:read` and `self-data:read`, plus `telemetry:write` where conversation sharing is available. `telemetry:write` shares nothing unless the user also opts in when approving the connection. `profile:read` is requestable but is not a default. Request only what the connection flow offers. The scope enum also includes compatibility aliases `copilot:retrieval`, `copilot:telemetry`, and `copilot:self-data`, plus `telemetry:write`. `projects:updates:write` and `submissions:write` are reserved, unavailable scopes. Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. There are no project-action endpoints to call.
 
@@ -89,11 +92,11 @@ Facets need `includeFacets: true`. Always list the facets you want in `facets`, 
 
 Counts describe covered projects, not market size. Similarity, prizes and update counts do not establish commercial outcomes. Freshness values may be null.
 
-Use `/filters` to discover valid slugs and keys, including canonical hackathon `startDate`, accelerator batches and archive sources. Project search permits an empty query for browsing with filters. `hasMore` and `offset` support pagination. For archive search, `hasMore` means an additional result was observed in the active retrieval tier. `totalFound` is a compatibility pagination value: `totalMatched` when more results exist, or `offset + returned results` on the last page. It is not an exact semantic-result total. `totalMatched` is the lexical text-match count, falling back to the retrieved result count if counting fails; it can be zero even when semantic results are useful. It reports `searchTier` as vector, chunk text or document text retrieval. `maxDocsPerSource: 0` removes that per-source cap.
+Use `/filters` to discover valid slugs and keys, including canonical hackathon `startDate`, accelerator batches and archive sources. Project search permits an empty query for browsing with filters. `hasMore` and `offset` support pagination. For archive search, `hasMore` means an additional result was observed in the active retrieval tier. It is false once the next page would pass offset 50. `totalFound` is a compatibility pagination value: `totalMatched` when more results exist, or `offset + returned results` on the last page. It is not an exact semantic-result total. `totalMatched` is the lexical text-match count, falling back to the retrieved result count if counting fails; it can be zero even when semantic results are useful. It reports `searchTier` as vector, chunk text or document text retrieval. `maxDocsPerSource: 0` removes that per-source cap.
 
-New sign-in project search defaults to vector similarity against public project evidence, with `diversify: false`. Set `diversify: true` for variety across hackathons, tracks, and clusters. If a missing vector triggers hybrid fallback, that request keeps the previous `diversify: true` default unless you set it explicitly. Old personal tokens keep hybrid ranking and `diversify: true`. With `includeDiagnostics: true`, `modeUsed: "vector"` reports cosine similarity (higher is closer); `"hybrid"` reports combined vector, text, and tag ranking; `"text"` uses a static 0.8 score when vectors are unavailable. Compare scores only within the same mode.
+New sign-in project search ranks by vector similarity against public project evidence and defaults to `diversify: false` on every path, including fallbacks. Set `diversify: true` for variety across hackathons, tracks, and clusters. Projects without a vector yet are appended after all vector-ranked matches. Diagnostics then show `fallbackUsed: true`, `fallbackReason: "missing_v2_vector"` and `missingVectorMatches`, and those appended rows carry hybrid scores. If the query embedding fails, search falls back to text (`modeUsed: "text"`, `fallbackReason: "embedding_generation_failed"`). Old personal tokens keep hybrid ranking and `diversify: true`. With `includeDiagnostics: true`, `modeUsed: "vector"` reports cosine similarity (higher is closer). `"hybrid"` reports combined vector, text, and tag ranking. `"text"` uses a static 0.8 score. `"filters"` (empty query) scores 0 and lists newest first. Compare scores only within the same mode.
 
-Archive search snippets are at most 240 characters. Archive reads default to `offset: 0` and `maxChars: 8000`; the allowed character window is 200 to 20,000. Open sources support full-text paging. For snippets-only sources, `isExcerpt` is true and the API exposes at most 1,000 characters across all pages. `totalChars`, `nextOffset`, and `hasMore` describe only that available excerpt; paging cannot reveal the rest of the document. An excerpt can include `excerptNote`; follow `url` to the publisher for full text when provided. Respect `restricted` and cite the source URL; pagination does not grant permission to redistribute restricted text.
+Archive search snippets are at most 240 characters. Archive reads default to `offset: 0` and `maxChars: 8000`; the allowed character window is 200 to 20,000. Open sources support full-text paging. For snippets-only sources, `isExcerpt` is true and the API exposes at most 1,000 characters across all pages. `totalChars`, `nextOffset`, and `hasMore` describe only that available excerpt; paging cannot reveal the rest of the document. Excerpts include `excerptNote`; follow `url` to the publisher for full text when provided. A document withdrawn since your search returns `404 NOT_FOUND`; drop it rather than retrying or citing its snippet. `restricted` equals `isExcerpt`; respect it and cite the source URL. Pagination does not grant permission to redistribute restricted text.
 
 ## Limits
 
@@ -119,6 +122,8 @@ Error bodies contain `error: string`, `code: string`, and `retryable: boolean`. 
 | 400  | `INVALID_QUERY`          | false     | Check body, path or query fields and validation bounds. |
 | 400  | `BAD_REQUEST`            | false     | Correct the request body.                               |
 | 401  | `UNAUTHORIZED`           | false     | Run `status`; check API origins before reconnecting.    |
+| 401  | `V2_SIGN_IN_REQUIRED`    | false     | A sign-in token was sent to `/api/v1`, or an old personal token to `/api/v2`. Use a base ending in `/api/v2` with a helper token. Run `login` only if helper `status` is not ready. |
+| 401  | `PAT_SUNSET`             | false     | Old personal tokens have ended. Update the skill and sign in with the helper. |
 | 403  | `FORBIDDEN`              | false     | Check account and granted access; do not bypass it.     |
 | 403  | `INSUFFICIENT_SCOPE` | false | Check the required scope, V2 sign-in and any separate consent. |
 | 404  | `NOT_FOUND`              | false     | Check slug, key or document ID.                         |

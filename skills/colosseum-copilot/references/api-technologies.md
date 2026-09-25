@@ -1,10 +1,10 @@
 # Technology analysis
 
-V2 sign-in provides four `POST` routes under `/technologies`: `/counts`, `/co-usage`, `/trends`, and `/top`. They use recorded technology tags from public project repositories. They require `evidence:read` (or `copilot:retrieval`); a v1 personal token receives `403 INSUFFICIENT_SCOPE`. The four routes share the analysis limit of 10 requests per minute and the per-user limit of two concurrent requests.
+V2 sign-in provides four `POST` routes under `/technologies`: `/counts`, `/co-usage`, `/trends`, and `/top`. They use recorded technology tags from public project repositories. They require `evidence:read` (or `copilot:retrieval`). They exist only under `/api/v2`: an old personal token receives `401 V2_SIGN_IN_REQUIRED` there, and the routes return `404` under `/api/v1`. The four routes share the analysis limit of 10 requests per minute and the per-user limit of two concurrent requests.
 
 ## Requests
 
-A technology is `{ "category": "frameworks", "name": "Anchor" }`. The seven categories are `languages`, `frameworks`, `chains`, `protocols`, `services`, `tooling`, and `standards`. Names are trimmed and matched without case, but there is no alias or substring matching. The same name in different categories identifies different technologies. Find recorded names in project details.
+A technology is `{ "category": "frameworks", "name": "Anchor" }`. The seven categories are `languages`, `frameworks`, `chains`, `protocols`, `services`, `tooling`, and `standards`. Names are trimmed and matched without case, but there is no alias or substring matching. Responses return lowercase names; use project details for display names. The same name in different categories identifies different technologies. Find recorded names in project details.
 
 Each route accepts an optional `cohort`:
 
@@ -17,7 +17,7 @@ Each route accepts an optional `cohort`:
 }
 ```
 
-Omitting `cohort` selects all permitted projects in launched V2 hackathons. `hackathonSlugs` accepts one to 20 slugs; `categoryKeys` accepts one to ten keys. Read `GET /categories` for the current keys. `winnersOnly` defaults to `false`. When it is `true`, honorable mentions are excluded unless `includeHonorableMentions: true`. Using `includeHonorableMentions: true` without `winnersOnly: true` is invalid. Without a winner filter, honorable mentions remain ordinary projects. The category filter selects any listed key.
+Omitting `cohort` selects all permitted projects in launched V2 hackathons. `hackathonSlugs` accepts one to 20 slugs; `categoryKeys` accepts one to ten keys. Read `GET /categories` for the current keys. Set `includeSecondaryCategories: true` to include matches in a project's related second group. A `categoryKeys` filter returns `503 CATEGORIES_UNAVAILABLE` until categories are published. `winnersOnly` defaults to `false`. When it is `true`, honorable mentions are excluded unless `includeHonorableMentions: true`. Using `includeHonorableMentions: true` without `winnersOnly: true` is invalid. Without a winner filter, honorable mentions remain ordinary projects. The category filter selects any listed key.
 
 Requests reject unknown fields. Unknown technologies or hackathons return empty or zero results. For `/co-usage` and `/top`, `topK` defaults to 10 and accepts integers from 1 to 50. All shares use the full selected cohort as their denominator, including projects without usable repository tags.
 
