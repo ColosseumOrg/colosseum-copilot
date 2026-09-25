@@ -37,7 +37,7 @@ Helper status confirms evidence readiness only and reports saved scopes. Use the
 Keep tokens out of model context and logs. The `token` command outputs a bearer token for private command-to-command use. Never run it naked in a captured terminal, use shell tracing, or place the value directly in a command argument.
 
 ```bash
-export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v1}"
+export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v2}"
 { printf 'Authorization: Bearer '; npx @colosseum-org/copilot-connect token; } |
   curl --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```

@@ -1,6 +1,6 @@
 # API reference
 
-Contract reviewed 2026-09-25 for skill 2.0.0. The API base is `https://copilot.colosseum.com/api/v1`; endpoint paths below are relative to it. The public evidence-service endpoints below require a bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
+Contract reviewed 2026-09-25 for skill 2.0.0. The API base is `https://copilot.colosseum.com/api/v2`; endpoint paths below are relative to it. This path requires a new sign-in token. The legacy `/api/v1` path serves old personal tokens until October 28, 2026. The evidence-service endpoints below require a bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
 
 ## Connect and call
 
@@ -9,7 +9,7 @@ The connection helper is **available with v2**. It uses browser authorization wi
 ```bash
 npx @colosseum-org/copilot-connect login
 npx @colosseum-org/copilot-connect status
-export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v1}"
+export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v2}"
 set +x
 npx @colosseum-org/copilot-connect token | {
   IFS= read -r copilot_token
@@ -63,7 +63,7 @@ Category facets and `/analyze` count main groups by default. Set `filters.includ
 
 For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For "who has tried X," include second groups, paginate, and deduplicate projects. For trends, run one search per hackathon with the same group keys and other filters. `/analyze` accepts `cohort.categoryKeys`; `/compare` rejects `"categories"` and its cohorts do not accept category keys.
 
-In a returned `categories` object, `primaryKey` is a group key, `other-emerging`, or `insufficient-information`; `secondaryKey` is a distinct group key or `null`. `confidence` is `high`, `medium`, or `low` for the main group, never a percentage or a project-quality score. High means a clear fit, medium means a plausible near tie, and low means sparse evidence or an uncertain fit. `categories: null` means the project is not yet categorized, often because it is new; do not call it "insufficient information." The named `insufficient-information` bucket means the available record does not say what the product does. `other-emerging` means it does not clearly fit a current group. Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
+In a returned `categories` object, `primaryKey` is a group key, `other-emerging`, or `insufficient-information`; `secondaryKey` is a distinct group key or `null`. `confidence` is `high`, `medium`, or `low` for the main group, never a percentage or a project-quality score. High means a clear fit, medium means a plausible near tie, and low means sparse evidence or an uncertain fit. `categories: null` means the project is not yet categorized, often because it is new; do not call it "insufficient information." The named `insufficient-information` bucket means the available record does not say what the product does. `other-emerging` means it does not clearly fit a current group. Categories return 404 under `/api/v1`; an old personal token on `/api/v2` receives `401 V2_SIGN_IN_REQUIRED`. With V2 sign-in, `GET /categories` works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
 
 ## Status and scopes
 
@@ -90,6 +90,8 @@ Facets need `includeFacets: true`. Always list the facets you want in `facets`, 
 Counts describe covered projects, not market size. Similarity, prizes and update counts do not establish commercial outcomes. Freshness values may be null.
 
 Use `/filters` to discover valid slugs and keys, including canonical hackathon `startDate`, accelerator batches and archive sources. Project search permits an empty query for browsing with filters. `hasMore` and `offset` support pagination. For archive search, `hasMore` means an additional result was observed in the active retrieval tier. `totalFound` is a compatibility pagination value: `totalMatched` when more results exist, or `offset + returned results` on the last page. It is not an exact semantic-result total. `totalMatched` is the lexical text-match count, falling back to the retrieved result count if counting fails; it can be zero even when semantic results are useful. It reports `searchTier` as vector, chunk text or document text retrieval. `maxDocsPerSource: 0` removes that per-source cap.
+
+New sign-in project search defaults to vector similarity against public project evidence, with `diversify: false`. Set `diversify: true` for variety across hackathons, tracks, and clusters. If a missing vector triggers hybrid fallback, that request keeps the previous `diversify: true` default unless you set it explicitly. Old personal tokens keep hybrid ranking and `diversify: true`. With `includeDiagnostics: true`, `modeUsed: "vector"` reports cosine similarity (higher is closer); `"hybrid"` reports combined vector, text, and tag ranking; `"text"` uses a static 0.8 score when vectors are unavailable. Compare scores only within the same mode.
 
 Archive reads default to `offset: 0` and `maxChars: 8000`; the allowed character window is 200 to 20,000. Continue with `nextOffset` while `hasMore` is true. Respect `restricted` and cite the source URL; pagination does not grant permission to redistribute restricted text.
 

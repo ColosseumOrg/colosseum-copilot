@@ -8,7 +8,7 @@ compatibility: Any agent that can read skills and make authorized HTTPS requests
 metadata:
   {
     'category': 'copilot',
-    'api_base': 'https://copilot.colosseum.com/api/v1',
+    'api_base': 'https://copilot.colosseum.com/api/v2',
     'author': 'colosseum',
   }
 ---
@@ -27,7 +27,7 @@ Before recommending a plan or stack, check potential blockers for the user's cas
 
 For markets, competitors, regulation and platform rules, use your host's web search for every option you compare. For competitors and the broader product landscape, also check The Grid's product and organization records; confirm current status and consequential claims with primary sources. Load [grid-recipes.md](references/grid-recipes.md) for public queries. Only tools to install must come from the hub; still name the venues, custodians and competitors where users and liquidity are.
 
-- Research: reconstruct histories, compare precedents, or support a founder decision. Start project discovery with `filters.winnersOnly: true`, which includes honorable mentions. Inspect relevant matches first, then broaden when needed. Load [research-methods.md](references/research-methods.md) for the search sequence and evidence checks.
+- Research: reconstruct histories, compare precedents, or support a founder decision. Start project discovery with `filters.winnersOnly: true`, which includes honorable mentions. New sign-in project search ranks by similarity to public project evidence; set `diversify: true` when you want variety across hackathons, tracks, and clusters. Inspect relevant matches first, then broaden when needed. Load [research-methods.md](references/research-methods.md) for the search sequence and evidence checks.
 - Categories: use the V2-only map of 41 groups in six areas to filter and count projects. Read `GET /categories` for the current keys and definitions; do not keep a local list of keys. Count main groups by default. For overlapping "who has tried X" lists, set `includeSecondaryCategories: true`, deduplicate projects, and label the list "including runner-up guesses." Treat high, medium, and low confidence as evidence about the main group, never as percentages or project quality. Say "not yet categorized" when a new project has no category record; keep that distinct from the "insufficient information" bucket. For "how many AI projects," use technology tags because categories describe jobs. Renaissance and Radar (2024) were classified from descriptions alone; missing summaries do not mean a project is junk. Load [api-projects.md](references/api-projects.md) for request shapes and interpretation.
 - Technology analysis: use the V2 technology routes for counts, tools used together, trends, and top technologies. Read [api-technologies.md](references/api-technologies.md) for cohorts, coverage, and response fields. Winner-filtered technology counts exclude honorable mentions unless the user asks to include them.
 - Tools: connect builders with the right tools from Colosseum's canonical hackathon resources hub through `GET /resources`. Cross-reference recorded technology use with project `builtWith` evidence when available. Present canonical links and hand implementation to the builder's agent and each tool's docs or skill. Load [tools.md](references/tools.md) and [api-resources.md](references/api-resources.md).
@@ -66,12 +66,12 @@ Helper `status` silently refreshes expiring access and verifies evidence access.
 Manual HTTPS fallback, run privately with shell tracing disabled. Capture the header without displaying the bearer token:
 
 ```bash
-export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v1}"
+export COLOSSEUM_COPILOT_API_BASE="${COLOSSEUM_COPILOT_API_BASE:-https://copilot.colosseum.com/api/v2}"
 { printf 'Authorization: Bearer '; npx @colosseum-org/copilot-connect token; } |
   curl --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
-Keep bearer tokens out of model context, command output, logs, and committed files. Only use a trusted API base. Existing v1 personal tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Tell users to update this skill and sign in with `@colosseum-org/copilot-connect` before then. The upgrade path is in [connection.md](references/connection.md); the API contract and error recovery are in [api-reference.md](references/api-reference.md).
+Keep bearer tokens out of model context, command output, logs, and committed files. Only use a trusted API base. The `/api/v2` path requires a new sign-in token. Existing v1 personal tokens use the legacy `/api/v1` path and stop working on October 28, 2026 at 00:00 UTC. Tell users to update this skill and sign in with `@colosseum-org/copilot-connect` before then. The upgrade path is in [connection.md](references/connection.md); the API contract and error recovery are in [api-reference.md](references/api-reference.md).
 
 This skill is version **2.0.0**. After the first API response, compare `X-Copilot-Skill-Version` semantically against `2.0.0`. If newer, tell the user to update with `npx skills add ColosseumOrg/colosseum-copilot`. Read authenticated `/status` before relying on a feature. Its current contract returns `authenticated`, `expiresAt`, a space-delimited `scope` string and, for V2 connections where conversation sharing is available, `sessionSharingEnabled`. On a V2 connection, confirm the scope needed for the request, such as `evidence:read`. A v1 token reports `colosseum_copilot:read`, which also grants evidence access.
 
