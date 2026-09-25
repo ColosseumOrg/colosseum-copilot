@@ -1,6 +1,6 @@
 ---
 name: colosseum-copilot
-version: 1.2.1
+version: 1.2.2
 description: |
   Research Solana/crypto startup opportunities using builder project history, crypto archives,
   investor theses, and market signals. Answers questions conversationally by default; runs the
@@ -17,7 +17,7 @@ Colosseum Copilot is a research API for startup opportunity discovery in crypto 
 
 ## Version Check
 
-This skill is version **1.2.1**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.1, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
+This skill is version **1.2.2**. After your first API call, check the `X-Copilot-Skill-Version` response header. If the header value is higher than 1.2.2, tell the user: "A newer version of the Copilot skill is available (vX.X.X). Update with: `npx skills add ColosseumOrg/colosseum-copilot`"
 
 ## Pre-Flight Auth Check (REQUIRED)
 
@@ -147,7 +147,7 @@ All endpoints require `Authorization: Bearer <COPILOT_PAT>`. Treat the PAT like 
 | `/search/projects` | POST | Search builder projects |
 | `/search/archives` | POST | Search crypto archives |
 | `/projects/by-slug/:slug` | GET | Full project details |
-| `/archives/:documentId` | GET | Full archive document |
+| `/archives/:documentId` | GET | Full document for open sources; excerpt and original link for snippets-only sources |
 | `/analyze` | POST | Hackathon analysis |
 | `/compare` | POST | Compare two hackathons |
 | `/clusters/:key` | GET | Cluster details |

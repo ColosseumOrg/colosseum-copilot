@@ -55,7 +55,7 @@ Place these as a brief note near the top of the "Similar Projects" section.
 
 If this deep dive follows a conversational exchange on the same topic, carry forward any results already obtained (project lists, archive citations, Grid data). In Step 2, skip calls that duplicate prior coverage — only run searches for dimensions not yet explored. In Step 5, mark checklist items as satisfied when prior evidence already covers them.
 
-For archives specifically: if Step 2b already returned highly relevant documents (similarity > 0.40), skip the Step 7c search query and instead fetch the full text of the best Step 2b results using the `/archives/:documentId` endpoint with `maxChars=8000`. Only run a new Step 7c search if your Step 2b results were tangential to the deep-dive opportunity.
+For archives specifically: if Step 2b already returned highly relevant documents (similarity > 0.40), skip the Step 7c search query and fetch the best Step 2b results using `/archives/:documentId`. Open sources provide paged full text; snippets-only sources provide a short excerpt and a link to the publisher. Only run a new Step 7c search if your Step 2b results were tangential to the deep-dive opportunity.
 
 ### Step 1: Parse the Research Topic
 
@@ -487,11 +487,13 @@ curl -s -X POST "$COLOSSEUM_COPILOT_API_BASE/search/archives" \
 
 > **Deep-dive pass**: Use `maxChunksPerDoc: 2` here (vs. `1` in exploratory Step 2b) to get richer context from documents you already know are relevant.
 
-For promising archive results, fetch full text:
+For promising archive results, fetch the available text:
 ```bash
 curl -s "$COLOSSEUM_COPILOT_API_BASE/archives/<documentId>?offset=0&maxChars=8000" \
   -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT"
 ```
+
+If `isExcerpt` is true, use the excerpt as evidence and open `url` for the publisher's full text when you need more context.
 
 Look for: foundational concepts from cypherpunk/crypto literature that validate or inform the opportunity.
 

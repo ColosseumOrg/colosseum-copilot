@@ -146,7 +146,7 @@ curl -X POST "$COLOSSEUM_COPILOT_API_BASE/search/archives" \
 ```
 
 Response includes:
-- `results[]`: `{ documentId, title, author, source, url, publishedAt, similarity, snippet, chunkIndex }`
+- `results[]`: `{ documentId, title, author, source, url, publishedAt, similarity, snippet, chunkIndex }`; each `snippet` is at most 240 characters
 - `searchTier`: which search method produced results (`vector`, `chunk_text`, or `doc_text`)
 - `totalFound`: tier-based count for pagination
 - `totalMatched`: FTS corpus match count
@@ -180,12 +180,14 @@ The `searchTier` response field indicates which tier produced results. Score int
 
 #### GET /archives/:documentId
 
-Fetch a paged archive document slice by `documentId`. Use `offset` + `maxChars` to page through the text.
+Fetch a document by `documentId`. Open sources support `offset` + `maxChars` paging. Sources marked snippets-only return at most 1,000 characters across all pages, plus the original URL.
 
 ```bash
 curl "$COLOSSEUM_COPILOT_API_BASE/archives/DOCUMENT_UUID?offset=0&maxChars=8000" \
   -H "Authorization: Bearer $COLOSSEUM_COPILOT_PAT"
 ```
+
+The response keeps the existing `content`, `restricted`, and paging fields. It adds `isExcerpt` (boolean) and, for excerpts, `excerptNote`. If `isExcerpt` is true, follow `url` to read the full text at the publisher. `totalChars`, `nextOffset`, and `hasMore` refer only to the available excerpt, so paging cannot retrieve the rest of a snippets-only document.
 
 #### GET /projects/by-slug/:slug
 
