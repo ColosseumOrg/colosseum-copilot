@@ -1,6 +1,6 @@
 # Project API fields
 
-Fields used by the v2 skill, checked against the release API on 2026-09-24. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
+Fields used by the v2 skill, checked against the release API on 2026-09-25. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
 
 [Endpoint reference](api-reference.md).
 
@@ -12,7 +12,7 @@ hackathons: Array<string [min 1]> [max 10] [optional]
 trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [max 10] [optional]
 limit: number [int, min 1, max 25] [default 10]
 offset: number [int, min 0] [default 0]
-filters: { categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, default false, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional] } [strict] [optional]
+filters: { categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, V2 only, default false]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional] } [strict] [optional]
 diversify: boolean [optional] [default true]
 includeFacets: boolean [optional] [default false]
 facets: Array<"categories" | "hackathons" | "tracks" | "prizes" | "problemTags" | "solutionTags" | "primitives" | "techStack"> [optional]
@@ -28,15 +28,13 @@ To count prize winners, use an empty query and `filters.prizeTypes` containing e
 
 ## Categories and counts
 
-Call `GET /categories` for six areas, 41 groups and their definitions. `filters.categoryKeys` accepts one to ten group keys, including `other-emerging` and `insufficient-information`. Keys match main groups by default. Set `filters.includeSecondaryCategories: true` to include runner-up guesses in search results, totals and facets. Such responses return `categoryCountsOverlap: true`; label counts as overlapping and discovery lists as “including runner-up guesses.” Area keys are not filter keys.
+Call `GET /categories` for the current 41 groups in six areas, their keys and definitions, and the two named buckets. Do not use a hardcoded list. `filters.categoryKeys` accepts one to ten group or bucket keys. Listed keys are alternatives. By default, a project matches through its main group only. Set `filters.includeSecondaryCategories: true` to match its related second group too. To cover an area, list its group keys, not the area key.
 
-For an exact count, use an empty-query search and read `totalFound`. For trends, run one search per hackathon. Analysis accepts `cohort.categoryKeys` and `cohort.includeSecondaryCategories`; the default is main groups only. `/compare` rejects categories.
+Category facets and `/analyze` count main groups by default. Set `includeSecondaryCategories: true` in search `filters` or analysis `cohort` to count runner-up guesses too. Then buckets overlap; label those counts as overlapping, do not add them for a project total, and do not treat `share` as exclusive. `categoryCountsOverlap` reports whether the option was used. Each returns at most 20 buckets (`facetTopK` for search, `topK` for analysis), so a missing bucket does not establish zero projects.
 
-All published assignments count, including low confidence. `categories: null` means “not yet categorized.” Other means no group fits; insufficient information means the public description and summaries do not say what the product does. `confidence` is `high`, `medium` or `low`, an agreement level rather than a calibrated probability. The second group means “also related” and has no separate confidence field.
+For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For "who has tried X" lists, include secondary groups, paginate, deduplicate projects, and label the list "including runner-up guesses." For trends, run one search per hackathon with the same group keys and other filters. `/analyze` accepts `cohort.categoryKeys`; `/compare` rejects `"categories"` and does not accept category keys.
 
-For “how many AI projects,” use technology tags; job categories omit AI projects doing other jobs. Renaissance and Radar (2024) were classified from descriptions alone. Missing summaries do not mean junk, and low-confidence winners and accelerator companies merit review.
-
-Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. `GET /categories` works before publication; category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until a map is published.
+All published assignments count, including low-confidence ones. In a returned `categories` object, `primaryKey` is a group key, `other-emerging`, or `insufficient-information`; `secondaryKey` is a distinct group key or `null` and has no separate confidence field. `confidence` describes only the main group; it is an agreement level, not a calibrated probability. For high confidence, say the project is classified in that group. For medium, say it likely belongs there and mention the second group if present. For low, call the placement tentative, explain that evidence is thin or ambiguous, and inspect the project before drawing a conclusion. Never quote confidence as a percentage or treat it as project quality. `categories: null` means "not yet categorized," often for a new project. The `insufficient-information` bucket means the available record does not say what the product does; `other-emerging` means the product does not clearly fit a current group. For "how many AI projects," use technology tags: job categories omit AI projects doing other jobs. Renaissance and Radar (2024) were classified from descriptions alone. Missing summaries do not mean junk; low-confidence winners and accelerator companies merit review. Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
 
 Facets need `includeFacets: true`. Always list the facets you want in `facets`, including `"categories"`; the default set omits categories. They count everything matching the filters and ignore the query. With a query, `totalFound` is offset plus returned results, plus one if more exist; never report it as a count. With an empty query, it is the exact filtered project count. Check `filtersApplied` before reporting the population.
 
@@ -169,7 +167,7 @@ archiveIngestedAt: string [datetime] | null
 
 ```text
 builtWith: compactBuiltWith | null [optional]
-categories: { version: string; primaryKey: v2CategoryKey | "other-emerging" | "insufficient-information"; secondaryKey: v2CategoryKey | null; confidence: "high" | "medium" | "low" } | null [optional, V2 only]
+categories: { version: string; primaryKey: v2CategoryKey | "other-emerging" | "insufficient-information"; confidence: "high" | "medium" | "low"; secondaryKey: v2CategoryKey | null } | null [optional, V2 only]
 slug: string
 name: string
 oneLiner: string | null
@@ -205,8 +203,9 @@ effectiveFilters: Record<string, unknown>
 ## searchProjectsResponse
 
 ```text
+categoryCountsOverlap: boolean [optional, V2 only]
 results: Array<projectSearchResult>
-filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, default false, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional] } [strict] [optional] }
+filtersApplied: { hackathons: Array<string> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; filters: { categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, V2 only]; builtWith: builtWithFilters [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [max 10] [optional]; prizePlacements: Array<number [int]> [optional]; prizeTypes: Array<string> [max 10] [optional]; isUniversityProject: boolean [optional]; isSolanaMobile: boolean [optional]; techStack: Array<string> [max 10] [optional]; primitives: Array<string> [max 10] [optional]; problemTags: Array<string> [max 10] [optional]; solutionTags: Array<string> [max 10] [optional]; targetUsers: Array<string> [max 10] [optional] } [strict] [optional] }
 totalFound: number [int]
 hasMore: boolean
 facets: { categories: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; hackathons: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; tracks: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; prizes: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; problemTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; solutionTags: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; primitives: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional]; techStack: Array<{ key: string; label: string; count: number [int]; sampleProjectSlugs: Array<string> }> [optional] } [optional]
@@ -223,7 +222,7 @@ slug: string
 
 ```text
 builtWith: repositoryTags | null [optional]
-categories: { version: string; primaryKey: v2CategoryKey | "other-emerging" | "insufficient-information"; secondaryKey: v2CategoryKey | null; confidence: "high" | "medium" | "low" } | null [optional, V2 only]
+categories: { version: string; primaryKey: v2CategoryKey | "other-emerging" | "insufficient-information"; confidence: "high" | "medium" | "low"; secondaryKey: v2CategoryKey | null } | null [optional, V2 only]
 evidenceSummaries: projectEvidence [optional]
 corpusRevision: string [optional]
 freshness: projectFreshness [optional]

@@ -2,7 +2,7 @@
 
 ## The Grid (Direct GraphQL)
 
-These inherited query examples were not re-executed for the v2 documentation rewrite. Validate the live schema and source dates before relying on their results. Queries go directly to The Grid; send only public task context authorized by the user.
+These four recipes were checked against the public GraphQL schema with two small read-only requests on September 25, 2026. Validate source dates before relying on results. Queries go directly to The Grid; send only public task context authorized by the user.
 
 ### Schema overview
 
@@ -13,6 +13,7 @@ These inherited query examples were not re-executed for the v2 documentation rew
 - **Operators**: `_eq`, `_in`, `_contains`, `_like`, `_gt`/`_gte`/`_lt`/`_lte`, `_and`/`_or`/`_not`, `_is_null`
 - No full-text search — `_contains` and `_like` are case-insensitive substring matches
 - Always check the `errors` field in JSON responses (GraphQL errors return HTTP 200)
+- If TLS verification fails, do not bypass it or send credentials. Use web search and primary sources until The Grid restores a verified HTTPS connection.
 
 ### Product Type Slug Cheat Sheet
 

@@ -1,6 +1,6 @@
 # API reference
 
-Contract reviewed 2026-09-24 for skill 2.0.0. The API base is `https://copilot.colosseum.com/api/v1`; endpoint paths below are relative to it. The public evidence-service endpoints below require a bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
+Contract reviewed 2026-09-25 for skill 2.0.0. The API base is `https://copilot.colosseum.com/api/v1`; endpoint paths below are relative to it. The public evidence-service endpoints below require a bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
 
 ## Connect and call
 
@@ -19,7 +19,7 @@ npx @colosseum-org/copilot-connect token | {
 }
 ```
 
-Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. V1 PATs keep working; Colosseum will announce any end date well in advance. The legacy token response contract is `{ access_token: string, token_type: "Bearer", expires_in: number, scope: string }`; `expires_in` is seconds. Issuance and grant management belong to the Colosseum connection service, not an endpoint under this API base.
+Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. Existing v1 personal tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in before then. The legacy token response contract is `{ access_token: string, token_type: "Bearer", expires_in: number, scope: string }`; `expires_in` is seconds. Issuance and grant management belong to the Colosseum connection service, not an endpoint under this API base.
 
 Compare `X-Copilot-Skill-Version` semantically with local version `2.0.0`; when newer, recommend `npx skills add ColosseumOrg/colosseum-copilot`. A newer header does not prove a capability is enabled.
 
@@ -38,9 +38,13 @@ Each schema name below resolves to the field definitions on its linked page. Tho
 | `GET /faqs` | Optional `program`, `q` | 200, FAQ list with canonical links and revisions |
 | `GET /faqs/:program/:id` | Program and stable FAQ ID | 200, one FAQ; 404 if unknown |
 | `GET /filters`                | No body or query                                                                                          | 200, [filtersResponse](api-projects.md#filtersresponse)                                               |
-| `GET /categories`             | No body or query                                                                                          | 200, the current V2 category map: its version, six areas, 41 group keys, labels, and definitions     |
+| `GET /categories`             | No body or query                                                                                          | 200, the current V2 category map: its version, six areas, 41 group keys, labels, and definitions, plus two named buckets |
 | `POST /analyze`               | JSON [analyzeRequest](api-analysis.md#analyzerequest)                                                     | 200, [analyzeResponse](api-analysis.md#analyzeresponse)                                               |
 | `POST /compare`               | JSON [compareRequest](api-analysis.md#comparerequest), with cohortDefinition for each side                | 200, [compareResponse](api-analysis.md#compareresponse)                                               |
+| `POST /technologies/counts` | JSON [technology counts request](api-technologies.md#requests) | 200, project and per-hackathon counts and coverage |
+| `POST /technologies/co-usage` | JSON [technology co-usage request](api-technologies.md#requests) | 200, technologies used together |
+| `POST /technologies/trends` | JSON [technology trends request](api-technologies.md#requests) | 200, per-hackathon usage |
+| `POST /technologies/top` | JSON [top technologies request](api-technologies.md#requests) | 200, ranked technologies |
 | `POST /session-shares` | JSON [session sharing request](#privacy-and-session-sharing), where conversation sharing is available | 201, `{ saved: true, expiresAt: string }` |
 | `POST /source-suggestions`    | JSON [sourceSuggestionRequest](api-analysis.md#sourcesuggestionrequest)                                   | 201, `{ "message": "Thanks! We'll review your suggestion." }`                                         |
 | `POST /feedback`              | JSON [feedbackRequest](api-analysis.md#feedbackrequest)                                                   | 201, `{ "message": "Feedback received. Thank you." }`                                                 |
@@ -51,15 +55,15 @@ See [FAQ fields and freshness](api-faqs.md) for canonical program answers.
 
 ## Curated V2 categories
 
-Categories are available only to a V2 signed-in client. `GET /categories` returns the current map: its version, six broad areas, 41 group keys, labels and definitions, plus `other-emerging` and `insufficient-information`. Do not invent, rename or infer category keys. Categories describe project purpose, not investment quality, market size, technology or current activity.
+Categories are available only to a V2 signed-in client. `GET /categories` returns the current map: its version, six broad areas, 41 groups with keys, labels, area keys and definitions, plus `other` and `insufficientInformation` bucket objects. Read it each time keys are needed; do not keep a hardcoded group list. Categories describe project purpose, not investment quality, market size, technology or current activity.
 
-`filters.categoryKeys` accepts one to ten group keys, including `other-emerging` and `insufficient-information`. Listed keys are alternatives: a project matches if its main group matches any key. Use `filters.includeSecondaryCategories: true` to include runner-up guesses. To cover a broad area, list its group keys, not the area key.
+`filters.categoryKeys` accepts one to ten group keys, including `other-emerging` and `insufficient-information`. Listed keys are alternatives. By default, a project matches by its main group. Set `filters.includeSecondaryCategories: true` to include matches in its related second group. To cover an area, list its group keys, not the area key.
 
-Category facets and `/analyze` count main groups by default. Opt into second groups with `filters.includeSecondaryCategories` for search or `cohort.includeSecondaryCategories` for analysis. Then `categoryCountsOverlap: true` marks overlapping buckets; do not sum them. Label discovery lists “including runner-up guesses.” Each returns at most 20 buckets (`facetTopK` for search, `topK` for analysis), so a missing bucket does not establish zero projects.
+Category facets and `/analyze` count main groups by default. Set `filters.includeSecondaryCategories: true` for search, or `cohort.includeSecondaryCategories: true` for analysis, to include runner-up guesses. Then `categoryCountsOverlap: true` marks overlapping buckets: label counts as overlapping, do not add them for a project total, and do not treat `share` as exclusive. Label discovery lists "including runner-up guesses." Each returns at most 20 buckets (`facetTopK` for search, `topK` for analysis), so a missing bucket does not establish zero projects.
 
-For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For trends, run one search per hackathon with the same group keys and other filters. `/compare` rejects `"categories"`; analysis accepts `cohort.categoryKeys`; comparison does not.
+For an exact count, use `POST /search/projects` with `query: ""` and `filters.categoryKeys`, then read `totalFound`. The count includes each matching project once even if several selected keys match it. For "who has tried X," include second groups, paginate, and deduplicate projects. For trends, run one search per hackathon with the same group keys and other filters. `/analyze` accepts `cohort.categoryKeys`; `/compare` rejects `"categories"` and its cohorts do not accept category keys.
 
-A returned `categories.primaryKey` is a group key, `other-emerging`, or `insufficient-information`. Confidence is `high`, `medium` or `low`; all levels are included. `categories: null` means “not yet categorized.” Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` always works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
+In a returned `categories` object, `primaryKey` is a group key, `other-emerging`, or `insufficient-information`; `secondaryKey` is a distinct group key or `null`. `confidence` is `high`, `medium`, or `low` for the main group, never a percentage or a project-quality score. High means a clear fit, medium means a plausible near tie, and low means sparse evidence or an uncertain fit. `categories: null` means the project is not yet categorized, often because it is new; do not call it "insufficient information." The named `insufficient-information` bucket means the available record does not say what the product does. `other-emerging` means it does not clearly fit a current group. Without V2 sign-in, categories return `403 INSUFFICIENT_SCOPE`. With V2 sign-in, `GET /categories` works, while category filters, facets and analysis return `503 CATEGORIES_UNAVAILABLE` until categories are published.
 
 ## Status and scopes
 
@@ -71,7 +75,7 @@ The helper requests `evidence:read` and `self-data:read`, plus `telemetry:write`
 
 Copilot retains request records, including account association, request metadata and search inputs, for 12 months. Those service records are separate from optional conversation sharing. The Copilot notice supplements the existing [Terms of Service](https://colosseum.com/terms-of-service) and [Privacy Policy](https://colosseum.com/privacy-policy). Contact [hello@colosseum.com](mailto:hello@colosseum.com) for data-handling questions or requests.
 
-Conversation sharing requires a separate opt-in at sign-in for the connection: an unchecked box on the approval page, shown only when the connection requests `telemetry:write`. This opt-in is consent to share full sessions without a per-share preview or approval. `POST /session-shares`, relative to the API base, requires a V2 connection with session sharing enabled and `telemetry:write` (or its compatibility alias `copilot:telemetry`). A scope alone is not consent. Before each upload, check authenticated `GET /status` for `sessionSharingEnabled: true` and the required scope. Never share sessions if the opt-in is absent or sharing has been turned off. Shared sessions are retained for 90 days. Users can turn sharing off at any time from their connected-agents page in Arena.
+Conversation sharing requires a separate opt-in at sign-in for the connection: an unchecked box on the approval page, shown only when the connection requests `telemetry:write`. This opt-in is consent to share full sessions without a per-share preview or approval. `POST /session-shares`, relative to the API base, requires a V2 connection with session sharing enabled and `telemetry:write` (or its compatibility alias `copilot:telemetry`). A scope alone is not consent. Before each upload, check authenticated `GET /status` for `sessionSharingEnabled: true` and the required scope. Never share sessions if the opt-in is absent or sharing has been turned off. Shared sessions are retained for 90 days. Users can see and revoke connected agents, and turn sharing on or off per connection, from Arena's connected-agents page.
 
 Redact secrets from session messages before upload. The opt-in covers the session's conversation, not separate uploads of repositories, unrelated conversation history or paid results. The request is a strict JSON object with `sessionId` (a UUID) and `messages` (2–100 strict objects with `role: "user" | "assistant"` and trimmed `content` of 1–20,000 characters). Include at least one message of each role. The serialized `messages` array must be at most 100,000 characters. Success is `201` with `{ saved: true, expiresAt: string }`, where `expiresAt` is an ISO datetime. Credential-like text is also removed from shared messages before they are saved. Repeating the same `sessionId` for the same connection does not replace the saved session or extend its expiry. A connection without the required opt-in and scope receives `403 INSUFFICIENT_SCOPE`.
 
@@ -96,7 +100,7 @@ Limits are shared per authenticated user, including when that user has multiple 
 | Category           | Limit              | Endpoints                                |
 | ------------------ | ------------------ | ---------------------------------------- |
 | Search             | 30 requests/minute | Both search endpoints, `/faqs`, `/faqs/:program/:id` and `/resources` combined           |
-| Analysis           | 10 requests/minute | `/analyze` and `/compare` combined       |
+| Analysis           | 10 requests/minute | `/analyze`, `/compare`, and the four `/technologies/*` routes combined |
 | Concurrency        | 2 in flight        | Authenticated evidence-service endpoints |
 | Source suggestions | 5 requests/hour    | `/source-suggestions`                    |
 | Feedback           | 10 requests/hour   | `/feedback`                              |

@@ -1,21 +1,21 @@
 # Analysis, status and submission fields
 
-Fields used by the v2 skill, checked against the release API on 2026-09-24. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
+Fields used by the v2 skill, checked against the release API on 2026-09-25. This is schema notation, not a sample response. `[optional]` permits omission; `null` is a distinct value; `[default x]` supplies x when omitted. `int` means integer. Array bounds apply to item counts, string bounds to length. Datetimes accept ISO 8601 offsets. Strict request objects reject unknown keys. Optional v2 fields are available with v2 and may be absent on older deployments.
 
 [Endpoint reference](api-reference.md).
 
 ## analyzeRequest
 
 ```text
-cohort: { categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, default false, V2 only]; hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional] } [strict]
+cohort: { hackathons: Array<string [min 1]> [optional]; trackKeys: Array<string [pattern /^[a-z0-9-]+\/[a-z0-9-]+$/]> [optional]; winnersOnly: boolean [optional]; acceleratorOnly: boolean [optional]; acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optional]; prizePlacements: Array<number [int]> [optional]; categoryKeys: Array<v2CategoryKey | "other-emerging" | "insufficient-information"> [min 1, max 10] [optional, V2 only]; includeSecondaryCategories: boolean [optional, V2 only, default false] } [strict]
 dimensions: Array<"categories" | "tracks" | "problemTags" | "solutionTags" | "primitives" | "techStack" | "targetUsers">
 topK: number [int, min 1, max 20] [default 10]
 samplePerBucket: number [int, min 0, max 5] [default 2]
 ```
 
-For technology counts, use [project search](api-projects.md#built-with-technology-tags) with an empty query, `filters.builtWith`, and the requested hackathon scope. Inspect `totalFound` and its diagnostics before reporting a count; inspect project details for tag evidence. Run separate searches for each hackathon when comparing recorded technology use over time.
+For technology counts, co-usage, trends, and rankings, use the [V2 technology routes](api-technologies.md). Use [project search](api-projects.md#built-with-technology-tags) for project names and evidence.
 
-Category buckets count main groups by default. `cohort.includeSecondaryCategories: true` includes runner-up guesses and returns `categoryCountsOverlap: true`; label these counts as overlapping and do not add them. `topK` returns at most 20 buckets. Use empty-query project search with `filters.categoryKeys` for exact counts, listing the group keys to cover an area.
+Category buckets count main groups by default. Set `cohort.includeSecondaryCategories: true` to include runner-up guesses; then `categoryCountsOverlap: true` marks overlapping buckets. Label those counts as overlapping, do not add them for a project total, and do not treat shares as exclusive. `topK` returns at most 20 buckets. Use empty-query project search with `filters.categoryKeys` for exact counts, listing the group keys to cover an area.
 
 `totals.winners`, `totalsA.winners` and `totalsB.winners` include honorable mentions. Report them separately from prize winners using the [`filters.prizeTypes` searches](api-projects.md#winners-and-honorable-mentions).
 
@@ -38,7 +38,7 @@ acceleratorBatchKeys: Array<string [pattern /^accelerator\/[a-z0-9-]+$/]> [optio
 prizePlacements: Array<number [int]> [optional]
 ```
 
-`POST /compare` rejects `"categories"`. For category trends, use an empty-query project search per hackathon with the same `filters.categoryKeys`. Analysis cohorts accept `categoryKeys` and `includeSecondaryCategories`; comparison cohorts accept neither. Neither accepts `prizeTypes`.
+`POST /analyze` accepts `cohort.categoryKeys`; `POST /compare` rejects `"categories"` and category keys. For category trends, use an empty-query project search per hackathon with the same `filters.categoryKeys`. Neither analysis nor comparison cohorts accept `prizeTypes`.
 
 ## compareRequest
 

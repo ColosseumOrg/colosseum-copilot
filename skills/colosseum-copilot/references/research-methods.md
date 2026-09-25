@@ -1,6 +1,6 @@
 # Research methods
 
-Match the investigation to the question. Use project records for submission history, archives for preserved claims and concepts, current primary sources for present-day facts, and The Grid for additional ecosystem metadata. No source type or call count is mandatory for every answer.
+Match the investigation to the question. Use project records for submission history, archives for preserved claims and concepts, The Grid alongside web search for competitors and the broader product landscape, and current primary sources for present-day facts. No source type or call count is mandatory for every answer.
 
 ## Reconstruct a history
 
@@ -27,7 +27,7 @@ After that pass, broaden by removing `winnersOnly` when those projects leave gap
 
 Follow explicit constraints on award status, including requests for unawarded projects or an exhaustive search across all submissions. Look up a named project directly; searches needed to resolve its name do not add an award filter. For recorded technology counts or population comparisons, use the requested population rather than carrying the discovery filter into later searches or analytics. If the same request also asks for examples, run their winner-first discovery separately from the population analysis. Identify a winner-only sample as such; it cannot establish what a typical project achieved.
 
-For "who has tried X", run two differently worded searches. Set `diversify: false` for exhaustive lists and paginate while `hasMore` is true. An empty-query filtered search lists every match across pages, newest first; `diversify` only affects searches with a query. Repeat with `filters.acceleratorOnly: true`, without carrying over the winner filter, and name the returned accelerator cohorts. Merge resubmissions only after establishing project identity; preserve each hackathon and date.
+For "who has tried X", run two differently worded searches. When using category keys, set `filters.includeSecondaryCategories: true` to include projects whose related second group matches, and deduplicate the results. Set `diversify: false` for exhaustive lists and paginate while `hasMore` is true. An empty-query filtered search lists every match across pages, newest first; `diversify` only affects searches with a query. Repeat with `filters.acceleratorOnly: true`, without carrying over the winner filter, and name the returned accelerator cohorts. Merge resubmissions only after establishing project identity; preserve each hackathon and date.
 
 Explain differences in opportunity, timing, distribution, and evidence coverage. A successful similar team does not prove the proposed approach will succeed. A stalled team does not prove the market is impossible. Avoid causal conclusions from a handful of correlated histories.
 

@@ -58,4 +58,4 @@ npx @colosseum-org/copilot-connect token | {
 }
 ```
 
-Copilot recommends tools only from this hub and uses `POST /search/projects` with `filters.builtWith` for recorded technology use.
+Copilot recommends tools only from this hub. Use [technology analysis](api-technologies.md) for recorded counts and co-usage, then `POST /search/projects` with `filters.builtWith` for project examples.

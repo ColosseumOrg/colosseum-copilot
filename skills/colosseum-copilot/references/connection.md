@@ -1,8 +1,8 @@
 # Connect and manage access
 
-The `@colosseum-org/copilot-connect` helper and browser/device authorization described here are available with v2. Use the helper only when available in your release. Existing v1 PATs keep working. Colosseum will announce any end date well in advance.
+The `@colosseum-org/copilot-connect` helper and browser/device authorization described here are available with v2. Use the helper only when available in your release. Existing v1 personal tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and sign in with the helper before then.
 
-You need a Colosseum account, an agent that can run commands and make HTTPS requests, and Node.js/npm with `npx`. Browser authorization uses your Colosseum identity. Agent/model usage remains subject to your provider's terms and billing. Frames is optional and has separate account and credit requirements.
+You need a Colosseum account, an agent that can run commands and make HTTPS requests, and Node.js/npm with `npx`. Browser authorization uses your Colosseum identity. Agent/model usage remains subject to your provider's terms and billing.
 
 ## First connection
 
@@ -56,7 +56,7 @@ Read `X-Copilot-Skill-Version` from the first response and compare it to the ins
 
 ## Migrate from v1 PATs
 
-Existing `COLOSSEUM_COPILOT_PAT` integrations keep working. Run the helper login and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old PAT from that integration's environment when it is no longer needed. Do not print either credential during migration.
+Existing v1 personal tokens work only for v1 data until October 28, 2026 at 00:00 UTC. Update the skill with `npx skills add ColosseumOrg/colosseum-copilot`, then run helper `login` and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`, then remove the old token from that integration's environment when it is no longer needed. Do not print either credential during migration.
 
 ## End or revoke access
 
@@ -72,7 +72,7 @@ To clear local credentials only, use this separate alternative:
 npx @colosseum-org/copilot-connect logout
 ```
 
-Do not run `logout` before `revoke`: revocation needs the saved refresh credential. A successful `revoke` also clears local credentials, so no subsequent logout is needed. If you already logged out, the helper no longer has the credential needed to revoke that connection. Reconnect deliberately after revocation.
+Do not run `logout` before `revoke`: revocation needs the saved refresh credential. A successful `revoke` also clears local credentials, so no subsequent logout is needed. If you already logged out, the helper no longer has the credential needed to revoke that connection. You can also see and revoke connections, and turn session sharing on or off per connection, from Arena's connected-agents page. Reconnect deliberately after revocation.
 
 ## Troubleshooting
 
