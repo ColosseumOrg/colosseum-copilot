@@ -93,7 +93,7 @@ Use `/filters` to discover valid slugs and keys, including canonical hackathon `
 
 New sign-in project search defaults to vector similarity against public project evidence, with `diversify: false`. Set `diversify: true` for variety across hackathons, tracks, and clusters. If a missing vector triggers hybrid fallback, that request keeps the previous `diversify: true` default unless you set it explicitly. Old personal tokens keep hybrid ranking and `diversify: true`. With `includeDiagnostics: true`, `modeUsed: "vector"` reports cosine similarity (higher is closer); `"hybrid"` reports combined vector, text, and tag ranking; `"text"` uses a static 0.8 score when vectors are unavailable. Compare scores only within the same mode.
 
-Archive reads default to `offset: 0` and `maxChars: 8000`; the allowed character window is 200 to 20,000. Continue with `nextOffset` while `hasMore` is true. Respect `restricted` and cite the source URL; pagination does not grant permission to redistribute restricted text.
+Archive search snippets are at most 240 characters. Archive reads default to `offset: 0` and `maxChars: 8000`; the allowed character window is 200 to 20,000. Open sources support full-text paging. For snippets-only sources, `isExcerpt` is true and the API exposes at most 1,000 characters across all pages. `totalChars`, `nextOffset`, and `hasMore` describe only that available excerpt; paging cannot reveal the rest of the document. An excerpt can include `excerptNote`; follow `url` to the publisher for full text when provided. Respect `restricted` and cite the source URL; pagination does not grant permission to redistribute restricted text.
 
 ## Limits
 

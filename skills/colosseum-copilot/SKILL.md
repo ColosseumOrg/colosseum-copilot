@@ -44,7 +44,7 @@ Lead with the requested answer or recommendation, including the qualifications n
 
 Answer every part of the question before trimming. Let the requested depth set the length. Stay within any length the user sets. Include Colosseum precedents only when they change the advice. Keep tool limits, unavailable tools, and internal notes out of the answer.
 
-Link named projects, repositories, products, and cited documents where they first matter, using descriptive labels and the most specific supported page or revision. Give readers a route to the full source when available. If the original is unavailable, use a verified readable preserved copy when one exists; otherwise state the access limit rather than presenting an excerpt or protected API URL as a full public document.
+Link named projects, repositories, products, and cited documents where they first matter, using descriptive labels and the most specific supported page or revision. Give readers a route to the full source when available. If an archive response has `isExcerpt: true`, use its excerpt as evidence and follow `url` to the publisher when you need the full text. If the original is unavailable, use a verified readable preserved copy when one exists; otherwise state the access limit rather than presenting an excerpt or protected API URL as a full public document.
 
 Link each cited Colosseum project to its public project page and each cited source to its public page, not an API or data-feed URL. Check that the links resolve.
 

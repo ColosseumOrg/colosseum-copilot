@@ -27,7 +27,7 @@ source: string
 url: string | null
 publishedAt: string | null
 similarity: number
-snippet: string
+snippet: string [max 240 characters]
 chunkIndex: number
 ```
 
@@ -66,6 +66,8 @@ url: string | null
 publishedAt: string | null
 content: string
 restricted: boolean
+isExcerpt: boolean
+excerptNote: string [optional, for excerpts]
 ```
 
 ## archiveDocumentPage
@@ -79,6 +81,8 @@ url: string | null
 publishedAt: string | null
 content: string
 restricted: boolean
+isExcerpt: boolean
+excerptNote: string [optional, for excerpts]
 offset: number [int]
 maxChars: number [int]
 totalChars: number [int]

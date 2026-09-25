@@ -37,7 +37,7 @@ Use canonical hackathon dates from the API rather than guessing chronology from 
 
 Keep conflicting claims visible with their dates and sources. Prefer a direct source for what it actually establishes; do not automatically prefer the newer page for a historical fact. Look for renamed products, changed definitions, differing periods, attribution mistakes, and copied reporting. Several pages repeating one announcement are not independent corroboration.
 
-Fetch current primary sources afresh for current pricing, availability, dependencies, ownership, product activity, and other volatile facts. A search snippet or model answer is a lead. Inspect the underlying page before using it to support a consequential claim.
+Fetch current primary sources afresh for current pricing, availability, dependencies, ownership, product activity, and other volatile facts. A search snippet or model answer is a lead. Inspect the underlying page before using it to support a consequential claim. For an archive marked `isExcerpt`, use the available text as an excerpt and follow its publisher `url` when the claim needs fuller context.
 
 When retrieval fails, distinguish an evidence gap from a query/filter problem. Try exact identifiers, synonyms, a narrower concept, or fewer filters as appropriate. Report material coverage gaps, especially outside Solana. Never turn an empty search into a claim that nobody has tried something.
 
