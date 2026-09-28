@@ -1,41 +1,42 @@
 # Colosseum Copilot
 
-AI agent skill for Solana/crypto startup research. Gives coding assistants access to 5,400+ hackathon project submissions, 84,000+ archive documents from 65+ curated sources, hackathon analytics, and ecosystem data from The Grid.
+Copilot is your agent's connection to Colosseum. Use project histories, crypto archives, The Grid, and current primary sources to answer a question, make a founder decision, or choose tools.
 
-## Install
+Research and tool guidance work inside your agent. Solana is our deepest evidence base; other ecosystems have uneven coverage. Copilot recommends tools for your product and existing stack, including offchain or existing-provider approaches when appropriate.
+
+## Start
+
+You need a compatible AI agent, a Colosseum account for protected evidence, and Node.js 20 or later with npm and `npx` for installation and the connection helper. The agent must be able to read skills and make authorized HTTPS requests. Claude Code, Codex, and OpenClaw are examples, not an allowlist or a guarantee of identical capabilities. Your agent/model provider bills its own usage under its terms.
 
 ```bash
 npx skills add ColosseumOrg/colosseum-copilot
+npx @colosseum-org/copilot-connect login
+npx @colosseum-org/copilot-connect status
 ```
 
-> **Prerequisites:** You need a Personal Access Token (PAT) from [colosseum.com/arena/copilot](https://colosseum.com/arena/copilot) before first use.
+For OpenClaw, install globally with `npx skills add ColosseumOrg/colosseum-copilot -g -a openclaw`. On Windows PowerShell, run the helper through `npx.cmd`.
 
-## What it does
+For tool picks from the same hub without signing in, use the lighter [`colosseum-resources` skill](https://github.com/ColosseumOrg/colosseum-resources) (`npx skills add ColosseumOrg/colosseum-resources`).
 
-- **Search builder projects** — find hackathon submissions by concept, tech stack, or problem domain
-- **Search crypto archives** — query curated corpus of cypherpunk literature, protocol docs, and investor research
-- **Analyze hackathons** — distribution and trend analysis across hackathon editions
-- **Deep research** — full 8-step workflow for vetting startup ideas with evidence from all sources
+The helper flow is available with v2. Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. Existing v1 personal tokens return v1 data only. Old tokens stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill and sign in with the helper before then.
 
-## Compatible runtimes
+Then ask your agent for a task, for example:
 
-- Claude Code
-- Codex
-- OpenClaw
+- Research: "Compare two relevant stablecoin payment project histories. Separate submission-time claims from later outcomes, cite dates, and tell me what remains unknown."
+- Tools: "Given my existing stack and customers, which payment tools should I evaluate? Check current support and explain the tradeoffs."
 
-## Auth
+These are example requests, not claimed results. The agent selects the evidence and checks needed for your task; there is no required research funnel.
 
-Requires a Personal Access Token (PAT) from [Colosseum Arena](https://colosseum.com/arena/copilot).
+## What is coming
 
-```bash
-export COLOSSEUM_COPILOT_API_BASE="https://copilot.colosseum.com/api/v1"
-export COLOSSEUM_COPILOT_PAT="your-token-here"
-```
+Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. Current research and tool guidance do not authorize platform writes, deployments, signing, or publication.
 
-## Docs
+## Help and privacy
 
-Full documentation at [docs.colosseum.com/copilot](https://docs.colosseum.com/copilot).
+Read the [documentation](https://docs.colosseum.com/copilot), [connection guide](skills/colosseum-copilot/references/connection.md), or [API reference](skills/colosseum-copilot/references/api-reference.md). Use the helper's `revoke` command or Arena's connected-agents page to revoke a connection. The sign-in choice is "Help improve Copilot (optional)": "Share your questions and your agent's answers with Colosseum, not files or tool output. We keep them for 12 months to make Copilot better." It's unchecked by default. If you opt in, that connection's sessions are shared until you turn sharing off. The Arena page lets you turn sharing on or off for each connection. For skill issues, [open an issue](https://github.com/ColosseumOrg/colosseum-copilot/issues) with redacted errors and versions; never include credentials or private repository content.
 
-## License
+The agent sends necessary API queries to Colosseum and any separately authorized services. Do not automatically upload repositories or conversations. Feedback and source suggestions require explicit authorization. Agent/provider handling is governed by their own terms.
 
-Proprietary. Copyright Colosseum.
+## License and terms
+
+The skill declares **Proprietary**, copyright Colosseum. This repository has no separate LICENSE file granting an open-source license. Public visibility does not grant additional reuse rights. Follow the Colosseum terms presented during account authorization and the terms of your agent and optional data providers.
