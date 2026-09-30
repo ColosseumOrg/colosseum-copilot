@@ -1,6 +1,6 @@
 # Resources API fields
 
-Contract reviewed 2026-09-29 for skill 2.0.0. `GET /resources` requires a bearer token and returns the canonical hackathon resources hub. `[optional]` permits omission; `[default x]` supplies x when omitted. This is schema notation, not a sample response.
+`GET /resources` requires a bearer token and returns the canonical hackathon resources hub. `[optional]` permits omission; `[default x]` supplies x when omitted. This is schema notation, not a sample response.
 
 [Endpoint reference](api-reference.md).
 

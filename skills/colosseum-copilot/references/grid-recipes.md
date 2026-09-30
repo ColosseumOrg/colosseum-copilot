@@ -2,7 +2,7 @@
 
 ## The Grid (Direct GraphQL)
 
-These four recipes were checked against the public GraphQL schema with two small read-only requests on September 25, 2026. Validate source dates before relying on results. Queries go directly to The Grid; send only public task context authorized by the user.
+Validate source dates before relying on results. Queries go directly to The Grid; send only public task context authorized by the user.
 
 ### Schema overview
 

@@ -1,6 +1,6 @@
 # API reference
 
-Contract reviewed 2026-09-29 for skill 2.0.0. The default API base is `https://copilot.colosseum.com/api/v2`; endpoint paths below are relative to the configured base. If `COLOSSEUM_COPILOT_API_BASE` is set to a trusted URL ending in `/api/v2`, use it unchanged. A base ending in `/api/v1` is stale; never call it for V2 readiness or use an old PAT. The evidence-service endpoints below require a helper bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
+The default API base is `https://copilot.colosseum.com/api/v2`; endpoint paths below are relative to the configured base. If `COLOSSEUM_COPILOT_API_BASE` is set to a trusted URL ending in `/api/v2`, use it unchanged. A base ending in `/api/v1` is stale; never call it for V2 readiness or use an old PAT. The evidence-service endpoints below require a helper bearer token. Send JSON bodies with `Content-Type: application/json`. The body limit is 1 MB.
 
 ## Connect and call
 

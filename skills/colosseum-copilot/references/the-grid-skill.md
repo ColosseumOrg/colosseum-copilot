@@ -8,4 +8,4 @@ Check the response's `errors` field even after HTTP 200. Inspect pagination and 
 
 Counts describe covered metadata records, not customers, market size, or commercial success. Chain tags, deployments, and product-support relations have different meanings. Product status is an attributed record, not proof of an outcome. Retain discontinued and unknown cases for historical comparisons when relevant.
 
-The [query recipes](grid-recipes.md) were checked against the public schema on September 25, 2026. If a query breaks, consult the upstream schema instead of inventing fields. Do not bypass a TLS certificate error. For startup-history interpretation, see [research methods](research-methods.md).
+If a [query recipe](grid-recipes.md) breaks, consult the upstream schema instead of inventing fields. Do not bypass a TLS certificate error. For startup-history interpretation, see [research methods](research-methods.md).
