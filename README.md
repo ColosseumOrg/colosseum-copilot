@@ -9,12 +9,12 @@ Research and tool guidance work inside your agent. Solana is our deepest evidenc
 You need a compatible AI agent, a Colosseum account for protected evidence, and Node.js 20 or later with npm and `npx` for installation and the connection helper. The agent must be able to read skills and make authorized HTTPS requests. Claude Code, Codex, and OpenClaw are examples, not an allowlist or a guarantee of identical capabilities. Your agent/model provider bills its own usage under its terms.
 
 ```bash
-npx skills add ColosseumOrg/colosseum-copilot
+npx skills add ColosseumOrg/colosseum-copilot -g
 npx @colosseum-org/copilot-connect login
 npx @colosseum-org/copilot-connect status
 ```
 
-For OpenClaw, install globally with `npx skills add ColosseumOrg/colosseum-copilot -g -a openclaw`. On Windows PowerShell, run the helper through `npx.cmd`.
+Installing globally replaces an older Copilot skill in place. If you once installed Copilot inside a project, run `npx skills remove colosseum-copilot` there so the old copy can't load instead. For OpenClaw, add `-a openclaw`. On Windows PowerShell, run the helper through `npx.cmd`.
 
 For tool picks from the same hub without signing in, use the lighter [`colosseum-resources` skill](https://github.com/ColosseumOrg/colosseum-resources) (`npx skills add ColosseumOrg/colosseum-resources`).
 

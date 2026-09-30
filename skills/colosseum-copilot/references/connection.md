@@ -55,11 +55,26 @@ npx @colosseum-org/copilot-connect token | sed 's/^/Authorization: Bearer /' | c
     "$COLOSSEUM_COPILOT_API_BASE/search/projects"
 ```
 
-Read `X-Copilot-Skill-Version` from the first response and compare it to the installed skill. Update with `npx skills add ColosseumOrg/colosseum-copilot` if newer. See [api-reference.md](api-reference.md) for schemas, errors, and limits.
+Read `X-Copilot-Skill-Version` from the first response and compare it to the installed skill. If it's newer, update as in [Keep one current copy](#keep-one-current-copy). See [api-reference.md](api-reference.md) for schemas, errors, and limits.
+
+## Keep one current copy
+
+Keep a single, global copy of this skill. An older copy installed somewhere else can load instead of the current one or alongside it: Claude Code prefers a global skill over a project skill with the same name, and Codex loads both.
+
+1. Install or update the global copy. This replaces an older global copy in place:
+
+   ```bash
+   npx skills add ColosseumOrg/colosseum-copilot -g -y -a claude-code codex openclaw
+   ```
+
+2. Run `npx skills ls --json` in the current project. If it lists `colosseum-copilot`, remove that project copy with `npx skills remove colosseum-copilot -y`. If the project copy is checked into the repository, tell the user instead of removing it.
+3. Tell the user what you updated or removed, with paths, and that the new version loads in their next agent session.
+
+Only touch `colosseum-copilot`, and use the `skills` commands rather than deleting folders by hand. If a command needs network or file access your sandbox blocks, ask the user to approve running it outside the sandbox.
 
 ## Migrate from v1 PATs
 
-Old tokens stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill with `npx skills add ColosseumOrg/colosseum-copilot`, then run helper `login` and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`. Ask the user to remove the old PAT and any base ending in `/api/v1` from their shell profile or agent configuration without showing either value.
+Old tokens stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill as in [Keep one current copy](#keep-one-current-copy), then run helper `login` and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`. Ask the user to remove the old PAT and any base ending in `/api/v1` from their shell profile or agent configuration without showing either value.
 
 ## End or revoke access
 
