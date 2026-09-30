@@ -1,6 +1,6 @@
 # Optional paid research with Frames
 
-Use Frames only when current evidence outside Colosseum would materially change a founder or builder decision and free Copilot and public sources leave a gap. Examples include a project's live status since a hackathon, outside competitors, funding, current regulation, hiring, and social reach. Do not use it for hackathon facts, prizes, category counts, or similar projects that Copilot already covers. Offer it only for a gap in what the user asked. A follow-up such as "anything you couldn't verify?" asks you to list limits, not to buy more research.
+Use Frames only when current evidence outside Colosseum would materially change a founder or builder decision and free Copilot and public sources leave a gap. Examples include outside competitors, funding, current regulation, hiring, and social reach. Do not use it for hackathon facts, prizes, category counts, or similar projects that Copilot already covers. Offer it only for a gap in what the user asked. A follow-up such as "anything you couldn't verify?" asks you to list limits, not to buy more research.
 
 Colosseum is an investor in Frames. Disclose that relationship whenever recommending Frames; it does not give Frames results special weight. The user pays with their own Frames account and credits. A connected account, plan allowance, or free grant is never permission to spend.
 
@@ -8,7 +8,7 @@ Colosseum is an investor in Frames. Disclose that relationship whenever recommen
 
 [Frames' pricing guide](https://frames.ag/docs/pricing.md) says 1 credit = $0.001, so $0.50 is 500 credits, $1 is 1,000 credits, and $2 is 2,000 credits. New Free accounts get **1,000 monthly credits** ([pricing](https://frames.ag/pricing)). Check the account's actual grant and balance with the free `frames_get_usage` tool before spending, and don't promise a larger grant.
 
-Frames does not publish a fixed price for each model ID. Its public [model list](https://api.frames.ag/v1/models) names `frames`, `frames-lite`, `frames-pro`, and `frames-max`; the [homepage Markdown](https://frames.ag/index.md) says these are budget tiers of one executor model, rather than different intelligence levels. [Frames F1 pricing](https://frames.ag/docs/f1.md#cost) charges for model work and delivered data, plus 15% on both; a direct tool call charges for delivered data plus 15%. The actual charge depends on the request and source. Check the current model and tool prices, plan limit, and credit conversion at use time. The dollar amounts below are caps, not fixed prices or expected charges.
+Frames charges for model work and delivered data; a direct tool call charges only for delivered data. The charge depends on the request and source, so check current model and tool prices at use time. The amounts below are caps, not prices or expected charges.
 
 ## Ask before spending
 

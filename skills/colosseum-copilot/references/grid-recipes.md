@@ -8,7 +8,7 @@ Validate source dates before relying on results. Queries go directly to The Grid
 
 - **Endpoint**: `https://beta.node.thegrid.id/graphql`
 - **GraphiQL**: `https://cloud.hasura.io/public/graphiql?endpoint=https%3A%2F%2Fbeta.node.thegrid.id%2Fgraphql`
-- **Auth**: No API key required for public queries. If you have an enterprise key, add `-H "x-api-key: <key>"`.
+- **Auth**: No API key is needed for public queries. Don't put a key on the command line.
 - **Schema hierarchy**: `roots` → `products`/`entities`/`assets`/`profileInfos` → `deployments`/`contracts`
 - **Operators**: `_eq`, `_in`, `_contains`, `_like`, `_gt`/`_gte`/`_lt`/`_lte`, `_and`/`_or`/`_not`, `_is_null`
 - No full-text search — `_contains` and `_like` are case-insensitive substring matches

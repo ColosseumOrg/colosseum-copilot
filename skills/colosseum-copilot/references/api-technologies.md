@@ -1,6 +1,6 @@
 # Technology analysis
 
-V2 sign-in provides four `POST` routes under `/technologies`: `/counts`, `/co-usage`, `/trends`, and `/top`. They use recorded technology tags from public project repositories. They require `evidence:read` (or `copilot:retrieval`). They exist only under `/api/v2`: an old personal token receives `401 V2_SIGN_IN_REQUIRED` there, and the routes return `404` under `/api/v1`. The four routes share the analysis limit of 10 requests per minute and the per-user limit of two concurrent requests.
+V2 sign-in provides four `POST` routes under `/technologies`: `/counts`, `/co-usage`, `/trends`, and `/top`. They use recorded technology tags from public project repositories. They require `evidence:read` (or `copilot:retrieval`). The four routes share the analysis limit of 10 requests per minute and the per-user limit of two concurrent requests.
 
 ## Requests
 
@@ -17,7 +17,7 @@ Each route accepts an optional `cohort`:
 }
 ```
 
-Omitting `cohort` selects all permitted projects in launched V2 hackathons. `hackathonSlugs` accepts one to 20 slugs; `categoryKeys` accepts one to ten keys. Read `GET /categories` for the current keys. Set `includeSecondaryCategories: true` to include matches in a project's related second group. A `categoryKeys` filter returns `503 CATEGORIES_UNAVAILABLE` while category data is unavailable. `winnersOnly` defaults to `false`. When it is `true`, honorable mentions are excluded unless `includeHonorableMentions: true`. Using `includeHonorableMentions: true` without `winnersOnly: true` is invalid. Without a winner filter, honorable mentions remain ordinary projects. The category filter selects any listed key.
+Omitting `cohort` selects every project Copilot covers. `hackathonSlugs` accepts one to 20 slugs; `categoryKeys` accepts one to ten keys. Read `GET /categories` for the current keys. Set `includeSecondaryCategories: true` to include matches in a project's related second group. A `categoryKeys` filter returns `503 CATEGORIES_UNAVAILABLE` while category data is unavailable. `winnersOnly` defaults to `false`. When it is `true`, honorable mentions are excluded unless `includeHonorableMentions: true`. Using `includeHonorableMentions: true` without `winnersOnly: true` is invalid. Without a winner filter, honorable mentions remain ordinary projects. The category filter selects any listed key.
 
 Requests reject unknown fields. Unknown technologies or hackathons return empty or zero results. For `/co-usage` and `/top`, `topK` defaults to 10 and accepts integers from 1 to 50. All shares use the full selected cohort as their denominator, including projects without usable repository tags.
 
@@ -58,4 +58,4 @@ Omit `technologyCategory` to rank across all seven technology categories. The re
 
 ## Reading the results
 
-These are counts of recorded repository tags among permitted projects, not proof of current deployment or use. Missing tags do not establish that a project uses none. Compare tag coverage across cohorts before interpreting shares or trends. For project names and source evidence, use `POST /search/projects` with an empty query and `filters.builtWith`, then open project details. A temporary `503 EVIDENCE_UNAVAILABLE` means the repository checks are not current; retry later and report those counts as unavailable. Tech-stack tags from project search are a looser measure that can differ materially; label them if you use them. Project permission changes can return retryable `503 PROJECT_PERMISSIONS_UNAVAILABLE`.
+These are counts of recorded repository tags among permitted projects, not proof of current deployment or use. Missing tags do not establish that a project uses none. Compare tag coverage across cohorts before interpreting shares or trends. For project names and source evidence, use `POST /search/projects` with an empty query and `filters.builtWith`, then open project details. A temporary `503 EVIDENCE_UNAVAILABLE` means repository technology data is temporarily unavailable; retry later and report those counts as unavailable. Tech-stack tags from project search are a looser measure that can differ materially; label them if you use them. `503 PROJECT_PERMISSIONS_UNAVAILABLE` is temporary; retry later.

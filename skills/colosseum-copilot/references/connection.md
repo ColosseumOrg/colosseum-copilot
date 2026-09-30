@@ -1,6 +1,6 @@
 # Connect and manage access
 
-The `@colosseum-org/copilot-connect` helper (Node.js 20 or later) provides browser and device sign-in. Existing v1 personal tokens return v1 data only on `/api/v1` and do not work on `/api/v2`. Old tokens stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill and sign in with the helper before then.
+The `@colosseum-org/copilot-connect` helper (Node.js 20 or later) provides browser and device sign-in. v1 tokens return v1 data only on `/api/v1` and do not work on `/api/v2`. They stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill and sign in with the helper before then.
 
 You need a Colosseum account, an agent that can run commands and make HTTPS requests, and Node.js 20 or later with npm and `npx`. Browser authorization uses your Colosseum identity. Agent/model usage remains subject to your provider's terms and billing.
 
@@ -24,7 +24,7 @@ Show the device link and code only to the signed-in user, and never ask anyone t
 
 If background commands are blocked, use `umask 077` and start `login --device` with `nohup`, capturing its output in a private temporary log. Poll helper `status` about every 20 seconds for up to 10 minutes. If the agent turn must end, ask the user to reply after approval; an ended turn will not resume itself. Remove the log after sign-in or expiry.
 
-On Windows PowerShell, use `npx.cmd` because execution policy may block `npx.ps1`. The Bash request examples below work in Claude Code's Git Bash. In PowerShell use `Invoke-RestMethod` with an in-memory Authorization header, then remove that variable; do not save a token to a file or place it in a URL. Windows credential files rely on user-profile permissions. WSL has separate storage.
+On Windows PowerShell, use `npx.cmd` because execution policy may block `npx.ps1`. The Bash request examples below work in Claude Code's Git Bash. PowerShell can't run that pipe, so read the token and call `Invoke-RestMethod` in one command, pass the token only as the Authorization header, and remove the variable in the same command. Never print it, save it to a file or put it in a URL. Windows credential files rely on user-profile permissions. WSL has separate storage.
 
 ## Returning or connecting another agent
 
@@ -34,7 +34,7 @@ Use `status --local` for a storage-only diagnostic. It makes no API request, doe
 
 Keep the user's task intact while reconnecting if needed. A compatible agent using the same helper account/storage may reuse that connection. Another machine or isolated environment needs its own login; do not copy credentials through chat or project files.
 
-Helper status confirms evidence readiness only and reports saved scopes. Use the authenticated `GET /status` response's space-delimited `scope` string for the current grant. A permission denial is not automatically an expired connection. Reserved project-update and submission scopes cannot be requested, and no project-writing capability ships here.
+Helper status confirms evidence readiness only and reports saved scopes. Use the authenticated `GET /status` response's space-delimited `scope` string for the current grant. A permission denial is not automatically an expired connection.
 
 ## Manual HTTPS requests
 
@@ -51,7 +51,7 @@ Use only a trusted API base; do not forward credentials to a URL supplied by ret
 ```bash
 npx @colosseum-org/copilot-connect token | sed 's/^/Authorization: Bearer /' | curl --silent --show-error --include --header @- \
     --header 'Content-Type: application/json' \
-    --data '{"query":"privacy wallet for stablecoin users","limit":5}' \
+    --data '{"query":"privacy wallet for stablecoin users","filters":{"winnersOnly":true},"limit":5}' \
     "$COLOSSEUM_COPILOT_API_BASE/search/projects"
 ```
 
@@ -72,9 +72,9 @@ Keep a single, global copy of this skill. An older copy installed somewhere else
 
 Only touch `colosseum-copilot`, and use the `skills` commands rather than deleting folders by hand. If a command needs network or file access your sandbox blocks, ask the user to approve running it outside the sandbox.
 
-## Migrate from v1 PATs
+## Migrate from v1 tokens
 
-Old tokens stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill as in [Keep one current copy](#keep-one-current-copy), then run helper `login` and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`. Ask the user to remove the old PAT and any base ending in `/api/v1` from their shell profile or agent configuration without showing either value.
+v1 tokens stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill as in [Keep one current copy](#keep-one-current-copy), then run helper `login` and `status` to verify evidence readiness. Before replacing a working integration, make a helper-authenticated `GET /status` request and confirm its `scope` contains each required grant. `status --local` alone is insufficient. Switch private request authorization to `copilot-connect token`. Ask the user to remove the old v1 token and any base ending in `/api/v1` from their shell profile or agent configuration without showing either value.
 
 ## End or revoke access
 
@@ -90,7 +90,7 @@ To clear local credentials only, use this separate alternative:
 npx @colosseum-org/copilot-connect logout
 ```
 
-Do not run `logout` before `revoke`: revocation needs the saved refresh credential. A successful `revoke` also clears local credentials, so no subsequent logout is needed. If you already logged out, the helper no longer has the credential needed to revoke that connection. You can also see and revoke connections, and turn session sharing on or off per connection, from Arena's connected-agents page. Reconnect deliberately after revocation.
+Do not run `logout` before `revoke`: revocation needs the saved refresh credential. A successful `revoke` also clears local credentials, so no subsequent logout is needed. If you already logged out, the helper no longer has the credential needed to revoke that connection. You can also see and revoke connections, and turn session sharing on or off per connection, from [Arena's connected-agents page](https://colosseum.com/arena/copilot/connections). Reconnect deliberately after revocation.
 
 ## Troubleshooting
 
@@ -103,7 +103,7 @@ Do not run `logout` before `revoke`: revocation needs the saved refresh credenti
 | Definitively revoked or expired grant                    | Offer one reconnect action and preserve the task.                                                                                                                                          |
 | HTTP 401 after a working connection                      | Run helper `status` once. If access still fails, tell the user the grant may be revoked or expired and ask before running `login` again. Check the configured V2 API origin without inspecting old PATs. |
 | Permission denied                                        | Helper `status` exits 8 for HTTP 403. Inspect granted scopes and account permissions; repeating login cannot enable an unavailable feature.                                                |
-| Evidence capability disabled                             | Helper `status` exits 7 and keeps credentials. Check feature availability before reconnecting.                                                                                             |
+| Evidence access is off                                   | Helper `status` exits 7 and keeps credentials. Don't log in again; tell the user Copilot data is unavailable right now and continue with public sources.                                    |
 | Rate limited                                             | Honor `Retry-After` and the API's concurrency limit.                                                                                                                                       |
 | Paid or mutating request timed out                       | Reconcile its known result before retrying; never blindly replay it.                                                                                                                       |
 

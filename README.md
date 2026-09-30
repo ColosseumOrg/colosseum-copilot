@@ -18,14 +18,14 @@ Installing globally replaces an older Copilot skill in place. If you once instal
 
 For tool picks from the same hub without signing in, use the lighter [`colosseum-resources` skill](https://github.com/ColosseumOrg/colosseum-resources) (`npx skills add ColosseumOrg/colosseum-resources`).
 
-The helper flow is available with v2. Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. Existing v1 personal tokens return v1 data only. Old tokens stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill and sign in with the helper before then.
+Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. v1 tokens return v1 data only and stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill and sign in with the helper before then.
 
 Then ask your agent for a task, for example:
 
 - Research: "Compare two relevant stablecoin payment project histories. Separate submission-time claims from later outcomes, cite dates, and tell me what remains unknown."
 - Tools: "Given my existing stack and customers, which payment tools should I evaluate? Check current support and explain the tradeoffs."
 
-These are example requests, not claimed results. The agent selects the evidence and checks needed for your task; there is no required research funnel.
+These are example requests, not claimed results. The agent picks the evidence and checks your task needs.
 
 ## What is coming
 
@@ -33,9 +33,9 @@ Posting project updates and completing submissions from your agent are coming; n
 
 ## Help and privacy
 
-Read the [documentation](https://docs.colosseum.com/copilot), [connection guide](skills/colosseum-copilot/references/connection.md), or [API reference](skills/colosseum-copilot/references/api-reference.md). Use the helper's `revoke` command or Arena's connected-agents page to revoke a connection. The sign-in choice is "Help improve Copilot (optional)": "Share your questions and your agent's answers with Colosseum, not files or tool output. We keep them for 12 months to make Copilot better." It's unchecked by default. If you opt in, that connection's sessions are shared until you turn sharing off. The Arena page lets you turn sharing on or off for each connection. For skill issues, [open an issue](https://github.com/ColosseumOrg/colosseum-copilot/issues) with redacted errors and versions; never include credentials or private repository content.
+Read the [documentation](https://docs.colosseum.com/copilot), [connection guide](skills/colosseum-copilot/references/connection.md), or [API reference](skills/colosseum-copilot/references/api-reference.md). Use the helper's `revoke` command or [Arena's connected-agents page](https://colosseum.com/arena/copilot/connections) to revoke a connection. The sign-in choice is "Help improve Copilot (optional)": "Share your questions and your agent's answers with Colosseum, not files or tool output. We keep them for 12 months to make Copilot better." It's unchecked by default. If you opt in, that connection's sessions are shared until you turn sharing off. The Arena page lets you turn sharing on or off for each connection. For skill issues, [open an issue](https://github.com/ColosseumOrg/colosseum-copilot/issues) with redacted errors and versions; never include credentials or private repository content.
 
-The agent sends necessary API queries to Colosseum and any separately authorized services. Do not automatically upload repositories or conversations. Feedback and source suggestions require explicit authorization. Agent/provider handling is governed by their own terms.
+Your agent sends Colosseum only the API queries it needs, plus other services you've authorized. It doesn't upload repositories. It shares conversations only if you opt in. Feedback and source suggestions need your approval each time. Your agent and model provider handle data under their own terms.
 
 ## License and terms
 

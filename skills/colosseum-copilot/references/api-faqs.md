@@ -1,12 +1,12 @@
 # Colosseum FAQs
 
-Use the canonical FAQ registry for questions about Colosseum programs. These authenticated read endpoints are available in V2. If an older service returns an endpoint 404, read the current official program page and disclose that fallback.
+Use the canonical FAQ registry for questions about Colosseum programs. If `/faqs` fails, read the official program page instead and say so.
 
 ## List and search
 
 `GET /faqs?program=accelerator&q=funding`
 
-`program` optionally selects `hackathon`, `eternal`, `accelerator`, or `stamp`. `q` is optional, trimmed, and 2–200 characters. Omit it to browse every FAQ, or use a short phrase to narrow results. Search ranks matching question terms ahead of answer terms; it is keyword retrieval, not semantic search. A search with no matches returns an empty `faqs` array, not a negative policy answer.
+`program` optionally selects `hackathon`, `eternal`, `accelerator`, or `stamp` (the Colosseum STAMP, its agreement for private investment before a MetaDAO token launch). `q` is optional, trimmed, and 2–200 characters. Omit it to browse every FAQ, or use a short phrase to narrow results. Search ranks matching question terms ahead of answer terms; it is keyword retrieval, not semantic search. A search with no matches returns an empty `faqs` array, not a negative policy answer.
 
 ```text
 eventDates: { hackathonSlug: string; startDate: string [datetime]; submissionDeadline: string [datetime]; winnerAnnouncementDate: string [datetime] | null } | null
@@ -21,4 +21,4 @@ faq: { program: string; id: string; question: string; answer: string; answerForm
 
 ## Answer with the current source
 
-Cite `sourceUrl` beside the answer and preserve useful links in the Markdown. Carry every condition in the FAQ answers you cite, plus the deadline, how to register or apply, and key terms needed to act now. The registry is shared with the marketing site and platform, bundled when the API is built. Revisions identify content; they do not assert a live check or publication date. Different deployment times can temporarily put the API behind the site. For consequential deadlines, eligibility, funding terms, or a suspected conflict, verify the linked live program page. Prefer its current policy over historical archive statements and name any unresolved conflict. Do not invent eligibility guarantees or expose private application information.
+Cite `sourceUrl` beside the answer and preserve useful links in the Markdown. The FAQ text can briefly lag the live program page. Revisions identify content, not a publication date. For consequential deadlines, eligibility, funding terms, or a suspected conflict, verify the linked live program page. Prefer its current policy over historical archive statements and name any unresolved conflict. Do not invent eligibility guarantees or expose private application information.
