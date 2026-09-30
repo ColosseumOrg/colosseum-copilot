@@ -38,7 +38,7 @@ Helper status confirms evidence readiness only and reports saved scopes. Use the
 
 ## Manual HTTPS requests
 
-Treat `COLOSSEUM_COPILOT_PAT` and a configured base ending in `/api/v1` as leftover settings. Never read, print, or use the PAT; never list the environment to diagnose Copilot; never call `/api/v1` for readiness. Check helper `status` instead. If `COLOSSEUM_COPILOT_API_BASE` is set and ends in `/api/v2`, use it unchanged. Otherwise choose the documented default `https://copilot.colosseum.com/api/v2` as the fallback. Use only a trusted base, and set the chosen base before running the request pipeline.
+Treat `COLOSSEUM_COPILOT_PAT` and a configured base ending in `/api/v1` as leftover settings. Never read, print, or use the PAT; never list the environment to diagnose Copilot; never call `/api/v1` for readiness. Check helper `status` instead. If `COLOSSEUM_COPILOT_API_BASE` is set to `https://copilot.colosseum.com/api/v2`, or to another `/api/v2` URL the user has explicitly told you to use, use it unchanged and never overwrite it. Otherwise (unset, ending in `/api/v1`, or any other origin), use the default `https://copilot.colosseum.com/api/v2` in the request instead of `$COLOSSEUM_COPILOT_API_BASE`, and never send a helper token anywhere else. Set the chosen base before running the request pipeline.
 
 Keep tokens out of model context, logs, agent-created files, URLs, and process arguments. The `token` command outputs a bearer token for private command-to-command use. Never run it naked in a captured terminal, use shell tracing, capture it with `TOKEN=$(...)`, or pass it through `curl -H`. Make each request one pipeline beginning with the helper; do not repeat helper `status` or `token` inside a single shell command.
 
@@ -113,8 +113,8 @@ For help, consult [Copilot documentation](https://docs.colosseum.com/copilot) or
 
 Only when the user opted in at sign-in. Check `sessionSharingEnabled` in the first authenticated `/status` response; if it's false, skip every step below and don't mention sharing. The helper checks again when you run `share`.
 
-1. Start each conversation with a new random UUID as `sessionId` (run `uuidgen` once) and reuse the literal value for the whole conversation; don't keep it in a shell variable.
-2. After each Copilot answer, write the conversation so far to `<home>/.colosseum-copilot/shares/<sessionId>.json` with your file-writing tool, where `<home>` is the real home directory from `echo $HOME`: `{"sessionId":"<uuid>","messages":[{"role":"user","content":"<question>"},{"role":"assistant","content":"<answer>"}]}`. Include only the user's questions and your final answers, in order. Never include files, tool output, command output, tokens, or other conversation history. Keep earlier messages exactly as sent and append the new ones.
+1. Before the first share, run `mkdir -p -m 700 ~/.colosseum-copilot/shares` on its own so the folder is private. Start each conversation with a new random UUID as `sessionId` (run `uuidgen` once) and reuse the literal value; don't keep it in a shell variable.
+2. After each Copilot answer, write the conversation since this `sessionId` started to `<home>/.colosseum-copilot/shares/<sessionId>.json` with your file-writing tool, where `<home>` is the real home directory from `echo $HOME`: `{"sessionId":"<uuid>","messages":[{"role":"user","content":"<question>"},{"role":"assistant","content":"<answer>"}]}`. Include only the user's questions and your final answers, in order. Never include files, tool output, command output, tokens, or other conversation history. Keep earlier messages exactly as sent and append the new ones.
 3. Run exactly:
 
 ```bash
@@ -124,9 +124,9 @@ npx @colosseum-org/copilot-connect share --file ~/.colosseum-copilot/shares/<ses
 Write the file with your file-writing tool, not a shell command, and run the share command on its own with the literal path. Keep the file outside the project so it can't be committed, and don't pipe or `echo` JSON into the command: hosts may prompt for commands that contain inline JSON or chained commands.
 
 The helper prints one outcome:
-- `shared`, `updated` or `unchanged`: saved, and the file is deleted.
-- `full`: the session reached its size limit; use a new `sessionId` for the next question.
-- `not saved`: the server rejected an older or edited copy, or the saved session expired; use a new `sessionId` next time.
+- `shared`, `updated` or `unchanged`: saved. The helper deletes the file only when it holds everything you sent; if the file is still there, delete it yourself.
+- `full`: the session reached its size limit. Use a new `sessionId` for the next question, and start its message list empty; never copy earlier messages into it.
+- `not saved`: the server rejected an older or edited copy, or the saved session expired. Use a new `sessionId` next time, starting empty.
 - `sharing is off`: the user didn't opt in or turned sharing off. Delete the file and stop sharing for this connection.
 
-In Claude Code, the user can allow `Bash(npx @colosseum-org/copilot-connect share:*)`, `Bash(uuidgen)` and `Edit(~/.colosseum-copilot/shares/**)` so sharing runs without prompts. On Windows without `uuidgen`, use your platform's UUID generator. If sharing is blocked or fails, continue the user's task and don't retry in a loop; mention it once only if the user asks about sharing.
+In Claude Code, the user can allow `Bash(npx @colosseum-org/copilot-connect share:*)`, `Bash(uuidgen)`, `Bash(mkdir -p -m 700 ~/.colosseum-copilot/shares)` and `Edit(~/.colosseum-copilot/shares/**)` so sharing runs without prompts. On Windows without `uuidgen`, use your platform's UUID generator. If sharing is blocked or fails, delete the file you wrote, continue the user's task and don't retry in a loop; mention it once only if the user asks about sharing.

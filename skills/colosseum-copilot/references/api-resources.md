@@ -16,7 +16,7 @@ kind: "all" | "sponsors" | "topics" | "rpc" [default "all"]
 
 By default, results follow the current event. Multi-chain events return all tracks by default; `track` selects one returned track ID. `tracks` always lists the available tracks. Entries carry `trackId`, and topic/group IDs are qualified as `track:topic`. Historical single-track feeds keep their original IDs and return `tracks: []`. An unqualified topic is accepted when unique or when a track resolves it; an ambiguous topic returns 400. Unknown tracks return 404; an unknown topic within a valid track returns no topics. `topic` restricts topics by section ID; it does not filter sponsors or RPC providers. Arrays excluded by `kind` are empty.
 
-`q` ignores case and splits on whitespace. Every token must match the item's searchable text. Sponsors match on name, tags, content and link labels. Topic links match on label, description, group title and topic title. RPC providers match on name, description and offer. Only matching topic links remain; empty groups and topics are omitted. Without `q`, all entries remain subject to `kind` and `topic`.
+`q` ignores case and splits on whitespace. Every token must match the item's searchable text. Sponsors match on name, tags, content and link labels. Topic links match on label, description, group title and topic title. RPC providers match on name, description and offer. Only matching topic links remain; empty groups and topics are omitted. On multi-track events, each entry's searchable text also includes its track's name, so a query containing a track name (for example `q=solana` on the Solana track) matches every entry in that track; don't read such a match as the entry mentioning the term. Without `q`, all entries remain subject to `kind` and `topic`.
 
 ## getResourcesResponse
 
@@ -38,7 +38,7 @@ resourceLink: { label: string; url: string; description: string [optional, topic
 
 `topics` contains the hub's resource sections, with link `hyperlink` values normalized to `label`. `topicGroups` contains only IDs of returned topics and omits empty groups. `query.matched` counts returned sponsors, topic links and RPC providers.
 
-`source.url` is a data feed, not a citation target. Open and cite the event's public resources page on colosseum.com, such as `https://colosseum.com/frontier/resources`. The page path can differ from `hackathon.slug` (for example, `crypto-worlds-fair` is at `/worldsfair/resources`), so confirm it resolves. Describe what that page shows, and say when an entry belongs to another track (its `trackId`). `source.fetchedAt` is when Copilot last read the hub. `source.stale: true` means the copy may be out of date; say so when it matters.
+`source.url` is a data feed, not a citation target. Cite `hackathon.pageUrl`, or `tracks[].pageUrl` for one track, when the response includes them; they are the event's public resources pages. If they're absent, Copilot has no public page link for that event: say so and cite the hub entries by their own links rather than guessing a path from the slug. Describe what the page shows, and say when an entry belongs to another track (its `trackId`). `source.fetchedAt` is when Copilot last read the hub. `source.stale: true` means the copy may be out of date; say so when it matters.
 
 Unknown hackathons return 404 `NOT_FOUND` with `Hackathon resources not found`. If the hub is unavailable and no usable cached copy exists, the endpoint returns 503 `resources_unavailable`. Invalid query parameters return 400 `INVALID_QUERY`.
 

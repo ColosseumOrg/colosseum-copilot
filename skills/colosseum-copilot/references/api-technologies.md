@@ -19,7 +19,7 @@ Each route accepts an optional `cohort`:
 
 Omitting `cohort` selects every project Copilot covers. `hackathonSlugs` accepts one to 20 slugs; `categoryKeys` accepts one to ten keys. Read `GET /categories` for the current keys. Set `includeSecondaryCategories: true` to include matches in a project's related second group. A `categoryKeys` filter returns `503 CATEGORIES_UNAVAILABLE` while category data is unavailable. `winnersOnly` defaults to `false`. When it is `true`, honorable mentions are excluded unless `includeHonorableMentions: true`. Using `includeHonorableMentions: true` without `winnersOnly: true` is invalid. Without a winner filter, honorable mentions remain ordinary projects. The category filter selects any listed key.
 
-Requests reject unknown fields. Unknown technologies or hackathons return empty or zero results. For `/co-usage` and `/top`, `topK` defaults to 10 and accepts integers from 1 to 50. All shares use the full selected cohort as their denominator, including projects without usable repository tags.
+Requests reject unknown fields. Unknown technologies or hackathons return empty or zero results. For `/co-usage` and `/top`, `topK` defaults to 10 and accepts integers from 1 to 50. Overall counts and top-technology shares use all projects in the selected cohort, including projects without usable repository tags. Per-hackathon shares use that hackathon's selected projects. Each `/co-usage` result's `share` is its `count` divided by `totals.count`, the number of projects tagged with the input technology.
 
 ### Counts
 

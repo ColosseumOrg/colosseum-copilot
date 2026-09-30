@@ -43,7 +43,7 @@ Facets need `includeFacets: true`. Always list the facets you want in `facets`, 
 
 `builtWith` describes technology evidence found in a project's code tree at capture time. It is derived from a repository summary and can be available even when the full repository summary is unavailable. It does not describe architecture or establish that an integration is deployed, active, or maintained today.
 
-Project details return the full record, with at most 100 tags per category. Each tag has a canonical display `name`, a `confidence` from 0 to 1, and an `evidence` quote of at most 120 characters from the source summary. A `version` appears only when the source states it. Chain tags may include `network`, one of `mainnet`, `devnet`, `testnet`, `localnet`, or `unknown`. Tags exclude architecture, endpoints, file paths, secrets, and business terms.
+Project details return the full record, with at most 100 tags per category. Each tag has a canonical display `name`. When the project's repository was confirmed public, each tag also has a `confidence` from 0 to 1 and an `evidence` quote of at most 120 characters from the source summary; otherwise tags contain only `name`. A `version` appears only when the source states it. Chain tags may include `network`, one of `mainnet`, `devnet`, `testnet`, `localnet`, or `unknown`, and `source: "inferred"` when the chain was inferred rather than found in the code. Tags exclude architecture, endpoints, file paths, secrets, and business terms.
 
 `builtWith: null` means no record is available. An empty category array means the available record identified no technology in that category; it does not prove the project uses none. Search results contain only names, capped at 10 per category. Fetch project details to inspect confidence, evidence, and the complete record.
 
@@ -65,8 +65,8 @@ standards: Array<repositoryTag> [max 100]
 ```text
 name: string [trim, min 1, max 100]
 version: string [trim, min 1, max 100] [optional]
-confidence: number [min 0, max 1]
-evidence: string [max 120]
+confidence: number [min 0, max 1] [optional, absent when the repository is not confirmed public]
+evidence: string [max 120] [optional, absent when the repository is not confirmed public]
 ```
 
 ### repositoryChainTag
@@ -75,6 +75,7 @@ Includes the `repositoryTag` fields and:
 
 ```text
 network: "mainnet" | "devnet" | "testnet" | "localnet" | "unknown" [optional]
+source: "inferred" [optional]
 ```
 
 ### compactBuiltWith
