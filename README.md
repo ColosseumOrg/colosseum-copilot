@@ -27,10 +27,6 @@ Then ask your agent for a task, for example:
 
 These are example requests, not claimed results. The agent picks the evidence and checks your task needs.
 
-## What is coming
-
-Posting project updates and completing submissions from your agent are coming; nothing writes to your project yet. Current research and tool guidance do not authorize platform writes, deployments, signing, or publication.
-
 ## Help and privacy
 
 Read the [documentation](https://docs.colosseum.com/copilot), [connection guide](skills/colosseum-copilot/references/connection.md), or [API reference](skills/colosseum-copilot/references/api-reference.md). Use the helper's `revoke` command or [Arena's connected-agents page](https://colosseum.com/arena/copilot/connections) to revoke a connection. The sign-in choice is "Help improve Copilot (optional)": "Share your questions and your agent's answers with Colosseum, not files or tool output. We keep them for 12 months to make Copilot better." It's unchecked by default. If you opt in, that connection's sessions are shared until you turn sharing off. The Arena page lets you turn sharing on or off for each connection. For skill issues, [open an issue](https://github.com/ColosseumOrg/colosseum-copilot/issues) with redacted errors and versions; never include credentials or private repository content.
