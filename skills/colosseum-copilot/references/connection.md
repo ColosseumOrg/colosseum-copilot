@@ -22,7 +22,7 @@ npx @colosseum-org/copilot-connect status
 
 Show the device link and code only to the signed-in user, and never ask anyone to paste a code or token back into chat. On hosts without a usable credential store, follow the helper's supported protected-storage instructions; do not improvise a plaintext secret file or promise a fallback your installed version lacks.
 
-If background commands are blocked, use `umask 077` and start `login --device` with `nohup`, capturing its output in a private temporary log. Poll helper `status` about every 20 seconds for up to 10 minutes. If the agent turn must end, ask the user to reply after approval; an ended turn will not resume itself. Remove the log after sign-in or expiry.
+If background commands are blocked, use `umask 077` and start `login --device` with `nohup`, capturing its output in a private temporary log. Check the log about every 20 seconds for up to 30 minutes, until login reports it finished or failed. Don't run `status` while it's still waiting, because that can make the sign-in fail; run it once afterwards. If the agent turn must end, ask the user to reply after approval; an ended turn will not resume itself. Remove the log after sign-in or expiry.
 
 On Windows PowerShell, use `npx.cmd` because execution policy may block `npx.ps1`. The Bash request examples below work in Claude Code's Git Bash. PowerShell can't run that pipe, so read the token and call `Invoke-RestMethod` in one command, pass the token only as the Authorization header, and remove the variable in the same command. Never print it, save it to a file or put it in a URL. Windows credential files rely on user-profile permissions. WSL has separate storage.
 

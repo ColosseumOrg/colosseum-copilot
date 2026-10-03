@@ -13,7 +13,7 @@ npx @colosseum-org/copilot-connect token | sed 's/^/Authorization: Bearer /' | c
 
 Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. v1 tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in before then.
 
-Compare `X-Copilot-Skill-Version` semantically with local version `2.0.1`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
+Compare `X-Copilot-Skill-Version` semantically with local version `2.0.2`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
 
 ## Endpoints and field definitions
 
