@@ -25,6 +25,8 @@ Use `labelKeys` from `GET /filters` or the `labels` facet for submission labels.
 
 ## Winners and honorable mentions
 
+Before an event publishes its results, `prize` and `award` are `null` and `isWinner` is `false`. Winner filters, prize filters, facets, and counts include only published results.
+
 In V2, `filters.winnersOnly: true`, detail `isWinner`, `winnerCount`, and analysis `winners` count prize winners and exclude honorable mentions. `award` is `winner`, `honorable_mention`, or `null`. Honorable mentions carry `prize.type: "HONORABLE_MENTION"` with no amount; they are recognitions, never wins. Frontier had no tracks: its 25 `TRACK_PRIZE` awards named `Winner` are its top-25 awards, not track prizes. To count mentions separately, use an empty query with `filters.prizeTypes: ["HONORABLE_MENTION"]` and read `totalFound`. Keep the same hackathon and other filters for both counts.
 
 ## Categories and counts
