@@ -47,7 +47,7 @@ Unknown hackathons return 404 `NOT_FOUND` with `Hackathon resources not found`. 
 Use the trusted V2 API base configured in the endpoint reference. Keep shell tracing off and pass the token directly to curl. Start the request pipeline with the helper.
 
 ```bash
-npx @colosseum-org/copilot-connect token | sed 's/^/Authorization: Bearer /' | curl --silent --show-error --include --header @- --get "$COLOSSEUM_COPILOT_API_BASE/resources" --data-urlencode 'track=solana' --data-urlencode 'q=wallet' --data-urlencode 'kind=topics'
+npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.0.3" --silent --show-error --include --header @- --get "$COLOSSEUM_COPILOT_API_BASE/resources" --data-urlencode 'track=solana' --data-urlencode 'q=wallet' --data-urlencode 'kind=topics'
 ```
 
 Copilot recommends tools only from this hub. Use [technology analysis](api-technologies.md) for recorded counts and co-usage, then `POST /search/projects` with `filters.builtWith` for project examples.

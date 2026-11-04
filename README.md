@@ -10,15 +10,15 @@ You need a compatible AI agent, a Colosseum account for protected evidence, and 
 
 ```bash
 npx skills add ColosseumOrg/colosseum-copilot -g
-npx @colosseum-org/copilot-connect login
-npx @colosseum-org/copilot-connect status
+npx @colosseum-org/copilot-connect@0.2.3 login
+npx @colosseum-org/copilot-connect@0.2.3 status
 ```
 
 Installing globally replaces an older Copilot skill in place. If you once installed Copilot inside a project, run `npx skills remove colosseum-copilot` there so the old copy can't load instead. For OpenClaw, add `-a openclaw`. On Windows PowerShell, run the helper through `npx.cmd`.
 
 For tool picks from the same hub without signing in, use the lighter [`colosseum-resources` skill](https://github.com/ColosseumOrg/colosseum-resources) (`npx skills add ColosseumOrg/colosseum-resources`).
 
-Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. v1 tokens return v1 data only and stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill and sign in with the helper before then.
+Default login opens the browser using PKCE; use `npx @colosseum-org/copilot-connect@0.2.3 login --device` for remote environments or blocked callbacks. Credentials stay in the helper's protected storage. Do not paste tokens into chat. v1 tokens return v1 data only and stop working at 00:00 UTC on October 28, 2026 (the evening of October 27 in the Americas). Update the skill and sign in with the helper before then.
 
 Then ask your agent for a task, for example:
 

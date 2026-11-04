@@ -7,13 +7,13 @@ The default API base is `https://copilot.colosseum.com/api/v2`; endpoint paths b
 The connection helper uses browser authorization with PKCE by default, a device fallback, and rotating refresh tokens. See [connection instructions](connection.md) for setup and v1 migration. Do not print, save, or send tokens to the model. This manual fallback feeds the token directly to curl through standard input; keep shell tracing off. Choose the base as described in [manual HTTPS requests](connection.md#manual-https-requests).
 
 ```bash
-npx @colosseum-org/copilot-connect status
-npx @colosseum-org/copilot-connect token | sed 's/^/Authorization: Bearer /' | curl --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
+npx @colosseum-org/copilot-connect@0.2.3 status
+npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.0.3" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
 Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. v1 tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in before then.
 
-Compare `X-Copilot-Skill-Version` semantically with local version `2.0.2`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
+Send your installed skill version in the `X-Copilot-Skill-Version` request header on every Copilot API request. Compare the response's `X-Copilot-Skill-Version` semantically with local version `2.0.3`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
 
 ## Endpoints and field definitions
 
@@ -170,12 +170,15 @@ Limits are shared per authenticated user, including when that user has multiple 
 | ------------------ | ------------------ | ---------------------------------------- |
 | Search             | 30 requests/minute | Both search endpoints, `/faqs`, `/faqs/:program/:id` and `/resources` combined           |
 | Own data           | 10 requests/minute | `/me` |
+| Project details | 1,000 requests/day | `/projects/by-slug/:slug` (every request counts, including not found) |
 | Analysis           | 10 requests/minute | `/analyze`, `/compare`, and the four `/technologies/*` routes combined |
 | Concurrency        | 2 in flight        | All endpoints |
 | Source suggestions | 5 requests/hour    | `/source-suggestions`                    |
 | Feedback           | 10 requests/hour   | `/feedback`                              |
 
 Honor `Retry-After` on 429 responses. Concurrency rejection uses `Retry-After: 1`. Queue client requests instead of assuming the host serializes them.
+If `Retry-After` is longer than 60 seconds, do not wait or retry; tell the user the limit is reached for now and continue with search and filters.
+
 ## Errors
 
 Error bodies contain `error: string`, `code: string`, and `retryable: boolean`. Server errors may also include `requestId: string`; include it in a user-approved support report. Do not include tokens or private task context.
@@ -193,7 +196,7 @@ Error bodies contain `error: string`, `code: string`, and `retryable: boolean`. 
 | 404  | `NOT_FOUND`              | false     | Check slug, key or document ID.                         |
 | 413  | `PAYLOAD_TOO_LARGE`      | false     | Reduce the body below 1 MB.                             |
 | 415  | `UNSUPPORTED_MEDIA_TYPE` | false     | Use supported encoding and charset.                     |
-| 429  | `RATE_LIMITED`           | true      | Wait for `Retry-After` (seconds) before retrying; read it with `--include`. Without it, wait 60 seconds. |
+| 429  | `RATE_LIMITED`           | true      | Read `Retry-After` (seconds) with `--include`; wait before retrying only if it is at most 60 seconds, otherwise follow the Limits guidance above. Without it, wait 60 seconds. |
 | 500  | `INTERNAL_ERROR`         | true      | Retry at most twice (about 10 s, then 30 s), then treat the route as down for this task and tell the user. |
 | 503  | `SERVICE_UNAVAILABLE`    | true      | Honor `Retry-After` when present. Retry at most twice, then treat the route as down for this task.           |
 | 503  | `PROJECT_PERMISSIONS_UNAVAILABLE` | true | Project records are temporarily unavailable. Retry at most twice, then use public sources and tell the user. |
