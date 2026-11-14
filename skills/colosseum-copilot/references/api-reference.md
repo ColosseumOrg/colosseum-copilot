@@ -8,12 +8,12 @@ The connection helper uses browser authorization with PKCE by default, a device 
 
 ```bash
 npx @colosseum-org/copilot-connect@0.2.3 status
-npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.0.3" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
+npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.1.0" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
-Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. v1 tokens return v1 data only and stop working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in before then.
+Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. v1 tokens stopped working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in.
 
-Send your installed skill version in the `X-Copilot-Skill-Version` request header on every Copilot API request. Compare the response's `X-Copilot-Skill-Version` semantically with local version `2.0.3`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
+Send your installed skill version in the `X-Copilot-Skill-Version` request header on every Copilot API request. Compare the response's `X-Copilot-Skill-Version` semantically with local version `2.1.0`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
 
 ## Endpoints and field definitions
 
