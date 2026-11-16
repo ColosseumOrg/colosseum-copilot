@@ -67,7 +67,7 @@ For founder decisions, preserve the substance behind a useful analysis: the cust
 
 Preserve the user's task through setup. Use an existing connection if it works; do not require login on every conversation.
 
-This skill pins the helper to version `0.2.3`; the pin is bumped with each skill release. Always send your installed skill version in the `X-Copilot-Skill-Version` header on every Copilot API request (currently `2.1.0`).
+This skill pins the helper to version `0.2.3`; the pin is bumped with each skill release. Always send your installed skill version in the `X-Copilot-Skill-Version` header on every Copilot API request (currently `2.1.1`).
 
 ```bash
 npx @colosseum-org/copilot-connect@0.2.3 status
@@ -88,7 +88,7 @@ Helper `status` silently refreshes expiring access and verifies evidence access.
 Manual HTTPS fallback, run privately with shell tracing disabled. Treat `COLOSSEUM_COPILOT_PAT` and a base ending in `/api/v1` as leftover settings. Never read, print, or use the PAT. Never list the environment (`env`, `printenv`, `set`, or `export -p`) to diagnose Copilot, and never call `/api/v1` for readiness. Check helper `status` instead. If `COLOSSEUM_COPILOT_API_BASE` is set to `https://copilot.colosseum.com/api/v2`, or to another `/api/v2` URL the user has explicitly told you to use, use it unchanged and never overwrite it. Otherwise (unset, ending in `/api/v1`, or any other origin), use the default `https://copilot.colosseum.com/api/v2` in the request instead of `$COLOSSEUM_COPILOT_API_BASE`, and never send a helper token anywhere else. Set the chosen base before the request, and make each request one pipeline starting with the helper:
 
 ```bash
-npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.1.0" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
+npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.1.1" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
 Keep bearer tokens out of model context, command output, logs, arguments, URLs, and agent-created files, including temporary files. Let only the helper manage its supported credential store. Pass each token from the helper to curl through the single pipeline above. Only use a trusted API base. The `/api/v2` path requires a new sign-in token. v1 tokens stopped working at 00:00 UTC on October 28, 2026. Tell anyone still using one to update this skill and sign in with `@colosseum-org/copilot-connect`. The upgrade path is in [connection.md](references/connection.md); the API contract and error recovery are in [api-reference.md](references/api-reference.md).
