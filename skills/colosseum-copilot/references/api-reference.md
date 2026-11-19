@@ -8,12 +8,12 @@ The connection helper uses browser authorization with PKCE by default, a device 
 
 ```bash
 npx @colosseum-org/copilot-connect@0.2.3 status
-npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.1.1" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
+npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.2.0" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
 Use only a trusted HTTPS API base. `token` is for programmatic consumption; do not run it alone in an agent-visible terminal. v1 tokens stopped working on October 28, 2026 at 00:00 UTC. Update the skill and use the new sign-in.
 
-Send your installed skill version in the `X-Copilot-Skill-Version` request header on every Copilot API request. Compare the response's `X-Copilot-Skill-Version` semantically with local version `2.1.1`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
+Send your installed skill version in the `X-Copilot-Skill-Version` request header on every Copilot API request. Compare the response's `X-Copilot-Skill-Version` semantically with local version `2.2.0`; when newer, update as in [connection.md](connection.md#keep-one-current-copy). A newer header does not prove a capability is enabled.
 
 ## Endpoints and field definitions
 
@@ -42,7 +42,7 @@ Each schema name links to its field definitions, including validation bounds, de
 | `POST /source-suggestions`    | JSON [sourceSuggestionRequest](api-analysis.md#sourcesuggestionrequest)                                   | 201, `{ "message": "Thanks! We'll review your suggestion." }`                                         |
 | `POST /feedback`              | JSON [feedbackRequest](api-analysis.md#feedbackrequest)                                                   | 201, `{ "message": "Feedback received. Thank you." }`                                                 |
 
-Source suggestions require a public HTTP or HTTPS URL without embedded credentials. Feedback `context` must serialize to at most 10,000 characters. Preview these submissions and obtain the user's consent. Using research does not authorize sending feedback or suggestions.
+Source suggestions require a public HTTP or HTTPS URL without embedded credentials. Feedback `context` must serialize to at most 10,000 characters. Preview these submissions and obtain the user's consent. Using research does not authorize sending feedback or suggestions. Offer feedback only after a Copilot error or data gap, as described in [When Copilot fails](../SKILL.md#when-copilot-fails).
 
 See [FAQ fields and freshness](api-faqs.md) for canonical program answers.
 
