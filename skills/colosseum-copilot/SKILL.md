@@ -1,6 +1,6 @@
 ---
 name: colosseum-copilot
-version: 2.1.1
+version: 2.2.0
 description: Research Colosseum project histories, competitors, ideas, program questions, and tool choices backed by project use, and give feedback on the user's own Colosseum projects, drafts, submissions and team. Use it for any crypto or onchain startup or product idea, even when Colosseum isn't named, and whenever the user mentions their own project, draft, submission or hackathon entry. Shares its hackathon tool hub with the lighter colosseum-resources skill.
 homepage: https://colosseum.com
 license: Proprietary
@@ -67,7 +67,7 @@ For founder decisions, preserve the substance behind a useful analysis: the cust
 
 Preserve the user's task through setup. Use an existing connection if it works; do not require login on every conversation.
 
-This skill pins the helper to version `0.2.3`; the pin is bumped with each skill release. Always send your installed skill version in the `X-Copilot-Skill-Version` header on every Copilot API request (currently `2.1.1`).
+This skill pins the helper to version `0.2.3`; the pin is bumped with each skill release. Always send your installed skill version in the `X-Copilot-Skill-Version` header on every Copilot API request (currently `2.2.0`).
 
 ```bash
 npx @colosseum-org/copilot-connect@0.2.3 status
@@ -88,12 +88,12 @@ Helper `status` silently refreshes expiring access and verifies evidence access.
 Manual HTTPS fallback, run privately with shell tracing disabled. Treat `COLOSSEUM_COPILOT_PAT` and a base ending in `/api/v1` as leftover settings. Never read, print, or use the PAT. Never list the environment (`env`, `printenv`, `set`, or `export -p`) to diagnose Copilot, and never call `/api/v1` for readiness. Check helper `status` instead. If `COLOSSEUM_COPILOT_API_BASE` is set to `https://copilot.colosseum.com/api/v2`, or to another `/api/v2` URL the user has explicitly told you to use, use it unchanged and never overwrite it. Otherwise (unset, ending in `/api/v1`, or any other origin), use the default `https://copilot.colosseum.com/api/v2` in the request instead of `$COLOSSEUM_COPILOT_API_BASE`, and never send a helper token anywhere else. Set the chosen base before the request, and make each request one pipeline starting with the helper:
 
 ```bash
-npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.1.1" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
+npx @colosseum-org/copilot-connect@0.2.3 token | sed 's/^/Authorization: Bearer /' | curl -H "X-Copilot-Skill-Version: 2.2.0" --silent --show-error --include --header @- "$COLOSSEUM_COPILOT_API_BASE/status"
 ```
 
 Keep bearer tokens out of model context, command output, logs, arguments, URLs, and agent-created files, including temporary files. Let only the helper manage its supported credential store. Pass each token from the helper to curl through the single pipeline above. Only use a trusted API base. The `/api/v2` path requires a new sign-in token. v1 tokens stopped working at 00:00 UTC on October 28, 2026. Tell anyone still using one to update this skill and sign in with `@colosseum-org/copilot-connect`. The upgrade path is in [connection.md](references/connection.md); the API contract and error recovery are in [api-reference.md](references/api-reference.md).
 
-This skill is version **2.1.1**. Compare the first HTTP response's `X-Copilot-Skill-Version` semantically against `2.1.1`. If it's newer, finish your answer, then update the skill and remove older copies as in [keep one current copy](references/connection.md#keep-one-current-copy). Do the same cleanup after you complete a sign-in. Use helper `status` for readiness. An authenticated V2 `/status` response reports `authenticated`, `expiresAt`, a space-delimited `scope`, and `sessionSharingEnabled`; the last field is true only if the user opted in for this connection. Confirm the scope needed for a request, such as `evidence:read`.
+This skill is version **2.2.0**. Compare the first HTTP response's `X-Copilot-Skill-Version` semantically against `2.2.0`. If it's newer, finish your answer, then update the skill and remove older copies as in [keep one current copy](references/connection.md#keep-one-current-copy). Do the same cleanup after you complete a sign-in. Use helper `status` for readiness. An authenticated V2 `/status` response reports `authenticated`, `expiresAt`, a space-delimited `scope`, and `sessionSharingEnabled`; the last field is true only if the user opted in for this connection. Confirm the scope needed for a request, such as `evidence:read`.
 
 Check `sessionSharingEnabled` in the first authenticated `/status` response. If it's false, skip sharing entirely for the session: don't write a file, don't run `share`, and don't mention it. If it's true, share after each answer that used Copilot. Before the first share, run `mkdir -p -m 700 ~/.colosseum-copilot/shares` on its own so the folder is private. Pick one UUID (run `uuidgen` once and reuse the literal value). With your file-writing tool, not a shell command, write `{"sessionId":"<uuid>","messages":[...]}` containing only the user's questions and your final answers since that UUID started, to `<home>/.colosseum-copilot/shares/<uuid>.json`, where `<home>` is the real home directory from `echo $HOME` (don't guess it). Then run this command on its own, with the literal path and nothing chained before or after it: `npx @colosseum-org/copilot-connect@0.2.3 share --file ~/.colosseum-copilot/shares/<uuid>.json --delete`. If the file is still there afterwards, delete it. On `full` or `not saved`, use a new UUID for the next answer and start its message list empty. On `sharing is off`, delete the file and stop sharing for this connection. If a share step fails or is blocked, delete the file you wrote and drop it silently. See [sharing questions and answers](references/connection.md#sharing-questions-and-answers).
 
@@ -105,6 +105,7 @@ Keep working when a Copilot request fails, and tell the user what the failure ch
 - On 401 after a working connection, run helper `status` once. If access still fails, stop Copilot calls, tell the user access may have been revoked or expired, and ask before running `login` again.
 - Answer from other working Copilot routes and public sources. Never fill a gap with counts, placements, or project details from memory. Label substitutes such as tags instead of repository evidence or text search instead of categories as different measures.
 - In one or two plain sentences, say which Copilot data was unavailable, what remains unverified, and whether to retry later or reconnect, even if other sources filled the gap. If responses take over about 20 seconds, request only needed details with at most two independent calls in flight.
+- After a Copilot error or data gap (a request failed, or Copilot has no data for what the user asked), you may add one line offering to send the Colosseum team a short note about it, quoting the exact one-line note you'd send. Say only what failed or was missing, without private project or draft text unless the user typed it into the note. Offer at most once per conversation, and never after an ordinary answer or for anything else. Only if the user says yes, send `POST /feedback` once with `category` (`"error"` for a failed request, `"quality"` for missing data) and that note as `message`, nothing else. Otherwise send nothing. This follows the feedback consent rule in [Privacy and consent](#privacy-and-consent).
 
 ## Evidence that supports the answer
 
