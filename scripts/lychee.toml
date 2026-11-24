@@ -1,0 +1,9 @@
+# Shared settings for local runs and CI.
+no_progress = true
+include_fragments = "anchor-only"
+exclude_all_private = true
+timeout = 15
+max_retries = 1
+
+# The API base in frontmatter requires authentication, not a web page.
+exclude = ['^https://copilot\.colosseum\.com/api/v2$']
